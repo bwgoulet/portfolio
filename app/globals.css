@@ -162,19 +162,6 @@ main {
   outline: none;
 }
 
-.scene-hotspots {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 6;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  max-width: min(620px, 90vw);
-}
-
-.scene-hotspot,
-.detail-action,
 .detail-close {
   border: 1px solid rgba(220, 234, 248, 0.48);
   background: rgba(10, 20, 30, 0.86);
@@ -186,10 +173,6 @@ main {
   cursor: pointer;
 }
 
-.scene-hotspot:hover,
-.scene-hotspot:focus-visible,
-.detail-action:hover,
-.detail-action:focus-visible,
 .detail-close:hover,
 .detail-close:focus-visible {
   border-color: rgba(244, 251, 255, 0.94);
@@ -202,16 +185,6 @@ main {
   margin-left: auto;
   margin-bottom: 0.7rem;
   display: block;
-}
-
-.detail-actions {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 6;
-  display: grid;
-  gap: 0.45rem;
-  max-width: min(340px, 78vw);
 }
 
 .note-preview {
@@ -343,28 +316,9 @@ main {
     padding: 0.72rem 0.86rem;
   }
 
-  .detail-actions {
-    right: 0.7rem;
-    bottom: 0.7rem;
-  }
-
-  .scene-hotspots {
-    bottom: 0.7rem;
-    left: 0.7rem;
-  }
 }
 
 @media (max-width: 640px) {
-  .scene-hotspots {
-    max-width: calc(100vw - 1.4rem);
-  }
-
-  .scene-hotspot,
-  .detail-action {
-    width: 100%;
-    text-align: left;
-  }
-
   .note-detail-card,
   .experience-detail-card {
     width: min(94vw, 760px);

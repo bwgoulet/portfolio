@@ -266,20 +266,6 @@ export function AdventureScene() {
         <p>an interactive portfolio</p>
       </header>
 
-      {isOverviewState && !isTransitioning && (
-        <section className="scene-hotspots" aria-label="Scene quick actions">
-          <button className="scene-hotspot" onClick={() => handleFocusClick('billboard')}>
-            Open Projects board
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('cabin')}>
-            Enter About/Gallery cabin
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('tablets')}>
-            Open Experience tablets
-          </button>
-        </section>
-      )}
-
       {interactionState === 'billboardCloseup' && selectedNote && (
         <article
           className={`note-detail ${detailCardStateClass(Boolean(closingNoteId))}`}
