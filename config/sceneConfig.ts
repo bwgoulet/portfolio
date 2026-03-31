@@ -20,9 +20,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 40
   },
   cabinInterior: {
-    position: [4.6, 2.18, 0.68],
-    lookAt: [3.84, 1.28, -0.48],
-    fov: 54
+    position: [4.01, 2.08, -0.16],
+    lookAt: [4.34, 2.08, -0.93],
+    fov: 48
   },
   tablets: {
     position: [2.82, 1.74, 5.86],
@@ -70,7 +70,7 @@ export const SCENE_ANCHORS = {
 export const PALETTE: Record<string, ColorRepresentation> = {
   skyBottom: '#ffb27a',
   fog: '#d78a67',
-  islandTop: '#2f4a38',
+  islandTop: '#3f6a4a',
   islandSide: '#1f2926',
   trail: '#526354',
   trailBlocker: '#444040',
@@ -79,7 +79,7 @@ export const PALETTE: Record<string, ColorRepresentation> = {
   tablet: '#808486',
   tabletRune: '#c9d9d2',
   trunk: '#3c302f',
-  leaves: '#3e5a45',
+  leaves: '#4a704f',
   billboardFrame: '#645241',
   billboardFace: '#d8c5a0',
   cabinWall: '#5b4737',

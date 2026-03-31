@@ -245,14 +245,14 @@ function GrassGround() {
     const context = canvas.getContext('2d');
     if (!context) return null;
 
-    context.fillStyle = '#35573e';
+    context.fillStyle = '#4a7a56';
     context.fillRect(0, 0, size, size);
     for (let index = 0; index < 340; index += 1) {
       const x = (index * 47) % size;
       const y = (index * 89) % size;
       const radius = 4 + (index % 5);
       const shade = 30 + (index % 12);
-      context.fillStyle = `hsla(${112 + (index % 6)}, 32%, ${shade}%, 0.35)`;
+      context.fillStyle = `hsla(${112 + (index % 6)}, 42%, ${shade + 8}%, 0.35)`;
       context.beginPath();
       context.arc(x, y, radius, 0, Math.PI * 2);
       context.fill();
@@ -275,11 +275,11 @@ function GrassGround() {
       </mesh>
       <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
         <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
-        <meshStandardMaterial color="#3d5d48" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <meshStandardMaterial color="#4e7d5f" map={grassTexture} roughness={0.99} metalness={0.03} />
       </mesh>
       <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
         <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
-        <meshStandardMaterial color="#3c5d4a" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <meshStandardMaterial color="#4a7a5a" map={grassTexture} roughness={0.99} metalness={0.03} />
       </mesh>
     </>
   );
