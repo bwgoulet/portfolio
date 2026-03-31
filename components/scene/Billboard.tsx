@@ -1,6 +1,6 @@
 'use client';
 
-import { Html } from '@react-three/drei';
+import { Html, Text } from '@react-three/drei';
 import gsap from 'gsap';
 import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
@@ -71,6 +71,29 @@ export const Billboard = memo(function Billboard({
         />
       </mesh>
 
+
+      <Text
+        position={[0, 2.26, 0.106]}
+        rotation={[0, 0, -0.02]}
+        fontSize={0.14}
+        letterSpacing={0.04}
+        anchorX="center"
+        anchorY="middle"
+        color="#7a592f"
+      >
+        Projects
+      </Text>
+      <Text
+        position={[0.008, 2.255, 0.102]}
+        rotation={[0, 0, -0.02]}
+        fontSize={0.14}
+        letterSpacing={0.04}
+        anchorX="center"
+        anchorY="middle"
+        color="#c79b62"
+      >
+        Projects
+      </Text>
       {!detailOpen &&
         PROJECT_NOTES.map((note) => (
           <group
