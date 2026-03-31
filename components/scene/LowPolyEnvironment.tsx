@@ -83,7 +83,7 @@ function MountainBackdrop() {
       </mesh>
       <mesh position={[-1.8, -0.3, 1.2]} rotation={[0, 0.4, 0]} castShadow>
         <coneGeometry args={[3.5, 4.8, 7]} />
-        <meshStandardMaterial color="#343d4a" flatShading />
+        <meshStandardMaterial color="#2b3443" flatShading />
       </mesh>
     </group>
   );
@@ -92,7 +92,7 @@ function MountainBackdrop() {
 function Clouds() {
   const cloudGroupRef = useRef<Group>(null);
   const cloudOffsets = useMemo(
-    () => [0, Math.PI * 0.65, Math.PI * 1.2, Math.PI * 1.85, Math.PI * 2.4, Math.PI * 2.9],
+    () => [0, Math.PI * 0.8, Math.PI * 1.45, Math.PI * 2.15],
     []
   );
 
@@ -101,28 +101,32 @@ function Clouds() {
     if (!group) return;
     group.children.forEach((cloud, index) => {
       const offset = cloudOffsets[index] ?? 0;
-      const t = clock.getElapsedTime() * 0.08 + offset;
-      cloud.position.x = Math.sin(t) * 12;
-      cloud.position.z = -18 + (index % 3) * 3 + Math.cos(t * 0.9) * 2.4;
-      cloud.position.y = 9.8 + Math.sin(t * 1.6) * 0.18;
+      const t = clock.getElapsedTime() * 0.06 + offset;
+      cloud.position.x = Math.sin(t) * 10.5;
+      cloud.position.z = -18.5 + index * 1.9 + Math.cos(t * 0.7) * 1.3;
+      cloud.position.y = 6.45 + Math.sin(t * 1.45) * 0.22;
     });
   });
 
   return (
     <group ref={cloudGroupRef}>
       {cloudOffsets.map((offset, index) => (
-        <group key={offset} position={[index * 2.8 - 7, 9.6, -18 + (index % 3) * 2.5]}>
-          <mesh>
-            <sphereGeometry args={[1.1, 10, 8]} />
-            <meshStandardMaterial color="#f7e2cf" flatShading transparent opacity={0.7} />
+        <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.2, 0.58, 0.82]}>
+          <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[1.15, 12, 10]} />
+            <meshStandardMaterial color="#edf5ff" flatShading transparent opacity={0.88} />
           </mesh>
-          <mesh position={[-1.05, -0.05, 0.1]}>
-            <sphereGeometry args={[0.7, 10, 8]} />
-            <meshStandardMaterial color="#fcebd8" flatShading transparent opacity={0.72} />
+          <mesh position={[-1.18, 0.12, 0.12]}>
+            <sphereGeometry args={[0.82, 12, 10]} />
+            <meshStandardMaterial color="#f7fbff" flatShading transparent opacity={0.9} />
           </mesh>
-          <mesh position={[0.98, -0.06, 0.08]}>
-            <sphereGeometry args={[0.76, 10, 8]} />
-            <meshStandardMaterial color="#f4d9c0" flatShading transparent opacity={0.66} />
+          <mesh position={[1.12, 0.1, 0.04]}>
+            <sphereGeometry args={[0.9, 12, 10]} />
+            <meshStandardMaterial color="#e8f1ff" flatShading transparent opacity={0.86} />
+          </mesh>
+          <mesh position={[0.26, 0.28, 0.08]}>
+            <sphereGeometry args={[0.68, 12, 10]} />
+            <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.9} />
           </mesh>
         </group>
       ))}
