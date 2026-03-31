@@ -10,6 +10,7 @@ type CameraRigProps = {
   targetKey: FocusTarget;
   isTransitioning: boolean;
   onTransitionEnd: () => void;
+  reducedMotion: boolean;
 };
 
 function getViewportTarget(aspect: number): ViewportTarget {
@@ -28,21 +29,23 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd }: Camer
   useEffect(() => {
     const preset = CAMERA_PRESETS[targetKey][viewportTarget];
 
-    if (!isTransitioning) {
+    if (!isTransitioning || reducedMotion) {
       camera.position.set(...preset.position);
       lookAt.current.set(...preset.lookAt);
       camera.fov = preset.fov;
       camera.lookAt(lookAt.current);
       camera.updateProjectionMatrix();
+      if (isTransitioning) onTransitionEnd();
       return;
     }
 
+    let settleTimer: ReturnType<typeof setTimeout> | null = null;
     const tweenPosition = animateValue(camera.position, {
       x: preset.position[0],
       y: preset.position[1],
       z: preset.position[2],
-      duration: ANIMATION_CONFIG.cameraDuration,
-      ease: ANIMATION_CONFIG.cameraEase,
+      duration: MOTION_TIERS.macro.cameraDuration,
+      ease: MOTION_TIERS.macro.cameraEase,
       onUpdate: () => camera.lookAt(lookAt.current)
     });
 
@@ -50,23 +53,26 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd }: Camer
       x: preset.lookAt[0],
       y: preset.lookAt[1],
       z: preset.lookAt[2],
-      duration: ANIMATION_CONFIG.cameraDuration,
-      ease: ANIMATION_CONFIG.cameraEase,
+      duration: MOTION_TIERS.macro.cameraDuration,
+      ease: MOTION_TIERS.macro.cameraEase,
       onUpdate: () => camera.lookAt(lookAt.current)
     });
 
     const tweenFov = animateValue(camera, {
       fov: preset.fov,
-      duration: ANIMATION_CONFIG.cameraDuration,
-      ease: ANIMATION_CONFIG.cameraEase,
+      duration: MOTION_TIERS.macro.cameraDuration,
+      ease: MOTION_TIERS.macro.cameraEase,
       onUpdate: () => camera.updateProjectionMatrix(),
-      onComplete: onTransitionEnd
+      onComplete: () => {
+        settleTimer = setTimeout(onTransitionEnd, MOTION_TIERS.macro.settleDelay * 1000);
+      }
     });
 
     return () => {
       tweenPosition.kill();
       tweenLookAt.kill();
       tweenFov.kill();
+      if (settleTimer) clearTimeout(settleTimer);
     };
   }, [camera, isTransitioning, onTransitionEnd, targetKey, viewportTarget]);
 

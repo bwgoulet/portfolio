@@ -5,6 +5,7 @@ import { useThree } from '@react-three/fiber';
 import { useEffect, useMemo } from 'react';
 import { ACESFilmicToneMapping, Color, FogExp2, PCFSoftShadowMap } from 'three';
 import { PALETTE } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 type LightProfile = {
   fogDensity: number;
@@ -73,6 +74,8 @@ export function LightingAtmosphere() {
     gl.shadowMap.type = PCFSoftShadowMap;
   }, [gl, profile.exposure, profile.fogColor, profile.fogDensity, scene]);
 
+  const lighting = VISUAL_TOKENS.lighting;
+
   return (
     <>
       <hemisphereLight intensity={profile.hemiIntensity} color="#ffe3c6" groundColor="#2d3a34" />
@@ -98,12 +101,12 @@ export function LightingAtmosphere() {
       <directionalLight intensity={profile.rimIntensity} position={[8, 3, -16]} color="#ffc98a" />
 
       <pointLight intensity={2.1} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} distance={8} decay={2} />
-      <pointLight intensity={1.25} color="#ffc47a" position={[12, 9, -26]} distance={130} decay={2} />
-      <pointLight intensity={0.62} color="#9ac1ff" position={[0.5, 2.2, -6.4]} distance={18} decay={2} />
+      <pointLight intensity={1.25} color={lighting.warmBounce.tint} position={[12, 9, -26]} distance={130} decay={2} />
+      <pointLight intensity={lighting.rim.intensity} color={lighting.rim.tint} position={[0.5, 2.2, -6.4]} distance={18} decay={2} />
 
       <mesh position={[12, 8.5, -28]}>
         <sphereGeometry args={[2.2, 20, 20]} />
-        <meshBasicMaterial color="#ffcc72" />
+        <meshBasicMaterial color={lighting.sun.tint} />
       </mesh>
 
       <Sky

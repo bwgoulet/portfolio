@@ -3,9 +3,11 @@
 import { Html, Text } from '@react-three/drei';
 import gsap from 'gsap';
 import { memo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import type { RefObject } from 'react';
-import { Group } from 'three';
-import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { Group, MeshStandardMaterial } from 'three';
+import { MOTION_TIERS, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { PROJECT_NOTES } from './projectNotes';
 
 type BillboardProps = {
@@ -17,6 +19,7 @@ type BillboardProps = {
   onNoteClick: (noteId: string) => void;
   detailOpen: boolean;
   billboardRef: RefObject<Group | null>;
+  reducedMotion: boolean;
 };
 
 export const Billboard = memo(function Billboard({
@@ -27,9 +30,24 @@ export const Billboard = memo(function Billboard({
   onClick,
   onNoteClick,
   detailOpen,
-  billboardRef
+  billboardRef,
+  reducedMotion
 }: BillboardProps) {
+  const billboard = VISUAL_TOKENS.scene.billboard;
   const noteRefs = useRef<Record<string, Group | null>>({});
+  const boardMaterialRef = useRef<MeshStandardMaterial>(null);
+  const labelRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!reducedMotion && boardMaterialRef.current && !hovered) {
+      const pulse = (Math.sin(clock.getElapsedTime() * 3.5) + 1) * 0.5;
+      boardMaterialRef.current.emissiveIntensity = 0.06 + pulse * 0.015;
+    }
+    if (hovered || reducedMotion || !labelRef.current) return;
+    const t = clock.getElapsedTime();
+    labelRef.current.rotation.z = Math.sin(t * 0.42) * 0.01;
+    labelRef.current.position.y = 2.26 + Math.sin(t * 0.48) * 0.015;
+  });
   return (
     <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
       <mesh position={[-1.04, 0.88, -0.02]} castShadow>
@@ -64,6 +82,7 @@ export const Billboard = memo(function Billboard({
       >
         <boxGeometry args={[2.18, 1.46, 0.1]} />
         <meshStandardMaterial
+          ref={boardMaterialRef}
           color={hovered ? '#dcca9f' : PALETTE.billboardFace}
           emissive={hovered ? PALETTE.brandAccent : '#1f180f'}
           emissiveIntensity={hovered ? 0.14 : 0.05}
@@ -74,15 +93,15 @@ export const Billboard = memo(function Billboard({
       </mesh>
 
 
-      <group position={[0, 2.26, 0.106]} rotation={[0, 0, -0.02]} scale={hovered ? 1.14 : 1}>
+      <group ref={labelRef} position={[0, 2.26, 0.106]} rotation={[0, 0, -0.02]} scale={hovered ? 1.14 : 1}>
         <Text
           fontSize={hovered ? 0.158 : 0.14}
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#f8d899' : '#7a592f'}
+          color={hovered ? billboard.titlePrimaryHover : billboard.titlePrimaryIdle}
           outlineWidth={hovered ? 0.012 : 0.006}
-          outlineColor={hovered ? '#3a2a16' : '#2d210f'}
+          outlineColor={hovered ? billboard.titlePrimaryOutlineHover : billboard.titlePrimaryOutlineIdle}
         >
           Projects
         </Text>
@@ -92,7 +111,7 @@ export const Billboard = memo(function Billboard({
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#ffd8a5' : '#c79b62'}
+          color={hovered ? billboard.titleSecondaryHover : billboard.titleSecondaryIdle}
           fillOpacity={hovered ? 1 : 0.92}
         >
           Projects
@@ -114,16 +133,16 @@ export const Billboard = memo(function Billboard({
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: 0.18, ease: 'power2.out' });
-                gsap.to(group.position, { z: note.position[2] + 0.028, duration: 0.18, ease: 'power2.out' });
+                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                gsap.to(group.position, { z: note.position[2] + 0.028, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
               }}
               onPointerLeave={(event) => {
                 if (!notesInteractive) return;
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.2, ease: 'power2.out' });
-                gsap.to(group.position, { z: note.position[2], duration: 0.2, ease: 'power2.out' });
+                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                gsap.to(group.position, { z: note.position[2], duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
               }}
               onPointerDown={(event) => {
                 if (!notesInteractive) return;
@@ -147,7 +166,7 @@ export const Billboard = memo(function Billboard({
             </mesh>
             <mesh position={[0.005, 0.11, 0.013]}>
               <sphereGeometry args={[0.017, 6, 6]} />
-              <meshStandardMaterial color="#b9a277" flatShading />
+              <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
             <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} style={{ pointerEvents: "none" }}>
               <div className="note-preview" aria-hidden>

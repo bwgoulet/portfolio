@@ -93,11 +93,31 @@ export const CAMERA_PRESETS: Record<FocusTarget, Record<ViewportTarget, CameraPr
   }
 };
 
+export const MOTION_TIERS = {
+  micro: {
+    hoverPopDuration: 0.18,
+    emissivePulseDuration: 1.8,
+    ease: 'sine.out'
+  },
+  medium: {
+    landmarkNudgeDuration: 0.34,
+    landmarkResetDuration: 0.3,
+    easeOut: 'power2.out',
+    easeInOut: 'sine.inOut'
+  },
+  macro: {
+    cameraDuration: 2.35,
+    overlayFadeDuration: 0.42,
+    cameraEase: 'power2.inOut',
+    settleDelay: 0.18
+  }
+} as const;
+
 export const ANIMATION_CONFIG = {
-  cameraDuration: 2.35,
-  cameraEase: 'power2.inOut',
-  nudgeDuration: 0.34,
-  resetDuration: 0.3
+  cameraDuration: MOTION_TIERS.macro.cameraDuration,
+  cameraEase: MOTION_TIERS.macro.cameraEase,
+  nudgeDuration: MOTION_TIERS.medium.landmarkNudgeDuration,
+  resetDuration: MOTION_TIERS.medium.landmarkResetDuration
 };
 
 export const SCENE_ANCHORS = {

@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 const PHOTO_LAYOUT = [
   [-0.52, 1.42, -0.56],
@@ -17,9 +18,10 @@ const PHOTO_LAYOUT = [
   [0.54, 1.25, -0.56]
 ] as const;
 
-const PHOTO_COLORS = ['#d6b383', '#caa17d', '#b98a68', '#dec89b', '#b57d5e'] as const;
+const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
 
 export const CabinInterior = memo(function CabinInterior() {
+  const { cabinInterior } = VISUAL_TOKENS.scene;
   return (
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
@@ -54,7 +56,7 @@ export const CabinInterior = memo(function CabinInterior() {
       </mesh>
       <mesh position={[0.23, 0.55, -0.315]}>
         <planeGeometry args={[0.2, 0.12]} />
-        <meshBasicMaterial color="#7cc8a8" />
+        <meshBasicMaterial color={cabinInterior.monitorScreen} />
       </mesh>
 
       {PHOTO_LAYOUT.map((position, index) => (
