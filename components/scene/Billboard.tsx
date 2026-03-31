@@ -83,6 +83,10 @@ export const Billboard = memo(function Billboard({
       {PROJECT_NOTES.map((note) => (
         <group key={note.id} position={note.position} rotation={[0, 0, note.rotation]}>
           <mesh
+            onPointerDown={(event) => {
+              if (!notesInteractive) return;
+              event.stopPropagation();
+            }}
             onClick={(event) => {
               if (!notesInteractive) return;
               event.stopPropagation();

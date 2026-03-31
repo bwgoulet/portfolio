@@ -76,12 +76,31 @@ function MountainBackdrop() {
   return (
     <group position={SCENE_ANCHORS.mountain}>
       <mesh castShadow>
-        <coneGeometry args={[4.8, 6.4, 7]} />
+        <coneGeometry args={[7.1, 9.2, 7]} />
         <meshStandardMaterial color={PALETTE.mountain} flatShading />
       </mesh>
       <mesh position={[-1.8, -0.3, 1.2]} rotation={[0, 0.4, 0]} castShadow>
-        <coneGeometry args={[2.2, 3.4, 7]} />
+        <coneGeometry args={[3.5, 4.8, 7]} />
         <meshStandardMaterial color="#343d4a" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function TrailheadMarker() {
+  return (
+    <group position={[SCENE_ANCHORS.trailStart[0], 1.06, SCENE_ANCHORS.trailStart[2] + 0.4]}>
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <cylinderGeometry args={[0.06, 0.08, 0.66, 6]} />
+        <meshStandardMaterial color={PALETTE.trunk} flatShading />
+      </mesh>
+      <mesh position={[0, 0.63, 0.04]} castShadow>
+        <boxGeometry args={[0.72, 0.34, 0.08]} />
+        <meshStandardMaterial color="#d4bc8a" flatShading />
+      </mesh>
+      <mesh position={[0, 0.63, 0.09]}>
+        <planeGeometry args={[0.45, 0.12]} />
+        <meshBasicMaterial color="#5c4a37" />
       </mesh>
     </group>
   );
@@ -119,15 +138,12 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={PALETTE.islandTop} flatShading />
       </mesh>
 
-      <mesh position={SCENE_ANCHORS.trailStart} rotation={[-Math.PI / 2, -0.03, 0]} receiveShadow>
-        <planeGeometry args={[1.25, 9.1]} />
+      <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[1.2, 34]} />
         <meshStandardMaterial color={PALETTE.trail} flatShading />
       </mesh>
 
-      <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0.15, 0]} castShadow>
-        <boxGeometry args={[1.55, 0.42, 1.0]} />
-        <meshStandardMaterial color={PALETTE.trailBlocker} flatShading />
-      </mesh>
+      <TrailheadMarker />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
