@@ -222,7 +222,7 @@ export function AdventureScene() {
             }}
           />
           <LightingAtmosphere />
-          {interactionState !== 'cabinCloseup' && (
+          {!(focusTarget === 'cabinInterior' || interactionState === 'cabinCloseup') && (
             <>
               <LowPolyEnvironment
                 tabletsInteractiveEnabled={isOverviewState}
@@ -254,7 +254,7 @@ export function AdventureScene() {
               />
             </>
           )}
-          {interactionState === 'cabinCloseup' && <CabinInterior />}
+          {(focusTarget === 'cabinInterior' || interactionState === 'cabinCloseup') && <CabinInterior />}
           </Suspense>
         </Canvas>
       </div>
@@ -263,20 +263,6 @@ export function AdventureScene() {
         <h1>Ben Goulet</h1>
         <p>an interactive portfolio</p>
       </header>
-
-      {isOverviewState && !isTransitioning && (
-        <section className="scene-hotspots" aria-label="Scene quick actions">
-          <button className="scene-hotspot" onClick={() => handleFocusClick('billboard')}>
-            Open Projects board
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('cabin')}>
-            Enter About/Gallery cabin
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('tablets')}>
-            Open Experience tablets
-          </button>
-        </section>
-      )}
 
       {interactionState === 'billboardCloseup' && selectedNote && (
         <article

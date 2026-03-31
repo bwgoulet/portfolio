@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useRef } from 'react';
+import { memo } from 'react';
 import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
@@ -42,7 +42,7 @@ export const Cabin = memo(function Cabin({
   };
 
   return (
-    <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
+    <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
       <mesh position={[0, 0.11, 0.03]} castShadow receiveShadow>
         <cylinderGeometry args={[0.94, 1.02, 0.2, 6]} />
         <meshStandardMaterial color={cabin.base} flatShading />
