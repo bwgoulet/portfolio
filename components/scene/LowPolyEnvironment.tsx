@@ -174,6 +174,45 @@ function ExperienceEngraving() {
   );
 }
 
+function TrailheadTimelineSign() {
+  return (
+    <group position={[0.86, 1.18, -13.7]} rotation={[0, Math.PI, 0]}>
+      <mesh position={[-0.45, 0.36, 0]} castShadow>
+        <boxGeometry args={[0.08, 0.72, 0.08]} />
+        <meshStandardMaterial color="#4c382c" flatShading />
+      </mesh>
+      <mesh position={[0.45, 0.36, 0]} castShadow>
+        <boxGeometry args={[0.08, 0.72, 0.08]} />
+        <meshStandardMaterial color="#4c382c" flatShading />
+      </mesh>
+      <mesh position={[0, 0.61, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.08, 0.44, 0.09]} />
+        <meshStandardMaterial color="#7a5639" flatShading />
+      </mesh>
+      <Text position={[0, 0.64, 0.056]} fontSize={0.14} anchorX="center" anchorY="middle" color="#f6e5be">
+        Timeline
+      </Text>
+
+      <mesh position={[0, 0.35, 0.08]} castShadow>
+        <boxGeometry args={[0.56, 0.2, 0.04]} />
+        <meshStandardMaterial color="#6e1f1f" flatShading />
+      </mesh>
+      <Text position={[0, 0.35, 0.105]} fontSize={0.08} letterSpacing={0.01} anchorX="center" anchorY="middle" color="#ffe9d4">
+        CLOSED
+      </Text>
+
+      <mesh position={[-0.4, 0.23, 0.11]} rotation={[0, 0, -0.62]} castShadow>
+        <boxGeometry args={[0.08, 0.62, 0.05]} />
+        <meshStandardMaterial color="#5f2f14" flatShading />
+      </mesh>
+      <mesh position={[0.39, 0.23, 0.11]} rotation={[0, 0, 0.62]} castShadow>
+        <boxGeometry args={[0.08, 0.62, 0.05]} />
+        <meshStandardMaterial color="#5f2f14" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -216,6 +255,7 @@ export function LowPolyEnvironment({
       </mesh>
 
       <ExperienceEngraving />
+      <TrailheadTimelineSign />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
