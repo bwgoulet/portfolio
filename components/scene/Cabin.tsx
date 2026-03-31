@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
