@@ -1,6 +1,6 @@
 import { ColorRepresentation, Vector3Tuple } from 'three';
 
-export type FocusTarget = 'overview' | 'billboard' | 'cabinInterior' | 'tablets';
+export type FocusTarget = 'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction';
 
 export type CameraPreset = {
   position: Vector3Tuple;
@@ -27,6 +27,11 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
   tablets: {
     position: [2.82, 1.74, 5.86],
     lookAt: [2.72, 1.24, 3.3],
+    fov: 32
+  },
+  introduction: {
+    position: [0.5, 2.46, 4.72],
+    lookAt: [0.15, 1.88, 1.26],
     fov: 32
   }
 };
@@ -62,6 +67,7 @@ export const SCENE_ANCHORS = {
   billboard: [-4.9, 1.42, 0.2] as Vector3Tuple,
   cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
   tabletsStart: [1.8, 0.93, 2.9] as Vector3Tuple,
+  introductionLandmark: [0.15, 1.27, 1.42] as Vector3Tuple,
   mountain: [0.8, 2.95, -24.5] as Vector3Tuple,
   trailStart: [0.8, 1.03, 2.9] as Vector3Tuple,
   trailEnd: [0.8, 1.03, -14.2] as Vector3Tuple

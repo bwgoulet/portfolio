@@ -3,9 +3,11 @@ export type InteractionState =
   | 'hoverBillboard'
   | 'hoverCabin'
   | 'hoverTablets'
+  | 'hoverIntroduction'
   | 'transitioning'
   | 'billboardCloseup'
   | 'cabinCloseup'
-  | 'tabletsCloseup';
+  | 'tabletsCloseup'
+  | 'introductionCloseup';
 
-export type InteractiveTarget = 'billboard' | 'cabin' | 'tablets';
+export type InteractiveTarget = 'billboard' | 'cabin' | 'tablets' | 'introduction';
