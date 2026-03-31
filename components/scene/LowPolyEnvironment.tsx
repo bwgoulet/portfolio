@@ -178,7 +178,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
   const textSize = hovered ? 0.218 : 0.196;
 
   return (
-    <group position={[2.42, 1.42, 4.18]} rotation={[-0.2, -0.16, 0]} scale={baseScale}>
+    <group position={[2.42, 1.42, 4.18]} rotation={[0, -0.16, 0]} scale={baseScale}>
       <mesh position={[0, -0.14, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.58, 0.26, 0.12]} />
         <meshStandardMaterial color="#6e563d" flatShading />
