@@ -15,9 +15,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 36
   },
   billboard: {
-    position: [-3.9, 2.5, 2.7],
-    lookAt: [-4.85, 2.25, 0.45],
-    fov: 29
+    position: [-3.95, 3.35, 4.9],
+    lookAt: [-4.85, 3.0, 0.42],
+    fov: 23
   },
   cabin: {
     position: [3.95, 1.62, 1.02],

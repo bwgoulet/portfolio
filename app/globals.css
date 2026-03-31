@@ -58,3 +58,39 @@ main {
 .scene-reset:hover {
   background: rgba(20, 34, 46, 0.92);
 }
+
+.postit-note-content {
+  width: 84px;
+  height: 62px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  border: 1px solid rgba(96, 72, 22, 0.5);
+  background: rgba(248, 227, 170, 0.94);
+  color: #3c2b12;
+  font-size: 8px;
+  line-height: 1.15;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
+}
+
+.postit-note-content p {
+  margin: 0;
+  font-weight: 700;
+  text-align: center;
+}
+
+.postit-image-placeholder {
+  width: 100%;
+  height: 30px;
+  border-radius: 2px;
+  border: 1px dashed rgba(74, 56, 19, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 7px;
+  background: rgba(255, 244, 211, 0.8);
+}
