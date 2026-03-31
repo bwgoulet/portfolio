@@ -3,7 +3,7 @@
 import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
@@ -24,26 +24,19 @@ export const Cabin = memo(function Cabin({
   cabinRef
 }: CabinProps) {
   const { cabin } = VISUAL_TOKENS.scene;
-  const engravingRef = useRef<Group>(null);
+  const engravingPosition: [number, number, number] = [0, 0.93, 0.67];
 
-  useFrame(({ clock }) => {
-    if (hovered || !engravingRef.current) return;
-    const t = clock.getElapsedTime();
-    engravingRef.current.rotation.z = Math.sin(t * 0.44) * 0.008;
-    engravingRef.current.position.y = 0.9 + Math.sin(t * 0.5) * 0.01;
-  });
-
-  const handleHoverStart = (event: { stopPropagation: () => void }) => {
+  const handleHoverStart = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
     if (interactiveEnabled) onHoverChange(true);
   };
 
-  const handleHoverEnd = (event: { stopPropagation: () => void }) => {
+  const handleHoverEnd = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
     onHoverChange(false);
   };
 
-  const handleClick = (event: { stopPropagation: () => void }) => {
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
     event.stopPropagation();
     if (interactiveEnabled) onClick();
   };
@@ -108,18 +101,18 @@ export const Cabin = memo(function Cabin({
       </mesh>
 
       <mesh
-        position={[0, 0.9, 0.62]}
+        position={engravingPosition}
         onPointerEnter={handleHoverStart}
         onPointerLeave={handleHoverEnd}
         onClick={handleClick}
       >
-        <planeGeometry args={[0.9, 0.2]} />
+        <planeGeometry args={[0.92, 0.22]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 
-      <group ref={engravingRef} position={[0, 0.9, 0.62]} scale={hovered ? 1.1 : 1}>
+      <group position={engravingPosition} scale={hovered ? 1.1 : 1}>
         <Text
-          fontSize={hovered ? 0.11 : 0.098}
+          fontSize={hovered ? 0.104 : 0.094}
           maxWidth={0.9}
           letterSpacing={0.028}
           anchorX="center"
@@ -127,18 +120,20 @@ export const Cabin = memo(function Cabin({
           color={hovered ? cabin.label : '#7a592f'}
           outlineWidth={hovered ? 0.012 : 0.006}
           outlineColor={hovered ? cabin.labelOutline : '#2d210f'}
+          depthOffset={-1}
         >
           About/Gallery
         </Text>
         <Text
           position={[0.006, -0.004, -0.004]}
-          fontSize={hovered ? 0.11 : 0.098}
+          fontSize={hovered ? 0.104 : 0.094}
           maxWidth={0.9}
           letterSpacing={0.028}
           anchorX="center"
           anchorY="middle"
           color={hovered ? cabin.labelSubtle : '#c79b62'}
           fillOpacity={hovered ? 1 : 0.92}
+          depthOffset={-1}
         >
           About/Gallery
         </Text>
