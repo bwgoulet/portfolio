@@ -19,7 +19,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Tested applications in pre-production as part of the QA process, while closely communicating with developers and project leads.',
       'Utilized HTML5/CSS, JavaScript, React, PHP, Laravel, AWS, and Docker to support rapid deployment cycles.'
     ],
-    placeholderImageSrc: '/note-images/gear-check.svg'
+    placeholderImageSrc: '/experience/3cinstitute_logo.jpg'
   },
   {
     id: 'unc-cs',
@@ -31,7 +31,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Implemented a challenging single-table inheritance mapping in SQLAlchemy to manage over 200 TA records, optimizing data organization and retrieval efficiency.',
       'Enhanced the CSXL community portal by developing new features, facilitating student engagement and experience in tech for over 2000 students.'
     ],
-    placeholderImageSrc: '/note-images/trail-maps.svg'
+    placeholderImageSrc: '/experience/csxl.png'
   },
   {
     id: 'kinetik',
@@ -43,7 +43,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Partnered with an IT firm serving 86% of the Forbes Global 50 to define and track success metrics, improving overall GTM effectiveness.',
       'Leveraged Python, AWS, and SQL to ingest and process datasets of over 500,000 records, enhancing the scalability and efficiency of the GTM engine.'
     ],
-    placeholderImageSrc: '/note-images/route-planner.svg'
+    placeholderImageSrc: '/experience/kinetik_ai_logo.jpg'
   },
   {
     id: 'podcast-your-way',
@@ -57,7 +57,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Implemented secure platform infrastructure across authentication, authorization, payments, and premium access using Supabase Auth, PostgreSQL RLS, RBAC, Stripe checkout, and webhook-driven entitlement updates.',
       'Developed community, admin, and operations tooling spanning live events, RSVP/reminder flows, content publishing, user management, and lifecycle automation for non-technical teammates.'
     ],
-    placeholderImageSrc: '/note-images/summit-ui.svg'
+    placeholderImageSrc: '/experience/pyw-icon-logo.png'
   }
 ];
 
