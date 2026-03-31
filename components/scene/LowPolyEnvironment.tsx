@@ -4,9 +4,9 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
-import { useMemo, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -40,19 +40,52 @@ type StoneTabletsProps = {
 function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, onHoverChange, onClick, onDetailSelect }: StoneTabletsProps) {
   const [hoveredTabletId, setHoveredTabletId] = useState<string | null>(null);
   const tabletTextures = useTexture(EXPERIENCE_ENTRIES.map((entry) => entry.placeholderImageSrc));
+  const gl = useThree((state) => state.gl);
+
+  const tabletImageDimensions = useMemo(
+    () =>
+      tabletTextures.map((texture) => {
+        const image = texture.image;
+        const width = image?.width ?? 1;
+        const height = image?.height ?? 1;
+        return { width, height };
+      }),
+    [tabletTextures]
+  );
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    tabletTextures.forEach((texture) => {
+      texture.colorSpace = SRGBColorSpace;
+      texture.minFilter = LinearMipmapLinearFilter;
+      texture.anisotropy = maxAnisotropy;
+      texture.wrapS = ClampToEdgeWrapping;
+      texture.wrapT = ClampToEdgeWrapping;
+      texture.needsUpdate = true;
+    });
+  }, [gl, tabletTextures]);
 
   return (
     <group>
       {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const height = 1.04;
+        const width = 0.21;
+        const height = 1.18;
         const rotationY = -0.11 + index * 0.09;
+        const logoFrameHeight = 0.5;
+        const logoAspectRatio = tabletImageDimensions[index].width / tabletImageDimensions[index].height;
+        const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
+        const logoPlaqueWidth = Math.min(0.29, logoFrameWidth + 0.036);
+        const logoPlaqueHeight = logoFrameHeight + 0.032;
+        const logoY = height * 0.34;
+        const logoPlaqueZ = width - 0.004;
+        const logoZ = logoPlaqueZ + 0.007;
 
         return (
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
             <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
-              <cylinderGeometry args={[0.24, 0.29, 0.1, 6]} />
+              <cylinderGeometry args={[0.28, 0.34, 0.11, 6]} />
               <meshStandardMaterial color={environmentPalette.tabletBase} flatShading />
             </mesh>
             <mesh
@@ -76,7 +109,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
-              <capsuleGeometry args={[0.17, height, 4, 6]} />
+              <capsuleGeometry args={[width, height, 4, 6]} />
               <meshStandardMaterial
                 color={hoveredTabletId === entry.id ? environmentPalette.tabletHover : PALETTE.tablet}
                 emissive={hoveredTabletId === entry.id || hovered ? environmentPalette.tabletEmissiveHover : environmentPalette.tabletEmissiveIdle}
@@ -85,16 +118,22 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               />
             </mesh>
             <mesh position={[0, height * 0.52, 0]} castShadow>
-              <cylinderGeometry args={[0.12, 0.14, 0.06, 6]} />
+              <cylinderGeometry args={[0.14, 0.17, 0.08, 6]} />
               <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
             </mesh>
-            <mesh position={[0, height * 0.26, 0.18]}>
-              <planeGeometry args={[0.2, 0.5]} />
+            <mesh position={[0, logoY, logoPlaqueZ]} receiveShadow>
+              <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
+              <meshStandardMaterial color="#ece8de" roughness={0.84} metalness={0.02} />
+            </mesh>
+            <mesh position={[0, logoY, logoZ]}>
+              <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
               <meshBasicMaterial
                 map={tabletTextures[index]}
                 color={hoveredTabletId === entry.id ? environmentPalette.tabletImageHover : environmentPalette.tabletImageIdle}
                 transparent
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
+                polygonOffset
+                polygonOffsetFactor={-1}
               />
             </mesh>
           </group>
