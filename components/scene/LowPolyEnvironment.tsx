@@ -177,7 +177,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
   return (
     <group position={[2.32, 1.52, 3.82]} rotation={[-0.2, -0.16, 0]} scale={hovered ? 0.94 : 0.88}>
       <mesh position={[0, -0.14, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.84, 0.3, 0.12]} />
+        <boxGeometry args={[1.54, 0.25, 0.12]} />
         <meshStandardMaterial color="#6e563d" flatShading />
       </mesh>
       <Text
