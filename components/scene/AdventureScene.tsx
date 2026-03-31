@@ -9,6 +9,7 @@ import { CameraRig } from './CameraRig';
 import { LightingAtmosphere } from './LightingAtmosphere';
 import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
+import { CabinInterior } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { EXPERIENCE_RECORD } from './experienceData';
@@ -20,7 +21,7 @@ export function AdventureScene() {
   const tabletsRef = useRef<Group>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin' | 'tablets'>('overview');
+  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
 
@@ -81,7 +82,7 @@ export function AdventureScene() {
       if (!isOverviewState || isTransitioning) return;
 
       setInteractionState('transitioning');
-      setFocusTarget(target);
+      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       animateFocusNudge(target);
@@ -95,13 +96,13 @@ export function AdventureScene() {
         ? `${selectedNote.title} selected — open project preview + tech stack.`
         : 'Projects Board: click any post-it to open its image and full scribbled note.';
     }
-    if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
+    if (interactionState === 'cabinCloseup') return 'Cabin interior: CRT setup + photo wall.';
     if (interactionState === 'tabletsCloseup') return 'Stone Tablets: click each tablet to open one resume experience entry.';
     return null;
   }, [interactionState, selectedNote]);
 
   const hoverLabel = useMemo(() => {
-    if (interactionState === 'hoverCabin') return 'About/Gallery: click the cabin door to go inside.';
+    if (interactionState === 'hoverCabin') return 'Cabin: click the door to enter.';
     if (interactionState === 'hoverBillboard') return 'Projects: click the board to zoom into project notes.';
     if (interactionState === 'hoverTablets') return 'Experience: click the tablets to navigate the 4-tablet experience.';
     return null;
@@ -122,39 +123,44 @@ export function AdventureScene() {
               setInteractionState(
                 focusTarget === 'billboard'
                   ? 'billboardCloseup'
-                  : focusTarget === 'cabin'
+                  : focusTarget === 'cabinInterior'
                     ? 'cabinCloseup'
                     : 'tabletsCloseup'
               );
             }}
           />
           <LightingAtmosphere />
-          <LowPolyEnvironment
-            tabletsInteractiveEnabled={isOverviewState}
-            tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
-            tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
-            onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
-            onTabletsClick={handleFocusClick}
-            onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
-            tabletsRef={tabletsRef}
-          />
-          <Billboard
-            billboardRef={billboardRef}
-            interactiveEnabled={isOverviewState}
-            notesInteractive={interactionState === 'billboardCloseup'}
-            hovered={interactionState === 'hoverBillboard'}
-            onHoverChange={(hovered) => updateHover('billboard', hovered)}
-            onClick={() => handleFocusClick('billboard')}
-            onNoteClick={(noteId) => setSelectedNoteId(noteId)}
-            detailOpen={selectedNoteId !== null}
-          />
-          <Cabin
-            cabinRef={cabinRef}
-            interactiveEnabled={isOverviewState}
-            hovered={interactionState === 'hoverCabin'}
-            onHoverChange={(hovered) => updateHover('cabin', hovered)}
-            onClick={() => handleFocusClick('cabin')}
-          />
+          {interactionState !== 'cabinCloseup' && (
+            <>
+              <LowPolyEnvironment
+                tabletsInteractiveEnabled={isOverviewState}
+                tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
+                tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
+                onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
+                onTabletsClick={handleFocusClick}
+                onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
+                tabletsRef={tabletsRef}
+              />
+              <Billboard
+                billboardRef={billboardRef}
+                interactiveEnabled={isOverviewState}
+                notesInteractive={interactionState === 'billboardCloseup'}
+                hovered={interactionState === 'hoverBillboard'}
+                onHoverChange={(hovered) => updateHover('billboard', hovered)}
+                onClick={() => handleFocusClick('billboard')}
+                onNoteClick={(noteId) => setSelectedNoteId(noteId)}
+                detailOpen={selectedNoteId !== null}
+              />
+              <Cabin
+                cabinRef={cabinRef}
+                interactiveEnabled={isOverviewState}
+                hovered={interactionState === 'hoverCabin'}
+                onHoverChange={(hovered) => updateHover('cabin', hovered)}
+                onClick={() => handleFocusClick('cabin')}
+              />
+            </>
+          )}
+          {interactionState === 'cabinCloseup' && <CabinInterior />}
         </Suspense>
       </Canvas>
 
