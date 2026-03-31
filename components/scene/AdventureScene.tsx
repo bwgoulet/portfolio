@@ -266,20 +266,6 @@ export function AdventureScene() {
         <p>an interactive portfolio</p>
       </header>
 
-      {isOverviewState && !isTransitioning && (
-        <section className="scene-hotspots" aria-label="Scene quick actions">
-          <button className="scene-hotspot" onClick={() => handleFocusClick('billboard')}>
-            Open Projects board
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('cabin')}>
-            Enter About/Gallery cabin
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('tablets')}>
-            Open Experience tablets
-          </button>
-        </section>
-      )}
-
       {interactionState === 'billboardCloseup' && selectedNote && (
         <article
           className={`note-detail ${detailCardStateClass(Boolean(closingNoteId))}`}
@@ -366,39 +352,6 @@ export function AdventureScene() {
         </button>
       )}
 
-      {interactionState === 'billboardCloseup' && !selectedNote && (
-        <section className="detail-actions" aria-label="Project note actions">
-          {Object.values(PROJECT_NOTE_RECORD).map((note) => (
-            <button
-              key={note.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedNoteId(note.id);
-              }}
-            >
-              {note.title}
-            </button>
-          ))}
-        </section>
-      )}
-
-      {interactionState === 'tabletsCloseup' && !selectedExperience && (
-        <section className="detail-actions" aria-label="Experience entry actions">
-          {Object.values(EXPERIENCE_RECORD).map((entry) => (
-            <button
-              key={entry.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedExperienceId(entry.id);
-              }}
-            >
-              {entry.role}
-            </button>
-          ))}
-        </section>
-      )}
     </main>
   );
 }
