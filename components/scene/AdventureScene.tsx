@@ -260,8 +260,6 @@ export function AdventureScene() {
       </div>
 
       <header className={`scene-brand ${reducedMotion ? 'motion-reduced' : 'anim-enter'}`} aria-label="Site title">
-        <span className="scene-brand-cloud scene-brand-cloud--left" />
-        <span className="scene-brand-cloud scene-brand-cloud--right" />
         <h1>Ben Goulet</h1>
         <p>an interactive portfolio</p>
       </header>
