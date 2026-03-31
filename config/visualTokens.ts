@@ -109,9 +109,9 @@ export const VISUAL_TOKENS = {
       signPost: '#4c382c',
       signBoard: '#7a5639',
       signText: '#f6e5be',
-      grassBase: '#274431',
-      mossA: '#365441',
-      mossB: '#35513f',
+      grassBase: '#356244',
+      mossA: '#457255',
+      mossB: '#406b50',
       pathEdge: '#66766a',
       pathLow: '#495b50'
     },
