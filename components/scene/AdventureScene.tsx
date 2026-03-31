@@ -222,7 +222,7 @@ export function AdventureScene() {
             }}
           />
           <LightingAtmosphere />
-          {interactionState !== 'cabinCloseup' && (
+          {!(focusTarget === 'cabinInterior' || interactionState === 'cabinCloseup') && (
             <>
               <LowPolyEnvironment
                 tabletsInteractiveEnabled={isOverviewState}
@@ -254,7 +254,7 @@ export function AdventureScene() {
               />
             </>
           )}
-          {interactionState === 'cabinCloseup' && <CabinInterior />}
+          {(focusTarget === 'cabinInterior' || interactionState === 'cabinCloseup') && <CabinInterior />}
           </Suspense>
         </Canvas>
       </div>
