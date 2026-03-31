@@ -104,6 +104,11 @@ export function LowPolyEnvironment({
 }: LowPolyEnvironmentProps) {
   return (
     <group>
+      <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <circleGeometry args={[60, 32]} />
+        <meshStandardMaterial color="#274431" flatShading />
+      </mesh>
+
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />

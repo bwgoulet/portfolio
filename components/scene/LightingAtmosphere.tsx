@@ -16,10 +16,10 @@ export function LightingAtmosphere() {
 
   return (
     <>
-      <ambientLight intensity={0.55} color="#bed3e8" />
-      <directionalLight intensity={1.35} position={[7, 11, 6]} color="#f7e8cb" castShadow />
+      <ambientLight intensity={0.62} color="#ffd7ba" />
+      <directionalLight intensity={1.45} position={[7, 11, 6]} color="#ffca9e" castShadow />
       <pointLight intensity={1.35} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} />
-      <Sky distance={180} sunPosition={[4, 1, -8]} turbidity={7} rayleigh={1.1} mieCoefficient={0.012} />
+      <Sky distance={220} sunPosition={[2, 0.2, -9]} turbidity={9} rayleigh={0.85} mieCoefficient={0.02} />
     </>
   );
 }
