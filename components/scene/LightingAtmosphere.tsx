@@ -1,30 +1,65 @@
 'use client';
 
 import { Sky } from '@react-three/drei';
-import { Color, Fog } from 'three';
 import { useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
+import { ACESFilmicToneMapping, Color, FogExp2, PCFSoftShadowMap } from 'three';
 import { PALETTE } from '@/config/sceneConfig';
 
 export function LightingAtmosphere() {
   const scene = useThree((state) => state.scene);
+  const gl = useThree((state) => state.gl);
 
   useEffect(() => {
     scene.background = new Color(PALETTE.skyBottom);
-    scene.fog = new Fog(PALETTE.fog, 9, 38);
-  }, [scene]);
+    scene.fog = new FogExp2(PALETTE.fog, 0.034);
+
+    gl.toneMapping = ACESFilmicToneMapping;
+    gl.toneMappingExposure = 1.08;
+    gl.shadowMap.enabled = true;
+    gl.shadowMap.type = PCFSoftShadowMap;
+  }, [gl, scene]);
 
   return (
     <>
-      <ambientLight intensity={0.62} color="#ffd7ba" />
-      <directionalLight intensity={1.45} position={[7, 11, 6]} color="#ffca9e" castShadow />
-      <pointLight intensity={1.35} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} />
-      <pointLight intensity={1.8} color="#ffc76a" position={[12, 9, -26]} distance={120} />
+      <hemisphereLight intensity={0.58} color="#ffe3c6" groundColor="#2d3a34" />
+      <ambientLight intensity={0.22} color="#ffd8bf" />
+
+      <directionalLight
+        intensity={2.1}
+        position={[15, 14, 4]}
+        color="#ffbc84"
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={65}
+        shadow-camera-left={-24}
+        shadow-camera-right={24}
+        shadow-camera-top={24}
+        shadow-camera-bottom={-24}
+        shadow-bias={-0.0003}
+      />
+
+      <directionalLight intensity={0.44} position={[-9, 8, -12]} color="#8eb0ff" />
+
+      <pointLight intensity={2.1} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} distance={8} decay={2} />
+      <pointLight intensity={1.25} color="#ffc47a" position={[12, 9, -26]} distance={130} decay={2} />
+      <pointLight intensity={0.62} color="#9ac1ff" position={[0.5, 2.2, -6.4]} distance={18} decay={2} />
+
       <mesh position={[12, 8.5, -28]}>
         <sphereGeometry args={[2.2, 20, 20]} />
         <meshBasicMaterial color="#ffcc72" />
       </mesh>
-      <Sky distance={220} sunPosition={[2, 0.2, -9]} turbidity={9} rayleigh={0.85} mieCoefficient={0.02} />
+
+      <Sky
+        distance={260}
+        sunPosition={[4.5, 1.1, -10]}
+        turbidity={8}
+        rayleigh={1.2}
+        mieCoefficient={0.018}
+        mieDirectionalG={0.9}
+      />
     </>
   );
 }
