@@ -73,9 +73,14 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
         const width = 0.21;
         const height = 1.18;
         const rotationY = -0.11 + index * 0.09;
-        const logoFrameHeight = 0.56;
+        const logoFrameHeight = 0.5;
         const logoAspectRatio = tabletImageDimensions[index].width / tabletImageDimensions[index].height;
         const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
+        const logoPlaqueWidth = Math.min(0.29, logoFrameWidth + 0.036);
+        const logoPlaqueHeight = logoFrameHeight + 0.032;
+        const logoY = height * 0.34;
+        const logoPlaqueZ = width - 0.004;
+        const logoZ = logoPlaqueZ + 0.007;
 
         return (
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
@@ -116,13 +121,19 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               <cylinderGeometry args={[0.14, 0.17, 0.08, 6]} />
               <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
             </mesh>
-            <mesh position={[0, height * 0.24, width + 0.025]}>
+            <mesh position={[0, logoY, logoPlaqueZ]} receiveShadow>
+              <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
+              <meshStandardMaterial color="#ece8de" roughness={0.84} metalness={0.02} />
+            </mesh>
+            <mesh position={[0, logoY, logoZ]}>
               <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
               <meshBasicMaterial
                 map={tabletTextures[index]}
                 color={hoveredTabletId === entry.id ? environmentPalette.tabletImageHover : environmentPalette.tabletImageIdle}
                 transparent
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
+                polygonOffset
+                polygonOffsetFactor={-1}
               />
             </mesh>
           </group>
