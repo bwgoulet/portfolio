@@ -1,12 +1,13 @@
 'use client';
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
+import { EXPERIENCE_ENTRIES } from './experienceData';
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -25,15 +26,20 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
 
 type StoneTabletsProps = {
   interactiveEnabled: boolean;
+  detailInteractiveEnabled: boolean;
   hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
+  onDetailSelect: (entryId: string) => void;
 };
 
-function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: StoneTabletsProps) {
+function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, onHoverChange, onClick, onDetailSelect }: StoneTabletsProps) {
+  const [hoveredTabletId, setHoveredTabletId] = useState<string | null>(null);
+  const tabletTextures = useTexture(EXPERIENCE_ENTRIES.map((entry) => entry.placeholderImageSrc));
+
   return (
     <group>
-      {Array.from({ length: 4 }).map((_, index) => {
+      {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
         const height = 0.88 + index * 0.08;
@@ -45,28 +51,38 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               receiveShadow
               onPointerEnter={(event) => {
                 event.stopPropagation();
-                if (interactiveEnabled) onHoverChange(true);
+                if (interactiveEnabled || detailInteractiveEnabled) {
+                  setHoveredTabletId(entry.id);
+                  onHoverChange(true);
+                }
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
+                setHoveredTabletId((current) => (current === entry.id ? null : current));
                 onHoverChange(false);
               }}
               onClick={(event) => {
                 event.stopPropagation();
                 if (interactiveEnabled) onClick('tablets');
+                if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
               <meshStandardMaterial
-                color={hovered ? '#9da3a6' : PALETTE.tablet}
-                emissive={hovered ? '#49605a' : '#1e2322'}
-                emissiveIntensity={hovered ? 0.28 : 0.08}
+                color={hoveredTabletId === entry.id ? '#9da3a6' : PALETTE.tablet}
+                emissive={hoveredTabletId === entry.id || hovered ? '#49605a' : '#1e2322'}
+                emissiveIntensity={hoveredTabletId === entry.id || hovered ? 0.28 : 0.08}
                 flatShading
               />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
-              <planeGeometry args={[0.18, 0.42]} />
-              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.6} />
+              <planeGeometry args={[0.2, 0.5]} />
+              <meshBasicMaterial
+                map={tabletTextures[index]}
+                color={hoveredTabletId === entry.id ? '#ffffff' : '#e0e0dd'}
+                transparent
+                opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
+              />
             </mesh>
           </group>
         );
@@ -159,17 +175,21 @@ function ExperienceEngraving() {
 
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
+  tabletsDetailInteractiveEnabled: boolean;
   tabletsHovered: boolean;
   onTabletsHoverChange: (hovered: boolean) => void;
   onTabletsClick: (target: InteractiveTarget) => void;
+  onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
 };
 
 export function LowPolyEnvironment({
   tabletsInteractiveEnabled,
+  tabletsDetailInteractiveEnabled,
   tabletsHovered,
   onTabletsHoverChange,
   onTabletsClick,
+  onTabletDetailSelect,
   tabletsRef
 }: LowPolyEnvironmentProps) {
   return (
@@ -213,9 +233,11 @@ export function LowPolyEnvironment({
       <group ref={tabletsRef}>
         <StoneTablets
           interactiveEnabled={tabletsInteractiveEnabled}
+          detailInteractiveEnabled={tabletsDetailInteractiveEnabled}
           hovered={tabletsHovered}
           onHoverChange={onTabletsHoverChange}
           onClick={onTabletsClick}
+          onDetailSelect={onTabletDetailSelect}
         />
       </group>
       <Clouds />
