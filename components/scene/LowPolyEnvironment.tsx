@@ -84,19 +84,6 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
               />
             </mesh>
-            <Text
-              position={[0, height * 0.23, 0.181]}
-              rotation={[0, 0, 0]}
-              fontSize={0.06}
-              lineHeight={0.95}
-              maxWidth={0.18}
-              textAlign="center"
-              anchorX="center"
-              anchorY="middle"
-              color="#dfe8e4"
-            >
-              {entry.tabletLabel}
-            </Text>
           </group>
         );
       })}
