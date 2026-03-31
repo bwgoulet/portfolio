@@ -18,11 +18,11 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
     <group position={position} scale={scale}>
       <mesh position={[0, 0.38, 0]} castShadow>
         <cylinderGeometry args={[0.06, 0.1, 0.82, 6]} />
-        <meshStandardMaterial color={PALETTE.trunk} flatShading />
+        <meshStandardMaterial color={PALETTE.trunk} roughness={0.88} metalness={0.04} flatShading />
       </mesh>
       <mesh position={[0, 1.05, 0]} castShadow>
         <coneGeometry args={[0.38, 0.92, 7]} />
-        <meshStandardMaterial color={PALETTE.leaves} flatShading />
+        <meshStandardMaterial color={PALETTE.leaves} roughness={0.94} metalness={0.02} flatShading />
       </mesh>
     </group>
   );
@@ -53,7 +53,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
             <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
               <cylinderGeometry args={[0.24, 0.29, 0.1, 6]} />
-              <meshStandardMaterial color={environmentPalette.tabletBase} flatShading />
+              <meshStandardMaterial color="#5a615f" roughness={0.76} metalness={0.08} flatShading />
             </mesh>
             <mesh
               castShadow
@@ -78,15 +78,17 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
             >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
               <meshStandardMaterial
-                color={hoveredTabletId === entry.id ? environmentPalette.tabletHover : PALETTE.tablet}
-                emissive={hoveredTabletId === entry.id || hovered ? environmentPalette.tabletEmissiveHover : environmentPalette.tabletEmissiveIdle}
-                emissiveIntensity={hoveredTabletId === entry.id || hovered ? 0.28 : 0.08}
+                color={hoveredTabletId === entry.id ? '#9da3a6' : PALETTE.tablet}
+                emissive={hoveredTabletId === entry.id || hovered ? PALETTE.brandAccent : '#1e2322'}
+                emissiveIntensity={hoveredTabletId === entry.id || hovered ? 0.18 : 0.06}
+                roughness={0.63}
+                metalness={0.13}
                 flatShading
               />
             </mesh>
             <mesh position={[0, height * 0.52, 0]} castShadow>
               <cylinderGeometry args={[0.12, 0.14, 0.06, 6]} />
-              <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
+              <meshStandardMaterial color="#95a3a0" roughness={0.54} metalness={0.2} flatShading />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
               <planeGeometry args={[0.2, 0.5]} />
@@ -107,21 +109,33 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 function MountainBackdrop() {
   return (
     <group position={SCENE_ANCHORS.mountain}>
+      <mesh position={[-2.5, -1.3, -4.2]} rotation={[0, 0.15, 0]}>
+        <coneGeometry args={[8.8, 6.8, 7]} />
+        <meshStandardMaterial color="#26323f" roughness={0.96} metalness={0.01} flatShading transparent opacity={0.82} />
+      </mesh>
+      <mesh position={[3.8, -1.35, -6.6]} rotation={[0, -0.24, 0]}>
+        <coneGeometry args={[9.4, 7.3, 7]} />
+        <meshStandardMaterial color="#1f2b38" roughness={0.97} metalness={0.01} flatShading transparent opacity={0.7} />
+      </mesh>
       <mesh castShadow rotation={[0, 0.2, 0]}>
         <coneGeometry args={[6.6, 8.9, 8]} />
-        <meshStandardMaterial color={PALETTE.mountain} flatShading />
+        <meshStandardMaterial color={PALETTE.mountain} roughness={0.85} metalness={0.05} flatShading />
       </mesh>
       <mesh position={[-2.2, -0.5, 1.6]} rotation={[0, 0.42, 0]} castShadow>
         <coneGeometry args={[4.1, 5.1, 8]} />
-        <meshStandardMaterial color={environmentPalette.mountainMid} flatShading />
+        <meshStandardMaterial color="#2b3443" roughness={0.88} metalness={0.04} flatShading />
       </mesh>
       <mesh position={[2.8, -0.7, 2.1]} rotation={[0, -0.36, 0]} castShadow>
         <coneGeometry args={[3.8, 4.4, 8]} />
-        <meshStandardMaterial color={environmentPalette.mountainFront} flatShading />
+        <meshStandardMaterial color="#344256" roughness={0.87} metalness={0.04} flatShading />
       </mesh>
       <mesh position={[0.4, 1.95, 0.2]} scale={[1.1, 0.5, 0.9]} castShadow>
         <dodecahedronGeometry args={[1.05, 0]} />
-        <meshStandardMaterial color={environmentPalette.mountainSnow} flatShading />
+        <meshStandardMaterial color="#7f95ad" roughness={0.72} metalness={0.06} flatShading />
+      </mesh>
+      <mesh position={[0.2, -0.38, 2.3]} rotation={[-Math.PI / 2, 0.15, 0]}>
+        <planeGeometry args={[11.5, 5.6]} />
+        <meshBasicMaterial color="#aab9ca" transparent opacity={0.08} />
       </mesh>
     </group>
   );
@@ -300,19 +314,30 @@ export function LowPolyEnvironment({
     <group>
       <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <circleGeometry args={[60, 32]} />
-        <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
+        <meshStandardMaterial color="#1f3829" roughness={0.98} metalness={0} flatShading />
       </mesh>
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
-        <meshStandardMaterial color={PALETTE.islandSide} flatShading />
+        <meshStandardMaterial color={PALETTE.islandSide} roughness={0.9} metalness={0.03} flatShading />
       </mesh>
 
-      <GrassGround />
+      <mesh position={[0, 1.12, 0]} rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.95, 8.05, 0.25, 8]} />
+        <meshStandardMaterial color={PALETTE.islandTop} roughness={0.8} metalness={0.04} flatShading />
+      </mesh>
+      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
+        <cylinderGeometry args={[2.4, 2.9, 0.21, 7]} />
+        <meshStandardMaterial color="#365441" roughness={0.82} metalness={0.04} flatShading />
+      </mesh>
+      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
+        <cylinderGeometry args={[1.8, 2.2, 0.18, 7]} />
+        <meshStandardMaterial color="#35513f" roughness={0.82} metalness={0.04} flatShading />
+      </mesh>
 
       <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[1.2, 34]} />
-        <meshStandardMaterial color={PALETTE.trail} flatShading />
+        <meshStandardMaterial color={PALETTE.trail} roughness={0.92} metalness={0.02} flatShading />
       </mesh>
       <mesh position={[0.25, 1.035, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
         <planeGeometry args={[0.7, 22]} />
@@ -333,11 +358,16 @@ export function LowPolyEnvironment({
 
       <mesh position={[2.7, 1.27, -1.65]} castShadow receiveShadow>
         <dodecahedronGeometry args={[0.7, 0]} />
-        <meshStandardMaterial color={PALETTE.rock} flatShading />
+        <meshStandardMaterial color={PALETTE.rock} roughness={0.66} metalness={0.14} flatShading />
       </mesh>
       <mesh position={[-2.2, 1.22, 2.2]} scale={[1.2, 1.1, 1.4]} castShadow receiveShadow>
         <dodecahedronGeometry args={[0.54, 0]} />
-        <meshStandardMaterial color={PALETTE.rock} flatShading />
+        <meshStandardMaterial color={PALETTE.rock} roughness={0.66} metalness={0.14} flatShading />
+      </mesh>
+
+      <mesh position={[0.2, 1.24, -8.6]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[9.8, 11.4]} />
+        <meshBasicMaterial color="#95a8b2" transparent opacity={0.1} />
       </mesh>
 
       <group ref={tabletsRef}>
