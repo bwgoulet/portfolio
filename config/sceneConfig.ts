@@ -70,7 +70,7 @@ export const SCENE_ANCHORS = {
 export const PALETTE: Record<string, ColorRepresentation> = {
   skyBottom: '#ffb27a',
   fog: '#d78a67',
-  islandTop: '#2f4a38',
+  islandTop: '#3f6a4a',
   islandSide: '#1f2926',
   trail: '#526354',
   trailBlocker: '#444040',
@@ -79,7 +79,7 @@ export const PALETTE: Record<string, ColorRepresentation> = {
   tablet: '#808486',
   tabletRune: '#c9d9d2',
   trunk: '#3c302f',
-  leaves: '#3e5a45',
+  leaves: '#4a704f',
   billboardFrame: '#645241',
   billboardFace: '#d8c5a0',
   cabinWall: '#5b4737',
