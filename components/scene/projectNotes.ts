@@ -14,7 +14,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Summit UI',
     detail: 'A polished dashboard concept focused on clean hierarchy, alpine-themed iconography, and reusable tokens for fast iteration.',
     imageSrc: '/note-images/summit-ui.svg',
-    position: [-0.76, 1.96, 0.19],
+    position: [-0.72, 1.96, 0.19],
     rotation: -0.15,
     color: '#f5dfa4'
   },
@@ -23,7 +23,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Trail Maps',
     detail: 'Interactive route layers with terrain overlays and waypoint storytelling for planning hikes before stepping outside.',
     imageSrc: '/note-images/trail-maps.svg',
-    position: [-0.18, 1.93, 0.19],
+    position: [-0.2, 1.93, 0.19],
     rotation: -0.04,
     color: '#efe3b4'
   },
@@ -32,7 +32,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Night Camp',
     detail: 'A moody branding exercise with motion studies, ambient gradients, and playful mascot illustrations for launch content.',
     imageSrc: '/note-images/night-camp.svg',
-    position: [0.4, 1.91, 0.19],
+    position: [0.32, 1.91, 0.19],
     rotation: 0.1,
     color: '#f8e6ad'
   },
@@ -41,7 +41,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Route Planner',
     detail: 'Prototype for trip sequencing, stop optimization, and drag-to-adjust day plans designed for quick itinerary tuning.',
     imageSrc: '/note-images/route-planner.svg',
-    position: [-0.48, 1.55, 0.19],
+    position: [-0.42, 1.56, 0.19],
     rotation: -0.09,
     color: '#f0dca3'
   },
@@ -50,7 +50,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Gear Check',
     detail: 'Accessibility and QA checklist that tracks readiness across devices, motion preferences, and keyboard-only review.',
     imageSrc: '/note-images/gear-check.svg',
-    position: [0.2, 1.53, 0.19],
+    position: [0.16, 1.55, 0.19],
     rotation: 0.07,
     color: '#f7e5b8'
   }

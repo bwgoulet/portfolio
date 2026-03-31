@@ -171,8 +171,8 @@ main {
 }
 
 .note-preview {
-  width: 118px;
-  height: 86px;
+  width: 54px;
+  height: 42px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -181,8 +181,8 @@ main {
 }
 
 .note-preview img {
-  width: 92px;
-  height: 54px;
+  width: 44px;
+  height: 26px;
   object-fit: cover;
   border-radius: 2px;
   border: 1px solid rgba(44, 34, 18, 0.24);
@@ -190,15 +190,15 @@ main {
 }
 
 .note-scribbles {
-  margin-top: 6px;
-  width: 74px;
+  margin-top: 3px;
+  width: 36px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .note-scribbles span {
-  height: 3px;
+  height: 2px;
   border-radius: 999px;
   background: rgba(50, 38, 17, 0.58);
 }
