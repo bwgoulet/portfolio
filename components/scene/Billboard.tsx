@@ -95,9 +95,9 @@ export const Billboard = memo(function Billboard({
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#f8d899' : '#7a592f'}
+          color={hovered ? billboard.titlePrimaryHover : billboard.titlePrimaryIdle}
           outlineWidth={hovered ? 0.012 : 0.006}
-          outlineColor={hovered ? '#3a2a16' : '#2d210f'}
+          outlineColor={hovered ? billboard.titlePrimaryOutlineHover : billboard.titlePrimaryOutlineIdle}
         >
           Projects
         </Text>
@@ -107,7 +107,7 @@ export const Billboard = memo(function Billboard({
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#ffd8a5' : '#c79b62'}
+          color={hovered ? billboard.titleSecondaryHover : billboard.titleSecondaryIdle}
           fillOpacity={hovered ? 1 : 0.92}
         >
           Projects
@@ -153,14 +153,14 @@ export const Billboard = memo(function Billboard({
               <boxGeometry args={[0.38, 0.28, 0.024]} />
               <meshStandardMaterial
                 color={note.color}
-                emissive={notesInteractive ? '#534212' : '#32270d'}
+                emissive={notesInteractive ? billboard.noteEmissiveActive : billboard.noteEmissiveIdle}
                 emissiveIntensity={notesInteractive ? 0.12 : 0.04}
                 flatShading
               />
             </mesh>
             <mesh position={[0.005, 0.11, 0.013]}>
               <sphereGeometry args={[0.017, 6, 6]} />
-              <meshStandardMaterial color="#b9a277" flatShading />
+              <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
             <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} style={{ pointerEvents: "none" }}>
               <div className="note-preview" aria-hidden>
