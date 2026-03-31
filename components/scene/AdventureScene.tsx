@@ -133,6 +133,7 @@ export function AdventureScene() {
             onHoverChange={(hovered) => updateHover('billboard', hovered)}
             onClick={() => handleFocusClick('billboard')}
             onNoteClick={(noteId) => setSelectedNoteId(noteId)}
+            detailOpen={selectedNoteId !== null}
           />
           <Cabin
             cabinRef={cabinRef}
