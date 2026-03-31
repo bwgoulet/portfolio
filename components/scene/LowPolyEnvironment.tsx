@@ -43,7 +43,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
       {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const height = 0.88 + index * 0.08;
+        const height = 1.04;
         const rotationY = -0.11 + index * 0.09;
 
         return (
