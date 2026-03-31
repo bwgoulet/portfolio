@@ -20,9 +20,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 40
   },
   cabinInterior: {
-    position: [4.01, 2.08, -0.16],
-    lookAt: [4.34, 2.08, -0.93],
-    fov: 48
+    position: [3.82, 2.34, 0.12],
+    lookAt: [4.55, 2.27, -1.37],
+    fov: 66
   },
   tablets: {
     position: [2.82, 1.74, 5.86],

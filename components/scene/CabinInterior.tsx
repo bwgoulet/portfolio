@@ -5,17 +5,17 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 const PHOTO_LAYOUT = [
-  [-0.64, 1.42, -0.64],
-  [-0.38, 1.56, -0.64],
-  [-0.12, 1.44, -0.64],
-  [0.14, 1.58, -0.64],
-  [0.4, 1.45, -0.64],
-  [0.66, 1.56, -0.64],
-  [-0.5, 1.22, -0.64],
-  [-0.22, 1.1, -0.64],
-  [0.06, 1.24, -0.64],
-  [0.34, 1.1, -0.64],
-  [0.62, 1.25, -0.64]
+  [-0.64, 1.42, -0.78],
+  [-0.38, 1.56, -0.78],
+  [-0.12, 1.44, -0.78],
+  [0.14, 1.58, -0.78],
+  [0.4, 1.45, -0.78],
+  [0.66, 1.56, -0.78],
+  [-0.5, 1.22, -0.78],
+  [-0.22, 1.1, -0.78],
+  [0.06, 1.24, -0.78],
+  [0.34, 1.1, -0.78],
+  [0.62, 1.25, -0.78]
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
@@ -23,43 +23,43 @@ const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
 export const CabinInterior = memo(function CabinInterior() {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   return (
-    <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
+    <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
-        <boxGeometry args={[1.56, 0.04, 1.24]} />
+        <boxGeometry args={[1.86, 0.04, 1.52]} />
         <meshStandardMaterial color={cabinInterior.floor} flatShading />
       </mesh>
 
-      <mesh position={[0, 0.94, -0.66]} receiveShadow>
-        <boxGeometry args={[1.56, 1.8, 0.08]} />
+      <mesh position={[0, 0.94, -0.8]} receiveShadow>
+        <boxGeometry args={[1.86, 1.8, 0.08]} />
         <meshStandardMaterial color={cabinInterior.wallBack} flatShading />
       </mesh>
 
-      <mesh position={[-0.74, 0.94, -0.04]} receiveShadow>
-        <boxGeometry args={[0.08, 1.8, 1.24]} />
+      <mesh position={[-0.89, 0.94, -0.08]} receiveShadow>
+        <boxGeometry args={[0.08, 1.8, 1.52]} />
         <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
       </mesh>
 
-      <mesh position={[0.74, 0.94, -0.04]} receiveShadow>
-        <boxGeometry args={[0.08, 1.8, 1.24]} />
+      <mesh position={[0.89, 0.94, -0.08]} receiveShadow>
+        <boxGeometry args={[0.08, 1.8, 1.52]} />
         <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
       </mesh>
 
-      <mesh position={[0.18, 0.42, -0.52]} castShadow receiveShadow>
+      <mesh position={[0.18, 0.42, -0.62]} castShadow receiveShadow>
         <boxGeometry args={[0.86, 0.08, 0.3]} />
         <meshStandardMaterial color={cabinInterior.tableTop} flatShading />
       </mesh>
       {[-0.16, 0.12, 0.52].map((x) => (
-        <mesh key={x} position={[x, 0.23, -0.56]} castShadow receiveShadow>
+        <mesh key={x} position={[x, 0.23, -0.66]} castShadow receiveShadow>
           <boxGeometry args={[0.06, 0.38, 0.06]} />
           <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
         </mesh>
       ))}
 
-      <mesh position={[0.22, 0.56, -0.52]} castShadow>
+      <mesh position={[0.22, 0.56, -0.62]} castShadow>
         <boxGeometry args={[0.28, 0.2, 0.18]} />
         <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
       </mesh>
-      <mesh position={[0.22, 0.55, -0.425]}>
+      <mesh position={[0.22, 0.55, -0.525]}>
         <planeGeometry args={[0.2, 0.12]} />
         <meshBasicMaterial color={cabinInterior.monitorScreen} />
       </mesh>
