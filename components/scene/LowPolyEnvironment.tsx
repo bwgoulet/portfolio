@@ -7,6 +7,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
+import { EXPERIENCE_ENTRIES } from './experienceData';
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -33,7 +34,7 @@ type StoneTabletsProps = {
 function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: StoneTabletsProps) {
   return (
     <group>
-      {Array.from({ length: 4 }).map((_, index) => {
+      {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
         const height = 0.88 + index * 0.08;
@@ -65,9 +66,22 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
-              <planeGeometry args={[0.18, 0.42]} />
-              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.6} />
+              <planeGeometry args={[0.2, 0.5]} />
+              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.5} />
             </mesh>
+            <Text
+              position={[0, height * 0.23, 0.181]}
+              rotation={[0, 0, 0]}
+              fontSize={0.06}
+              lineHeight={0.95}
+              maxWidth={0.18}
+              textAlign="center"
+              anchorX="center"
+              anchorY="middle"
+              color="#dfe8e4"
+            >
+              {entry.tabletLabel}
+            </Text>
           </group>
         );
       })}
