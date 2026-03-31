@@ -12,12 +12,21 @@ import { InteractionState, InteractiveTarget } from './types';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { makeTimeline } from '@/lib/animation';
 
+const NOTE_LABELS: Record<string, string> = {
+  'summit-ui': 'Summit UI selected — open project preview + tech stack.',
+  'trail-maps': 'Trail Maps selected — open geospatial data story.',
+  'night-camp': 'Night Camp selected — open branding + motion case study.',
+  'route-planner': 'Route Planner selected — open planning workflow demo.',
+  'gear-check': 'Gear Check selected — open accessibility + QA checklist.'
+};
+
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin'>('overview');
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   const isTransitioning = interactionState === 'transitioning';
   const isOverviewState = interactionState === 'idleOverview' || interactionState === 'hoverBillboard' || interactionState === 'hoverCabin';
@@ -78,16 +87,21 @@ export function AdventureScene() {
 
       setInteractionState('transitioning');
       setFocusTarget(target);
+      setSelectedNoteId(null);
       animateFocusNudge(target);
     },
     [animateFocusNudge, isOverviewState, isTransitioning]
   );
 
   const closeupLabel = useMemo(() => {
-    if (interactionState === 'billboardCloseup') return 'Projects Board: ready for post-it portfolio navigation.';
+    if (interactionState === 'billboardCloseup') {
+      return selectedNoteId
+        ? NOTE_LABELS[selectedNoteId]
+        : 'Projects Board: every post-it is clickable and can hold an image + text preview.';
+    }
     if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
     return null;
-  }, [interactionState]);
+  }, [interactionState, selectedNoteId]);
 
   return (
     <main>
@@ -109,9 +123,11 @@ export function AdventureScene() {
           <Billboard
             billboardRef={billboardRef}
             interactiveEnabled={isOverviewState}
+            notesInteractive={interactionState === 'billboardCloseup'}
             hovered={interactionState === 'hoverBillboard'}
             onHoverChange={(hovered) => updateHover('billboard', hovered)}
             onClick={() => handleFocusClick('billboard')}
+            onNoteClick={(noteId) => setSelectedNoteId(noteId)}
           />
           <Cabin
             cabinRef={cabinRef}
@@ -137,6 +153,7 @@ export function AdventureScene() {
           onClick={() => {
             setFocusTarget('overview');
             setInteractionState('transitioning');
+            setSelectedNoteId(null);
           }}
         >
           Return to overview

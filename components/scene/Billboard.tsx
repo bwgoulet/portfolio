@@ -1,23 +1,44 @@
 'use client';
 
+import { Html } from '@react-three/drei';
 import { memo } from 'react';
 import type { RefObject } from 'react';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 
+type ProjectNote = {
+  id: string;
+  title: string;
+  imageLabel: string;
+  position: [number, number, number];
+  rotation: number;
+};
+
+const PROJECT_NOTES: ProjectNote[] = [
+  { id: 'summit-ui', title: 'Summit UI', imageLabel: 'UI Preview', position: [-0.7, 1.86, 0.14], rotation: -0.08 },
+  { id: 'trail-maps', title: 'Trail Maps', imageLabel: 'Map Shot', position: [-0.08, 1.84, 0.14], rotation: -0.03 },
+  { id: 'night-camp', title: 'Night Camp', imageLabel: 'Hero Image', position: [0.56, 1.78, 0.14], rotation: 0.06 },
+  { id: 'route-planner', title: 'Route Planner', imageLabel: 'Dashboard', position: [-0.42, 1.42, 0.14], rotation: -0.06 },
+  { id: 'gear-check', title: 'Gear Check', imageLabel: 'Mobile View', position: [0.28, 1.46, 0.14], rotation: 0.04 }
+];
+
 type BillboardProps = {
   interactiveEnabled: boolean;
   hovered: boolean;
+  notesInteractive: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: () => void;
+  onNoteClick: (noteId: string) => void;
   billboardRef: RefObject<Group | null>;
 };
 
 export const Billboard = memo(function Billboard({
   interactiveEnabled,
   hovered,
+  notesInteractive,
   onHoverChange,
   onClick,
+  onNoteClick,
   billboardRef
 }: BillboardProps) {
   return (
@@ -52,17 +73,39 @@ export const Billboard = memo(function Billboard({
         />
       </mesh>
 
-      {[
-        [-0.62, 1.76, 0.14],
-        [-0.01, 1.82, 0.14],
-        [0.61, 1.7, 0.14],
-        [-0.33, 1.37, 0.14],
-        [0.34, 1.42, 0.14]
-      ].map((position, idx) => (
-        <mesh key={idx} position={position as [number, number, number]} rotation={[0, 0, (idx - 2) * 0.06]}>
-          <planeGeometry args={[0.42, 0.33]} />
-          <meshBasicMaterial color={idx % 2 === 0 ? '#f2d882' : '#f3c4a1'} />
-        </mesh>
+      {PROJECT_NOTES.map((note) => (
+        <group key={note.id} position={note.position} rotation={[0, 0, note.rotation]}>
+          <mesh
+            onClick={(event) => {
+              event.stopPropagation();
+              if (notesInteractive) onNoteClick(note.id);
+            }}
+          >
+            <boxGeometry args={[0.5, 0.38, 0.02]} />
+            <meshStandardMaterial color="#f7e2a9" emissive="#6b5616" emissiveIntensity={0.08} flatShading />
+          </mesh>
+
+          <Html
+            transform
+            distanceFactor={8}
+            position={[0, 0, 0.015]}
+            style={{
+              width: '84px',
+              pointerEvents: notesInteractive ? 'auto' : 'none',
+              cursor: notesInteractive ? 'pointer' : 'default'
+            }}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (notesInteractive) onNoteClick(note.id);
+            }}
+          >
+            <div className="postit-note-content">
+              <div className="postit-image-placeholder">{note.imageLabel}</div>
+              <p>{note.title}</p>
+            </div>
+          </Html>
+        </group>
       ))}
     </group>
   );
