@@ -14,11 +14,13 @@ import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
 import { MOTION_TIERS } from '@/config/sceneConfig';
+import { IntroductionLandmark } from './IntroductionLandmark';
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
+  const introductionRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
   const noteTitleId = useId();
@@ -26,7 +28,7 @@ export function AdventureScene() {
   const cabinRevealTimerRef = useRef<number | null>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
+  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
@@ -40,7 +42,8 @@ export function AdventureScene() {
     interactionState === 'idleOverview' ||
     interactionState === 'hoverBillboard' ||
     interactionState === 'hoverCabin' ||
-    interactionState === 'hoverTablets';
+    interactionState === 'hoverTablets' ||
+    interactionState === 'hoverIntroduction';
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -137,14 +140,29 @@ export function AdventureScene() {
         setInteractionState('idleOverview');
         return;
       }
-      setInteractionState(target === 'billboard' ? 'hoverBillboard' : target === 'cabin' ? 'hoverCabin' : 'hoverTablets');
+      setInteractionState(
+        target === 'billboard'
+          ? 'hoverBillboard'
+          : target === 'cabin'
+            ? 'hoverCabin'
+            : target === 'tablets'
+              ? 'hoverTablets'
+              : 'hoverIntroduction'
+      );
     },
     [isOverviewState, isTransitioning]
   );
 
   const animateFocusNudge = useCallback(
     (target: InteractiveTarget) => {
-      const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
+      const group =
+        target === 'billboard'
+          ? billboardRef.current
+          : target === 'cabin'
+            ? cabinRef.current
+            : target === 'tablets'
+              ? tabletsRef.current
+              : introductionRef.current;
       if (!group) return;
       if (reducedMotion) return;
 
@@ -243,7 +261,9 @@ export function AdventureScene() {
                   ? 'billboardCloseup'
                   : focusTarget === 'cabinInterior'
                     ? 'cabinCloseup'
-                    : 'tabletsCloseup'
+                    : focusTarget === 'tablets'
+                      ? 'tabletsCloseup'
+                      : 'introductionCloseup'
               );
             }}
           />
@@ -258,6 +278,14 @@ export function AdventureScene() {
                 onTabletsClick={handleFocusClick}
                 onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
                 tabletsRef={tabletsRef}
+                reducedMotion={reducedMotion}
+              />
+              <IntroductionLandmark
+                landmarkRef={introductionRef}
+                interactiveEnabled={isOverviewState}
+                hovered={interactionState === 'hoverIntroduction'}
+                onHoverChange={(hovered) => updateHover('introduction', hovered)}
+                onClick={handleFocusClick}
                 reducedMotion={reducedMotion}
               />
               <Billboard
@@ -359,6 +387,30 @@ export function AdventureScene() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+          </div>
+        </article>
+      )}
+
+      {interactionState === 'introductionCloseup' && (
+        <article className={`introduction-detail ${detailCardStateClass(false)}`} aria-live="polite">
+          <div
+            className={`introduction-detail-card ${detailCardStateClass(false)}`}
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="introduction-title"
+            tabIndex={-1}
+          >
+            <h2 id="introduction-title">Introduction</h2>
+            <p>
+              I&apos;m Ben Goulet, a software engineer focused on building thoughtful, user-facing software across
+              product, backend, and creative technical work.
+            </p>
+            <p>
+              Currently, I&apos;m focused on building interactive web experiences, pursuing strong engineering
+              opportunities, and creating projects that blend technical depth with personality and design.
+            </p>
+            <p>Explore the island to view projects, experience, and more about me.</p>
           </div>
         </article>
       )}
