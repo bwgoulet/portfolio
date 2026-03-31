@@ -213,8 +213,10 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  z-index: 6;
+  pointer-events: auto;
+  z-index: 20;
+  background: rgba(8, 10, 12, 0.38);
+  backdrop-filter: blur(8px);
 }
 
 .note-detail-card {
@@ -222,7 +224,7 @@ main {
   background: rgba(246, 242, 231, 0.94);
   border: 2px solid rgba(22, 24, 23, 0.68);
   border-radius: 14px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.52);
   padding: clamp(1rem, 2.5vw, 1.8rem);
   color: #121314;
   pointer-events: auto;

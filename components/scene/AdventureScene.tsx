@@ -160,8 +160,27 @@ export function AdventureScene() {
       </aside>
 
       {interactionState === 'billboardCloseup' && selectedNote && (
-        <article className="note-detail" aria-live="polite">
-          <div className="note-detail-card">
+        <article
+          className="note-detail"
+          aria-live="polite"
+          onClick={() => setSelectedNoteId(null)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              setSelectedNoteId(null);
+            }
+          }}
+        >
+          <div
+            className="note-detail-card"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${selectedNote.title} details`}
+          >
             <img src={selectedNote.imageSrc} alt={`${selectedNote.title} post-it sketch`} />
             <h2>{selectedNote.title}</h2>
             <p>{selectedNote.detail}</p>
