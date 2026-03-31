@@ -175,7 +175,7 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
 
 function ExperienceEngraving() {
   return (
-    <group position={[2.82, 1.72, 3.82]} rotation={[0, 0.06, 0]}>
+    <group position={[2.32, 1.52, 3.82]} rotation={[-0.2, -0.16, 0]}>
       <mesh position={[0, -0.14, 0]} castShadow receiveShadow>
         <boxGeometry args={[2.1, 0.34, 0.12]} />
         <meshStandardMaterial color="#6e563d" flatShading />
