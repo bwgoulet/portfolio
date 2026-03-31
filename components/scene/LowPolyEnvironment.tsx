@@ -70,22 +70,22 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
       {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const width = 0.21;
-        const height = 1.18;
+        const width = 0.24;
+        const height = 1.36;
         const rotationY = -0.11 + index * 0.09;
-        const logoFrameHeight = 0.5;
+        const logoFrameHeight = 0.42;
         const logoAspectRatio = tabletImageDimensions[index].width / tabletImageDimensions[index].height;
-        const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
-        const logoPlaqueWidth = Math.min(0.29, logoFrameWidth + 0.036);
+        const logoFrameWidth = Math.min(0.28, logoFrameHeight * logoAspectRatio);
+        const logoPlaqueWidth = Math.min(0.32, logoFrameWidth + 0.04);
         const logoPlaqueHeight = logoFrameHeight + 0.032;
-        const logoY = height * 0.34;
+        const logoY = height * 0.39;
         const logoPlaqueZ = width - 0.004;
         const logoZ = logoPlaqueZ + 0.007;
 
         return (
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
             <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
-              <cylinderGeometry args={[0.28, 0.34, 0.11, 6]} />
+              <cylinderGeometry args={[0.31, 0.37, 0.12, 6]} />
               <meshStandardMaterial color={environmentPalette.tabletBase} flatShading />
             </mesh>
             <mesh
@@ -117,8 +117,8 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 flatShading
               />
             </mesh>
-            <mesh position={[0, height * 0.52, 0]} castShadow>
-              <cylinderGeometry args={[0.14, 0.17, 0.08, 6]} />
+            <mesh position={[0, height * 0.58, 0]} castShadow>
+              <cylinderGeometry args={[0.16, 0.2, 0.09, 6]} />
               <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
             </mesh>
             <mesh position={[0, logoY, logoPlaqueZ]} receiveShadow>
