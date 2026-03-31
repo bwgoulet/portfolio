@@ -1,6 +1,7 @@
 'use client';
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { Text } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -134,21 +135,24 @@ function Clouds() {
   );
 }
 
-function TrailheadMarker() {
+function ExperienceEngraving() {
   return (
-    <group position={[SCENE_ANCHORS.trailStart[0], 1.06, SCENE_ANCHORS.trailStart[2] + 0.4]}>
-      <mesh position={[0, 0.34, 0]} castShadow>
-        <cylinderGeometry args={[0.06, 0.08, 0.66, 6]} />
-        <meshStandardMaterial color={PALETTE.trunk} flatShading />
+    <group position={[2.78, 1.126, 3.96]} rotation={[-Math.PI / 2, 0, -0.08]}>
+      <mesh receiveShadow>
+        <planeGeometry args={[1.44, 0.44]} />
+        <meshStandardMaterial color="#28372d" flatShading />
       </mesh>
-      <mesh position={[0, 0.63, 0.04]} castShadow>
-        <boxGeometry args={[0.72, 0.34, 0.08]} />
-        <meshStandardMaterial color="#d4bc8a" flatShading />
-      </mesh>
-      <mesh position={[0, 0.63, 0.09]}>
-        <planeGeometry args={[0.45, 0.12]} />
-        <meshBasicMaterial color="#5c4a37" />
-      </mesh>
+      <Text
+        position={[0, 0.002, 0.01]}
+        rotation={[Math.PI, 0, 0]}
+        fontSize={0.15}
+        letterSpacing={0.03}
+        anchorX="center"
+        anchorY="middle"
+        color="#1a261f"
+      >
+        Experience
+      </Text>
     </group>
   );
 }
@@ -190,7 +194,7 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={PALETTE.trail} flatShading />
       </mesh>
 
-      <TrailheadMarker />
+      <ExperienceEngraving />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />

@@ -25,9 +25,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 21
   },
   tablets: {
-    position: [2.73, 1.78, 4.78],
-    lookAt: [2.76, 1.42, 3.12],
-    fov: 19
+    position: [2.82, 1.74, 5.86],
+    lookAt: [2.72, 1.24, 3.3],
+    fov: 32
   }
 };
 
