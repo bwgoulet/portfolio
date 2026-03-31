@@ -174,11 +174,11 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function ExperienceEngraving({ hovered }: { hovered: boolean }) {
-  const baseScale = hovered ? 0.76 : 0.7;
+  const baseScale = hovered ? 0.55 : 0.5;
   const textSize = hovered ? 0.218 : 0.196;
 
   return (
-    <group position={[2.75, 1.42, 4.4]} rotation={[0, -0.16, 0]} scale={baseScale}>
+    <group position={[2.75, 1.37, 4.4]} rotation={[0, -0.16, 0]} scale={baseScale}>
       <mesh position={[0, -0.14, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.3, 0.26, 0.12]} />
         <meshStandardMaterial color="#6e563d" flatShading />
