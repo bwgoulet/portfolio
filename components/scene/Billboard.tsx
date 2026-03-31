@@ -7,6 +7,7 @@ import { useFrame } from '@react-three/fiber';
 import type { RefObject } from 'react';
 import { Group, MeshStandardMaterial } from 'three';
 import { MOTION_TIERS, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { PROJECT_NOTES } from './projectNotes';
 
 type BillboardProps = {
@@ -32,6 +33,7 @@ export const Billboard = memo(function Billboard({
   billboardRef,
   reducedMotion
 }: BillboardProps) {
+  const billboard = VISUAL_TOKENS.scene.billboard;
   const noteRefs = useRef<Record<string, Group | null>>({});
   const boardMaterialRef = useRef<MeshStandardMaterial>(null);
   const labelRef = useRef<Group>(null);
