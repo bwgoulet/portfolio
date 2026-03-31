@@ -149,6 +149,13 @@ export function AdventureScene() {
         </Suspense>
       </Canvas>
 
+      <header className="scene-brand" aria-label="Site title">
+        <span className="scene-brand-cloud scene-brand-cloud--left" />
+        <span className="scene-brand-cloud scene-brand-cloud--right" />
+        <h1>Ben Goulet</h1>
+        <p>an interactive portfolio</p>
+      </header>
+
       <aside className="scene-hud">
         {closeupLabel ?? (
           <span>

@@ -2,6 +2,8 @@
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { RefObject } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 
@@ -87,6 +89,47 @@ function MountainBackdrop() {
   );
 }
 
+function Clouds() {
+  const cloudGroupRef = useRef<Group>(null);
+  const cloudOffsets = useMemo(
+    () => [0, Math.PI * 0.65, Math.PI * 1.2, Math.PI * 1.85, Math.PI * 2.4, Math.PI * 2.9],
+    []
+  );
+
+  useFrame(({ clock }) => {
+    const group = cloudGroupRef.current;
+    if (!group) return;
+    group.children.forEach((cloud, index) => {
+      const offset = cloudOffsets[index] ?? 0;
+      const t = clock.getElapsedTime() * 0.08 + offset;
+      cloud.position.x = Math.sin(t) * 12;
+      cloud.position.z = -18 + (index % 3) * 3 + Math.cos(t * 0.9) * 2.4;
+      cloud.position.y = 9.8 + Math.sin(t * 1.6) * 0.18;
+    });
+  });
+
+  return (
+    <group ref={cloudGroupRef}>
+      {cloudOffsets.map((offset, index) => (
+        <group key={offset} position={[index * 2.8 - 7, 9.6, -18 + (index % 3) * 2.5]}>
+          <mesh>
+            <sphereGeometry args={[1.1, 10, 8]} />
+            <meshStandardMaterial color="#f7e2cf" flatShading transparent opacity={0.7} />
+          </mesh>
+          <mesh position={[-1.05, -0.05, 0.1]}>
+            <sphereGeometry args={[0.7, 10, 8]} />
+            <meshStandardMaterial color="#fcebd8" flatShading transparent opacity={0.72} />
+          </mesh>
+          <mesh position={[0.98, -0.06, 0.08]}>
+            <sphereGeometry args={[0.76, 10, 8]} />
+            <meshStandardMaterial color="#f4d9c0" flatShading transparent opacity={0.66} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function TrailheadMarker() {
   return (
     <group position={[SCENE_ANCHORS.trailStart[0], 1.06, SCENE_ANCHORS.trailStart[2] + 0.4]}>
@@ -167,6 +210,7 @@ export function LowPolyEnvironment({
           onClick={onTabletsClick}
         />
       </group>
+      <Clouds />
       <MountainBackdrop />
     </group>
   );
