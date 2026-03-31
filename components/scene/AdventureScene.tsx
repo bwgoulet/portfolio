@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
@@ -13,32 +13,41 @@ import { CabinInterior } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
-import { MOTION_TIERS } from '@/config/sceneConfig';
+import { ExperienceDetailOverlay } from './ExperienceDetailOverlay';
+import { ProjectDetailOverlay } from './ProjectDetailOverlay';
+import { getCloseupStateForFocus, getHoverStateForLandmark, getNudgeRotationDelta, isOverviewState } from './interactionController';
+import { LANDMARKS } from './landmarks';
+import { SceneDebugOverlay } from './SceneDebugOverlay';
+
+const IS_DEV = process.env.NODE_ENV !== 'production';
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const lastTriggerRef = useRef<HTMLElement | null>(null);
-  const noteTitleId = useId();
-  const experienceTitleId = useId();
+  const landmarkRefs = useMemo(
+    () => ({
+      billboard: billboardRef,
+      cabin: cabinRef,
+      tablets: tabletsRef
+    }),
+    []
+  );
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
-  const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
-  const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [debugEnabled, setDebugEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!IS_DEV) return;
+    const debugFromUrl = new URLSearchParams(window.location.search).get('sceneDebug') === '1';
+    setDebugEnabled(debugFromUrl);
+  }, [landmarkRefs]);
 
   const isTransitioning = interactionState === 'transitioning';
-  const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null;
-  const isOverviewState =
-    interactionState === 'idleOverview' ||
-    interactionState === 'hoverBillboard' ||
-    interactionState === 'hoverCabin' ||
-    interactionState === 'hoverTablets';
+  const inOverviewState = isOverviewState(interactionState);
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -128,71 +137,67 @@ export function AdventureScene() {
     lastTriggerRef.current?.focus();
   }, [isDetailDialogOpen]);
 
+  const landmarksById = useMemo(() => Object.fromEntries(LANDMARKS.map((landmark) => [landmark.id, landmark])), []);
+  const landmarksByFocus = useMemo(() => Object.fromEntries(LANDMARKS.map((landmark) => [landmark.focusPresetKey, landmark])), []);
+  const activeLandmark = focusTarget === 'overview' ? null : landmarksByFocus[focusTarget];
+
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
-      if (!isOverviewState || isTransitioning) return;
-      if (!hovered) {
-        setInteractionState('idleOverview');
-        return;
-      }
-      setInteractionState(target === 'billboard' ? 'hoverBillboard' : target === 'cabin' ? 'hoverCabin' : 'hoverTablets');
+      if (!inOverviewState || isTransitioning) return;
+      setInteractionState(hovered ? getHoverStateForLandmark(target) : 'idleOverview');
     },
-    [isOverviewState, isTransitioning]
+    [inOverviewState, isTransitioning]
   );
 
-  const animateFocusNudge = useCallback(
-    (target: InteractiveTarget) => {
-      const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
-      if (!group) return;
-      if (reducedMotion) return;
+  const animateFocusNudge = useCallback((target: InteractiveTarget) => {
+    const group = landmarkRefs[target].current;
+    if (!group) return;
 
-      const startY = group.position.y;
-      const startRotationY = group.rotation.y;
+    const startY = group.position.y;
+    const startRotationY = group.rotation.y;
 
-      makeTimeline()
-        .to(group.position, {
-          y: startY + 0.18,
-          duration: MOTION_TIERS.medium.landmarkNudgeDuration,
-          ease: MOTION_TIERS.medium.easeOut
-        })
-        .to(
-          group.rotation,
-          {
-            y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05),
-            duration: MOTION_TIERS.medium.landmarkNudgeDuration,
-            ease: MOTION_TIERS.medium.easeOut
-          },
-          '<'
-        )
-        .to(group.position, {
-          y: startY,
-          duration: MOTION_TIERS.medium.landmarkResetDuration,
-          ease: MOTION_TIERS.medium.easeInOut
-        })
-        .to(
-          group.rotation,
-          {
-            y: startRotationY,
-            duration: MOTION_TIERS.medium.landmarkResetDuration,
-            ease: MOTION_TIERS.medium.easeInOut
-          },
-          '<'
-        );
-    },
-    [reducedMotion]
-  );
+    makeTimeline()
+      .to(group.position, {
+        y: startY + 0.18,
+        duration: ANIMATION_CONFIG.nudgeDuration,
+        ease: 'power2.out'
+      })
+      .to(
+        group.rotation,
+        {
+          y: startRotationY + getNudgeRotationDelta(target),
+          duration: ANIMATION_CONFIG.nudgeDuration,
+          ease: 'sine.out'
+        },
+        '<'
+      )
+      .to(group.position, {
+        y: startY,
+        duration: ANIMATION_CONFIG.resetDuration,
+        ease: 'power1.inOut'
+      })
+      .to(
+        group.rotation,
+        {
+          y: startRotationY,
+          duration: ANIMATION_CONFIG.resetDuration,
+          ease: 'power1.inOut'
+        },
+        '<'
+      );
+  }, [landmarkRefs]);
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
-      if (!isOverviewState || isTransitioning) return;
+      if (!inOverviewState || isTransitioning) return;
 
       setInteractionState('transitioning');
-      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
+      setFocusTarget(landmarksById[target].focusPresetKey);
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       animateFocusNudge(target);
     },
-    [animateFocusNudge, isOverviewState, isTransitioning]
+    [animateFocusNudge, inOverviewState, isTransitioning, landmarksById]
   );
 
   const detailCardStateClass = (isClosing: boolean) =>
@@ -206,37 +211,23 @@ export function AdventureScene() {
           <CameraRig
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
-            reducedMotion={reducedMotion}
-            onTransitionEnd={() => {
-              if (focusTarget === 'overview') {
-                setInteractionState('idleOverview');
-                return;
-              }
-              setInteractionState(
-                focusTarget === 'billboard'
-                  ? 'billboardCloseup'
-                  : focusTarget === 'cabinInterior'
-                    ? 'cabinCloseup'
-                    : 'tabletsCloseup'
-              );
-            }}
+            onTransitionEnd={() => setInteractionState(getCloseupStateForFocus(focusTarget))}
           />
           <LightingAtmosphere />
           {interactionState !== 'cabinCloseup' && (
             <>
               <LowPolyEnvironment
-                tabletsInteractiveEnabled={isOverviewState}
+                tabletsInteractiveEnabled={inOverviewState}
                 tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
                 tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
                 onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
                 onTabletsClick={handleFocusClick}
                 onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
-                tabletsRef={tabletsRef}
-                reducedMotion={reducedMotion}
+                tabletsRef={landmarkRefs.tablets}
               />
               <Billboard
-                billboardRef={billboardRef}
-                interactiveEnabled={isOverviewState}
+                billboardRef={landmarkRefs.billboard}
+                interactiveEnabled={inOverviewState}
                 notesInteractive={interactionState === 'billboardCloseup'}
                 hovered={interactionState === 'hoverBillboard'}
                 onHoverChange={(hovered) => updateHover('billboard', hovered)}
@@ -246,8 +237,8 @@ export function AdventureScene() {
                 reducedMotion={reducedMotion}
               />
               <Cabin
-                cabinRef={cabinRef}
-                interactiveEnabled={isOverviewState}
+                cabinRef={landmarkRefs.cabin}
+                interactiveEnabled={inOverviewState}
                 hovered={interactionState === 'hoverCabin'}
                 onHoverChange={(hovered) => updateHover('cabin', hovered)}
                 onClick={() => handleFocusClick('cabin')}
@@ -255,9 +246,9 @@ export function AdventureScene() {
             </>
           )}
           {interactionState === 'cabinCloseup' && <CabinInterior />}
-          </Suspense>
-        </Canvas>
-      </div>
+          {IS_DEV && debugEnabled && <SceneDebugOverlay />}
+        </Suspense>
+      </Canvas>
 
       <header className={`scene-brand ${reducedMotion ? 'motion-reduced' : 'anim-enter'}`} aria-label="Site title">
         <span className="scene-brand-cloud scene-brand-cloud--left" />
@@ -266,92 +257,15 @@ export function AdventureScene() {
         <p>an interactive portfolio</p>
       </header>
 
-      {isOverviewState && !isTransitioning && (
-        <section className="scene-hotspots" aria-label="Scene quick actions">
-          <button className="scene-hotspot" onClick={() => handleFocusClick('billboard')}>
-            Open Projects board
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('cabin')}>
-            Enter About/Gallery cabin
-          </button>
-          <button className="scene-hotspot" onClick={() => handleFocusClick('tablets')}>
-            Open Experience tablets
-          </button>
-        </section>
+      {activeLandmark?.detailRendererKey === 'project' && interactionState === 'billboardCloseup' && selectedNote && (
+        <ProjectDetailOverlay note={selectedNote} onClose={() => setSelectedNoteId(null)} />
       )}
 
-      {interactionState === 'billboardCloseup' && selectedNote && (
-        <article
-          className={`note-detail ${detailCardStateClass(Boolean(closingNoteId))}`}
-          aria-live="polite"
-          onClick={closeNoteDetail}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              closeNoteDetail();
-            }
-          }}
-        >
-          <div
-            className={`note-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
-            ref={modalRef}
-            onClick={(event) => event.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={noteTitleId}
-            tabIndex={-1}
-          >
-            <button className="detail-close" onClick={closeNoteDialog} aria-label="Close project details">
-              Close
-            </button>
-            <img src={selectedNote.imageSrc} alt={`${selectedNote.title} post-it sketch`} />
-            <h2 id={noteTitleId}>{selectedNote.title}</h2>
-            <p>{selectedNote.detail}</p>
-          </div>
-        </article>
+      {activeLandmark?.detailRendererKey === 'experience' && interactionState === 'tabletsCloseup' && selectedExperience && (
+        <ExperienceDetailOverlay experience={selectedExperience} onClose={() => setSelectedExperienceId(null)} />
       )}
 
-      {interactionState === 'tabletsCloseup' && selectedExperience && (
-        <article
-          className={`note-detail ${detailCardStateClass(Boolean(closingExperienceId))}`}
-          aria-live="polite"
-          onClick={closeExperienceDetail}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              closeExperienceDetail();
-            }
-          }}
-        >
-          <div
-            className={`experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
-            ref={modalRef}
-            onClick={(event) => event.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={experienceTitleId}
-            tabIndex={-1}
-          >
-            <button className="detail-close" onClick={closeExperienceDialog} aria-label="Close experience details">
-              Close
-            </button>
-            <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
-            <p className="experience-detail-meta">{selectedExperience.company}</p>
-            <p className="experience-detail-meta">{selectedExperience.dateLocation}</p>
-            <ul>
-              {selectedExperience.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-              ))}
-            </ul>
-          </div>
-        </article>
-      )}
-
-      {!isOverviewState && !isTransitioning && (
+      {!inOverviewState && !isTransitioning && (
         <button
           className="scene-back"
           aria-label="Return to overview"
@@ -366,38 +280,10 @@ export function AdventureScene() {
         </button>
       )}
 
-      {interactionState === 'billboardCloseup' && !selectedNote && (
-        <section className="detail-actions" aria-label="Project note actions">
-          {Object.values(PROJECT_NOTE_RECORD).map((note) => (
-            <button
-              key={note.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedNoteId(note.id);
-              }}
-            >
-              {note.title}
-            </button>
-          ))}
-        </section>
-      )}
-
-      {interactionState === 'tabletsCloseup' && !selectedExperience && (
-        <section className="detail-actions" aria-label="Experience entry actions">
-          {Object.values(EXPERIENCE_RECORD).map((entry) => (
-            <button
-              key={entry.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedExperienceId(entry.id);
-              }}
-            >
-              {entry.role}
-            </button>
-          ))}
-        </section>
+      {IS_DEV && (
+        <button className="scene-debug-toggle" onClick={() => setDebugEnabled((current) => !current)}>
+          {debugEnabled ? 'Hide scene debug' : 'Show scene debug'}
+        </button>
       )}
     </main>
   );
