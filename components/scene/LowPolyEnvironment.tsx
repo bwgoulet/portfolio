@@ -7,6 +7,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
+import { EXPERIENCE_ENTRIES } from './experienceData';
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -25,15 +26,17 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
 
 type StoneTabletsProps = {
   interactiveEnabled: boolean;
+  detailInteractiveEnabled: boolean;
   hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
+  onDetailSelect: (entryId: string) => void;
 };
 
-function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: StoneTabletsProps) {
+function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, onHoverChange, onClick, onDetailSelect }: StoneTabletsProps) {
   return (
     <group>
-      {Array.from({ length: 4 }).map((_, index) => {
+      {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
         const height = 0.88 + index * 0.08;
@@ -45,7 +48,7 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               receiveShadow
               onPointerEnter={(event) => {
                 event.stopPropagation();
-                if (interactiveEnabled) onHoverChange(true);
+                if (interactiveEnabled || detailInteractiveEnabled) onHoverChange(true);
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
@@ -54,6 +57,7 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               onClick={(event) => {
                 event.stopPropagation();
                 if (interactiveEnabled) onClick('tablets');
+                if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
@@ -65,9 +69,22 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
-              <planeGeometry args={[0.18, 0.42]} />
-              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.6} />
+              <planeGeometry args={[0.2, 0.5]} />
+              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.5} />
             </mesh>
+            <Text
+              position={[0, height * 0.23, 0.181]}
+              rotation={[0, 0, 0]}
+              fontSize={0.06}
+              lineHeight={0.95}
+              maxWidth={0.18}
+              textAlign="center"
+              anchorX="center"
+              anchorY="middle"
+              color="#dfe8e4"
+            >
+              {entry.tabletLabel}
+            </Text>
           </group>
         );
       })}
@@ -159,17 +176,21 @@ function ExperienceEngraving() {
 
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
+  tabletsDetailInteractiveEnabled: boolean;
   tabletsHovered: boolean;
   onTabletsHoverChange: (hovered: boolean) => void;
   onTabletsClick: (target: InteractiveTarget) => void;
+  onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
 };
 
 export function LowPolyEnvironment({
   tabletsInteractiveEnabled,
+  tabletsDetailInteractiveEnabled,
   tabletsHovered,
   onTabletsHoverChange,
   onTabletsClick,
+  onTabletDetailSelect,
   tabletsRef
 }: LowPolyEnvironmentProps) {
   return (
@@ -213,9 +234,11 @@ export function LowPolyEnvironment({
       <group ref={tabletsRef}>
         <StoneTablets
           interactiveEnabled={tabletsInteractiveEnabled}
+          detailInteractiveEnabled={tabletsDetailInteractiveEnabled}
           hovered={tabletsHovered}
           onHoverChange={onTabletsHoverChange}
           onClick={onTabletsClick}
+          onDetailSelect={onTabletDetailSelect}
         />
       </group>
       <Clouds />

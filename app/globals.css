@@ -250,3 +250,41 @@ main {
   line-height: 1.5;
   color: rgba(19, 20, 18, 0.88);
 }
+
+.experience-detail-card {
+  width: min(880px, 90vw);
+  max-height: min(76vh, 760px);
+  overflow: auto;
+  background: linear-gradient(170deg, rgba(18, 25, 31, 0.98), rgba(28, 38, 45, 0.96));
+  border: 1px solid rgba(224, 236, 245, 0.32);
+  border-radius: 14px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.52);
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  color: #edf3f8;
+  pointer-events: auto;
+}
+
+.experience-detail-card h2 {
+  margin: 0;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  color: #fff3dd;
+}
+
+.experience-detail-meta {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: #cfdfec;
+}
+
+.experience-detail-card ul {
+  margin: 0.85rem 0 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.experience-detail-card li {
+  font-size: clamp(0.95rem, 1.3vw, 1.02rem);
+  line-height: 1.45;
+  color: #e8eff5;
+}
