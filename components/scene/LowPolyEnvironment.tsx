@@ -4,7 +4,7 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
@@ -175,19 +175,31 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
 
 function ExperienceEngraving() {
   return (
-    <group position={[2.78, 1.126, 3.96]} rotation={[-Math.PI / 2, 0, -0.08]}>
-      <mesh receiveShadow>
-        <planeGeometry args={[1.44, 0.44]} />
-        <meshStandardMaterial color={environmentPalette.engravingPlate} flatShading />
+    <group position={[4.1, 1.14, 3.48]} rotation={[0, -0.22, 0]}>
+      <mesh position={[0, 0, 0]} rotation={[-0.92, 0, -0.04]} receiveShadow castShadow>
+        <boxGeometry args={[1.72, 0.5, 0.12]} />
+        <meshStandardMaterial color="#74614d" flatShading />
       </mesh>
       <Text
-        position={[0, 0.002, 0.01]}
-        rotation={[Math.PI, 0, 0]}
-        fontSize={0.15}
-        letterSpacing={0.03}
+        position={[0, 0.16, 0.165]}
+        rotation={[-0.92, 0, -0.04]}
+        fontSize={0.16}
+        letterSpacing={0.026}
         anchorX="center"
         anchorY="middle"
-        color={environmentPalette.engravingText}
+        color="#2d1e10"
+      >
+        Experience
+      </Text>
+      <Text
+        position={[0.008, 0.168, 0.171]}
+        rotation={[-0.92, 0, -0.04]}
+        fontSize={0.16}
+        letterSpacing={0.026}
+        anchorX="center"
+        anchorY="middle"
+        color="#ecd4ad"
+        fillOpacity={0.98}
       >
         Experience
       </Text>
