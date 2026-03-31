@@ -1,0 +1,101 @@
+'use client';
+
+import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+
+function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  return (
+    <group position={position} scale={scale}>
+      <mesh position={[0, 0.38, 0]} castShadow>
+        <cylinderGeometry args={[0.06, 0.1, 0.82, 6]} />
+        <meshStandardMaterial color={PALETTE.trunk} flatShading />
+      </mesh>
+      <mesh position={[0, 1.05, 0]} castShadow>
+        <coneGeometry args={[0.38, 0.92, 7]} />
+        <meshStandardMaterial color={PALETTE.leaves} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function StoneTablets() {
+  return (
+    <group>
+      {Array.from({ length: 4 }).map((_, index) => {
+        const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
+        const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
+        const height = 0.88 + index * 0.08;
+
+        return (
+          <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]}>
+            <mesh castShadow receiveShadow>
+              <capsuleGeometry args={[0.17, height, 4, 6]} />
+              <meshStandardMaterial color={PALETTE.tablet} flatShading />
+            </mesh>
+            <mesh position={[0, height * 0.26, 0.18]}>
+              <planeGeometry args={[0.18, 0.42]} />
+              <meshBasicMaterial color={PALETTE.tabletRune} transparent opacity={0.6} />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+function MountainBackdrop() {
+  return (
+    <group position={SCENE_ANCHORS.mountain}>
+      <mesh castShadow>
+        <coneGeometry args={[4.8, 6.4, 7]} />
+        <meshStandardMaterial color={PALETTE.mountain} flatShading />
+      </mesh>
+      <mesh position={[-1.8, -0.3, 1.2]} rotation={[0, 0.4, 0]} castShadow>
+        <coneGeometry args={[2.2, 3.4, 7]} />
+        <meshStandardMaterial color="#343d4a" flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+export function LowPolyEnvironment() {
+  return (
+    <group>
+      <mesh rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
+        <meshStandardMaterial color={PALETTE.islandSide} flatShading />
+      </mesh>
+
+      <mesh position={[0, 1.12, 0]} rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.95, 8.05, 0.25, 8]} />
+        <meshStandardMaterial color={PALETTE.islandTop} flatShading />
+      </mesh>
+
+      <mesh position={SCENE_ANCHORS.trailStart} rotation={[-Math.PI / 2, -0.03, 0]} receiveShadow>
+        <planeGeometry args={[1.25, 9.1]} />
+        <meshStandardMaterial color={PALETTE.trail} flatShading />
+      </mesh>
+
+      <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0.15, 0]} castShadow>
+        <boxGeometry args={[1.55, 0.42, 1.0]} />
+        <meshStandardMaterial color={PALETTE.trailBlocker} flatShading />
+      </mesh>
+
+      <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
+      <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
+      <Tree position={[2.2, 1.08, -2.35]} />
+      <Tree position={[-4.2, 1.08, 1.8]} scale={0.95} />
+
+      <mesh position={[2.7, 1.27, -1.65]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[0.7, 0]} />
+        <meshStandardMaterial color={PALETTE.rock} flatShading />
+      </mesh>
+      <mesh position={[-2.2, 1.22, 2.2]} scale={[1.2, 1.1, 1.4]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[0.54, 0]} />
+        <meshStandardMaterial color={PALETTE.rock} flatShading />
+      </mesh>
+
+      <StoneTablets />
+      <MountainBackdrop />
+    </group>
+  );
+}
