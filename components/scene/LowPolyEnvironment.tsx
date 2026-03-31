@@ -43,9 +43,14 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
         const height = 0.88 + index * 0.08;
+        const rotationY = -0.11 + index * 0.09;
 
         return (
-          <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]}>
+          <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
+            <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
+              <cylinderGeometry args={[0.24, 0.29, 0.1, 6]} />
+              <meshStandardMaterial color="#5a615f" flatShading />
+            </mesh>
             <mesh
               castShadow
               receiveShadow
@@ -75,6 +80,10 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 flatShading
               />
             </mesh>
+            <mesh position={[0, height * 0.52, 0]} castShadow>
+              <cylinderGeometry args={[0.12, 0.14, 0.06, 6]} />
+              <meshStandardMaterial color="#95a3a0" flatShading />
+            </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
               <planeGeometry args={[0.2, 0.5]} />
               <meshBasicMaterial
@@ -94,13 +103,21 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 function MountainBackdrop() {
   return (
     <group position={SCENE_ANCHORS.mountain}>
-      <mesh castShadow>
-        <coneGeometry args={[7.1, 9.2, 7]} />
+      <mesh castShadow rotation={[0, 0.2, 0]}>
+        <coneGeometry args={[6.6, 8.9, 8]} />
         <meshStandardMaterial color={PALETTE.mountain} flatShading />
       </mesh>
-      <mesh position={[-1.8, -0.3, 1.2]} rotation={[0, 0.4, 0]} castShadow>
-        <coneGeometry args={[3.5, 4.8, 7]} />
+      <mesh position={[-2.2, -0.5, 1.6]} rotation={[0, 0.42, 0]} castShadow>
+        <coneGeometry args={[4.1, 5.1, 8]} />
         <meshStandardMaterial color="#2b3443" flatShading />
+      </mesh>
+      <mesh position={[2.8, -0.7, 2.1]} rotation={[0, -0.36, 0]} castShadow>
+        <coneGeometry args={[3.8, 4.4, 8]} />
+        <meshStandardMaterial color="#344256" flatShading />
+      </mesh>
+      <mesh position={[0.4, 1.95, 0.2]} scale={[1.1, 0.5, 0.9]} castShadow>
+        <dodecahedronGeometry args={[1.05, 0]} />
+        <meshStandardMaterial color="#7f95ad" flatShading />
       </mesh>
     </group>
   );
@@ -128,21 +145,21 @@ function Clouds() {
   return (
     <group ref={cloudGroupRef}>
       {cloudOffsets.map((offset, index) => (
-        <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.2, 0.58, 0.82]}>
+        <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.24, 0.56, 0.86]}>
           <mesh position={[0, 0, 0]}>
-            <sphereGeometry args={[1.15, 12, 10]} />
+            <dodecahedronGeometry args={[1.06, 0]} />
             <meshStandardMaterial color="#edf5ff" flatShading transparent opacity={0.88} />
           </mesh>
           <mesh position={[-1.18, 0.12, 0.12]}>
-            <sphereGeometry args={[0.82, 12, 10]} />
+            <dodecahedronGeometry args={[0.75, 0]} />
             <meshStandardMaterial color="#f7fbff" flatShading transparent opacity={0.9} />
           </mesh>
           <mesh position={[1.12, 0.1, 0.04]}>
-            <sphereGeometry args={[0.9, 12, 10]} />
+            <dodecahedronGeometry args={[0.83, 0]} />
             <meshStandardMaterial color="#e8f1ff" flatShading transparent opacity={0.86} />
           </mesh>
-          <mesh position={[0.26, 0.28, 0.08]}>
-            <sphereGeometry args={[0.68, 12, 10]} />
+          <mesh position={[0.22, 0.3, 0.12]} scale={[0.88, 0.78, 0.9]}>
+            <dodecahedronGeometry args={[0.63, 0]} />
             <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.9} />
           </mesh>
         </group>
@@ -230,10 +247,26 @@ export function LowPolyEnvironment({
         <cylinderGeometry args={[6.95, 8.05, 0.25, 8]} />
         <meshStandardMaterial color={PALETTE.islandTop} flatShading />
       </mesh>
+      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
+        <cylinderGeometry args={[2.4, 2.9, 0.21, 7]} />
+        <meshStandardMaterial color="#365441" flatShading />
+      </mesh>
+      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
+        <cylinderGeometry args={[1.8, 2.2, 0.18, 7]} />
+        <meshStandardMaterial color="#35513f" flatShading />
+      </mesh>
 
       <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[1.2, 34]} />
         <meshStandardMaterial color={PALETTE.trail} flatShading />
+      </mesh>
+      <mesh position={[0.25, 1.035, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
+        <planeGeometry args={[0.7, 22]} />
+        <meshStandardMaterial color="#66766a" flatShading />
+      </mesh>
+      <mesh position={[1.38, 1.035, -6.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
+        <planeGeometry args={[0.62, 22]} />
+        <meshStandardMaterial color="#495b50" flatShading />
       </mesh>
 
       <ExperienceEngraving />
