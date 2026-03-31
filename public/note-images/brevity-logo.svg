@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 480'>
+  <rect width='800' height='480' fill='#ece9e3'/>
+  <text x='82' y='220' font-family='Arial, Helvetica, sans-serif' font-size='150' font-weight='500' fill='#000'>Brev</text>
+  <text x='518' y='220' font-family='Arial, Helvetica, sans-serif' font-size='150' font-weight='500' fill='#000'>ty</text>
+  <path d='M488 66c-24 58-33 110-39 164-8-33-19-65-34-97 18 23 36 31 57 37-16-24-26-50-31-82 17 20 37 36 62 46-19-31-30-63-28-107 25 37 43 60 69 73-21-6-37-2-57 8 17 12 35 19 55 20-26 6-46 12-66 30 16 5 28 4 44 4-24 28-46 55-63 90-9 20-17 47-27 84h-12c12-60 29-116 56-170 11-22 24-45 40-66-8 0-18-1-28-5z' fill='#67b8ec'/>
+  <text x='84' y='332' font-family='Georgia, Times, serif' font-size='62' font-weight='700' fill='#232247'>Email Management, Reimagined</text>
+</svg>
