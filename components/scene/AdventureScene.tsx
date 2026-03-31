@@ -11,6 +11,7 @@ import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
+import { EXPERIENCE_ENTRIES } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
 
 export function AdventureScene() {
@@ -92,7 +93,7 @@ export function AdventureScene() {
         : 'Projects Board: click any post-it to open its image and full scribbled note.';
     }
     if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
-    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: ready for 4-tablet project navigation.';
+    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: each tablet now maps to one role from my resume experience section.';
     return null;
   }, [interactionState, selectedNote]);
 
@@ -194,6 +195,27 @@ export function AdventureScene() {
             <p>{selectedNote.detail}</p>
           </div>
         </article>
+      )}
+
+
+      {interactionState === 'tabletsCloseup' && (
+        <section className="experience-panel" aria-label="Experience copied from resume">
+          <h2>Experience</h2>
+          <div className="experience-grid">
+            {EXPERIENCE_ENTRIES.map((entry) => (
+              <article key={entry.id} className="experience-tablet">
+                <h3>{entry.role}</h3>
+                <p className="experience-meta">{entry.company}</p>
+                <p className="experience-meta">{entry.dateLocation}</p>
+                <ul>
+                  {entry.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
 
       {!isOverviewState && !isTransitioning && (
