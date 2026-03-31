@@ -27,27 +27,27 @@ export const Cabin = memo(function Cabin({
     <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
       <mesh position={[0, 0.11, 0.03]} castShadow receiveShadow>
         <cylinderGeometry args={[0.94, 1.02, 0.2, 6]} />
-        <meshStandardMaterial color="#3e352f" roughness={0.86} metalness={0.05} flatShading />
+        <meshStandardMaterial color={cabin.base} flatShading />
       </mesh>
       <mesh position={[0, 0.46, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.35, 0.92, 1.1]} />
-        <meshStandardMaterial color={PALETTE.cabinWall} roughness={0.82} metalness={0.04} flatShading />
+        <meshStandardMaterial color={PALETTE.cabinWall} flatShading />
       </mesh>
       <mesh position={[0, 0.72, 0]} castShadow>
         <boxGeometry args={[1.46, 0.1, 1.2]} />
-        <meshStandardMaterial color="#6b5642" roughness={0.76} metalness={0.05} flatShading />
+        <meshStandardMaterial color={cabin.trim} flatShading />
       </mesh>
       <mesh position={[0, 1.12, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
         <coneGeometry args={[1.18, 0.96, 4]} />
-        <meshStandardMaterial color={PALETTE.cabinRoof} roughness={0.68} metalness={0.08} flatShading />
+        <meshStandardMaterial color={PALETTE.cabinRoof} flatShading />
       </mesh>
       <mesh position={[0.54, 1.18, -0.14]} rotation={[0, 0.2, 0]} castShadow>
         <boxGeometry args={[0.18, 0.5, 0.18]} />
-        <meshStandardMaterial color="#534b4f" roughness={0.48} metalness={0.24} flatShading />
+        <meshStandardMaterial color={cabin.chimney} flatShading />
       </mesh>
       <mesh position={[0, 0.2, 0.67]} castShadow receiveShadow>
         <boxGeometry args={[0.72, 0.12, 0.3]} />
-        <meshStandardMaterial color="#604a39" roughness={0.82} metalness={0.05} flatShading />
+        <meshStandardMaterial color={cabin.porch} flatShading />
       </mesh>
 
       <mesh
@@ -68,10 +68,8 @@ export const Cabin = memo(function Cabin({
         <boxGeometry args={[0.36, 0.56, 0.06]} />
         <meshStandardMaterial
           color={PALETTE.cabinDoor}
-          emissive={hovered ? PALETTE.brandAccent : '#17100a'}
-          emissiveIntensity={hovered ? 0.18 : 0.05}
-          roughness={0.64}
-          metalness={0.08}
+          emissive={hovered ? cabin.doorHover : cabin.doorIdle}
+          emissiveIntensity={hovered ? 0.26 : 0.05}
           flatShading
         />
       </mesh>
@@ -82,7 +80,7 @@ export const Cabin = memo(function Cabin({
       </mesh>
       <mesh position={[-0.3, 0.52, 0.565]}>
         <boxGeometry args={[0.26, 0.23, 0.03]} />
-        <meshStandardMaterial color="#4a3528" roughness={0.78} metalness={0.03} flatShading />
+        <meshStandardMaterial color={cabin.windowFrame} flatShading />
       </mesh>
       <mesh position={[0.31, 0.52, 0.57]}>
         <planeGeometry args={[0.22, 0.19]} />
@@ -90,7 +88,7 @@ export const Cabin = memo(function Cabin({
       </mesh>
       <mesh position={[0.31, 0.52, 0.565]}>
         <boxGeometry args={[0.26, 0.23, 0.03]} />
-        <meshStandardMaterial color="#4a3528" roughness={0.78} metalness={0.03} flatShading />
+        <meshStandardMaterial color={cabin.windowFrame} flatShading />
       </mesh>
 
       {interactiveEnabled && hovered && (
