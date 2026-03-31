@@ -27,6 +27,7 @@ export function AdventureScene() {
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin' | 'tablets'>('overview');
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   const isTransitioning = interactionState === 'transitioning';
   const isOverviewState =
