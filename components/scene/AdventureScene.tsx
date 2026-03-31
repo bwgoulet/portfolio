@@ -96,6 +96,13 @@ export function AdventureScene() {
     return null;
   }, [interactionState, selectedNote]);
 
+  const hoverLabel = useMemo(() => {
+    if (interactionState === 'hoverCabin') return 'About/Gallery: click the cabin door to go inside.';
+    if (interactionState === 'hoverBillboard') return 'Projects: click the board to zoom into project notes.';
+    if (interactionState === 'hoverTablets') return 'Experience: click the tablets to navigate the 4-tablet experience.';
+    return null;
+  }, [interactionState]);
+
   return (
     <main>
       <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
@@ -153,7 +160,7 @@ export function AdventureScene() {
       </header>
 
       <aside className="scene-hud">
-        {closeupLabel ?? (
+        {closeupLabel ?? hoverLabel ?? (
           <span>
             Click the <code>billboard</code> for projects, the <code>tablets</code> for tablet navigation, or the <code>cabin door</code> for about/gallery.
           </span>
