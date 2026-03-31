@@ -123,7 +123,7 @@ function MountainBackdrop() {
   );
 }
 
-function Clouds() {
+function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
   const cloudGroupRef = useRef<Group>(null);
   const cloudOffsets = useMemo(
     () => [0, Math.PI * 0.8, Math.PI * 1.45, Math.PI * 2.15],
@@ -135,6 +135,7 @@ function Clouds() {
     if (!group) return;
     group.children.forEach((cloud, index) => {
       const offset = cloudOffsets[index] ?? 0;
+      if (reducedMotion) return;
       const t = clock.getElapsedTime() * 0.06 + offset;
       cloud.position.x = Math.sin(t) * 10.5;
       cloud.position.z = -18.5 + index * 1.9 + Math.cos(t * 0.7) * 1.3;
@@ -190,9 +191,18 @@ function ExperienceEngraving() {
   );
 }
 
-function TrailheadTimelineSign() {
+function TrailheadTimelineSign({ reducedMotion }: { reducedMotion: boolean }) {
+  const signRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (reducedMotion || !signRef.current) return;
+    const t = clock.getElapsedTime();
+    signRef.current.rotation.z = Math.sin(t * 0.18) * 0.012;
+    signRef.current.position.y = 1.2 + Math.sin(t * 0.22) * 0.02;
+  });
+
   return (
-    <group position={[-.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
+    <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
       <mesh position={[-0.14, 0.14, 0]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color="#4c382c" flatShading />
@@ -220,6 +230,7 @@ type LowPolyEnvironmentProps = {
   onTabletsClick: (target: InteractiveTarget) => void;
   onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
+  reducedMotion: boolean;
 };
 
 export function LowPolyEnvironment({
@@ -229,7 +240,8 @@ export function LowPolyEnvironment({
   onTabletsHoverChange,
   onTabletsClick,
   onTabletDetailSelect,
-  tabletsRef
+  tabletsRef,
+  reducedMotion
 }: LowPolyEnvironmentProps) {
   return (
     <group>
@@ -270,7 +282,7 @@ export function LowPolyEnvironment({
       </mesh>
 
       <ExperienceEngraving />
-      <TrailheadTimelineSign />
+      <TrailheadTimelineSign reducedMotion={reducedMotion} />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
@@ -296,7 +308,7 @@ export function LowPolyEnvironment({
           onDetailSelect={onTabletDetailSelect}
         />
       </group>
-      <Clouds />
+      <Clouds reducedMotion={reducedMotion} />
       <MountainBackdrop />
     </group>
   );

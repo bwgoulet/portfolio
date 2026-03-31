@@ -269,3 +269,85 @@ main {
   line-height: 1.45;
   color: #e8eff5;
 }
+
+.anim-enter.note-detail,
+.anim-enter.note-detail-card,
+.anim-enter.experience-detail-card,
+.anim-enter.scene-brand {
+  animation-duration: 420ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.anim-exit.note-detail,
+.anim-exit.note-detail-card,
+.anim-exit.experience-detail-card,
+.anim-exit.scene-brand {
+  animation-duration: 320ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.2);
+}
+
+.anim-enter.note-detail,
+.anim-enter.scene-brand {
+  animation-name: overlay-enter;
+}
+
+.anim-exit.note-detail,
+.anim-exit.scene-brand {
+  animation-name: overlay-exit;
+}
+
+.anim-enter.note-detail-card,
+.anim-enter.experience-detail-card {
+  animation-name: detail-card-enter;
+  animation-delay: 160ms;
+}
+
+.anim-exit.note-detail-card,
+.anim-exit.experience-detail-card {
+  animation-name: detail-card-exit;
+}
+
+@keyframes overlay-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlay-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes detail-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes detail-card-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.992);
+  }
+}
+
+.motion-reduced {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-brand-cloud {
+    animation: none;
+  }
+}
