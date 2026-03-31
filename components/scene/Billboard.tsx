@@ -1,6 +1,5 @@
 'use client';
 
-import { Html } from '@react-three/drei';
 import { memo } from 'react';
 import type { RefObject } from 'react';
 import { Group } from 'three';
@@ -8,18 +7,17 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 
 type ProjectNote = {
   id: string;
-  title: string;
-  imageLabel: string;
   position: [number, number, number];
   rotation: number;
+  color: string;
 };
 
 const PROJECT_NOTES: ProjectNote[] = [
-  { id: 'summit-ui', title: 'Summit UI', imageLabel: 'UI Preview', position: [-0.7, 1.86, 0.14], rotation: -0.08 },
-  { id: 'trail-maps', title: 'Trail Maps', imageLabel: 'Map Shot', position: [-0.08, 1.84, 0.14], rotation: -0.03 },
-  { id: 'night-camp', title: 'Night Camp', imageLabel: 'Hero Image', position: [0.56, 1.78, 0.14], rotation: 0.06 },
-  { id: 'route-planner', title: 'Route Planner', imageLabel: 'Dashboard', position: [-0.42, 1.42, 0.14], rotation: -0.06 },
-  { id: 'gear-check', title: 'Gear Check', imageLabel: 'Mobile View', position: [0.28, 1.46, 0.14], rotation: 0.04 }
+  { id: 'summit-ui', position: [-0.66, 1.94, 0.19], rotation: -0.14, color: '#f5dfa4' },
+  { id: 'trail-maps', position: [-0.2, 1.92, 0.19], rotation: -0.03, color: '#efe3b4' },
+  { id: 'night-camp', position: [0.26, 1.9, 0.19], rotation: 0.09, color: '#f8e6ad' },
+  { id: 'route-planner', position: [-0.36, 1.58, 0.19], rotation: -0.08, color: '#f0dca3' },
+  { id: 'gear-check', position: [0.1, 1.56, 0.19], rotation: 0.06, color: '#f7e5b8' }
 ];
 
 type BillboardProps = {
@@ -43,13 +41,21 @@ export const Billboard = memo(function Billboard({
 }: BillboardProps) {
   return (
     <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
-      <mesh position={[0, 0.78, 0]} castShadow>
-        <boxGeometry args={[0.15, 1.6, 0.15]} />
+      <mesh position={[-1.04, 0.88, -0.02]} castShadow>
+        <boxGeometry args={[0.16, 1.78, 0.16]} />
+        <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
+      </mesh>
+      <mesh position={[1.04, 0.88, -0.02]} castShadow>
+        <boxGeometry args={[0.16, 1.78, 0.16]} />
+        <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
+      </mesh>
+      <mesh position={[0, 2.38, -0.02]} castShadow>
+        <boxGeometry args={[2.38, 0.16, 0.16]} />
         <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
       </mesh>
 
       <mesh
-        position={[0, 1.62, 0.06]}
+        position={[0, 1.72, 0.05]}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (interactiveEnabled) onHoverChange(true);
@@ -63,12 +69,13 @@ export const Billboard = memo(function Billboard({
           if (interactiveEnabled) onClick();
         }}
         castShadow
+        receiveShadow
       >
-        <boxGeometry args={[2.25, 1.25, 0.12]} />
+        <boxGeometry args={[2.18, 1.46, 0.1]} />
         <meshStandardMaterial
-          color={hovered ? '#e2cfab' : PALETTE.billboardFace}
-          emissive={hovered ? '#4a3b1f' : '#1f180f'}
-          emissiveIntensity={hovered ? 0.3 : 0.09}
+          color={hovered ? '#dcca9f' : PALETTE.billboardFace}
+          emissive={hovered ? '#433318' : '#1f180f'}
+          emissiveIntensity={hovered ? 0.18 : 0.06}
           flatShading
         />
       </mesh>
@@ -77,34 +84,23 @@ export const Billboard = memo(function Billboard({
         <group key={note.id} position={note.position} rotation={[0, 0, note.rotation]}>
           <mesh
             onClick={(event) => {
+              if (!notesInteractive) return;
               event.stopPropagation();
-              if (notesInteractive) onNoteClick(note.id);
+              onNoteClick(note.id);
             }}
           >
-            <boxGeometry args={[0.5, 0.38, 0.02]} />
-            <meshStandardMaterial color="#f7e2a9" emissive="#6b5616" emissiveIntensity={0.08} flatShading />
+            <boxGeometry args={[0.38, 0.28, 0.024]} />
+            <meshStandardMaterial
+              color={note.color}
+              emissive={notesInteractive ? '#534212' : '#32270d'}
+              emissiveIntensity={notesInteractive ? 0.12 : 0.04}
+              flatShading
+            />
           </mesh>
-
-          <Html
-            transform
-            distanceFactor={8}
-            position={[0, 0, 0.015]}
-            style={{
-              width: '84px',
-              pointerEvents: notesInteractive ? 'auto' : 'none',
-              cursor: notesInteractive ? 'pointer' : 'default'
-            }}
-            onPointerDown={(event) => event.stopPropagation()}
-            onClick={(event) => {
-              event.stopPropagation();
-              if (notesInteractive) onNoteClick(note.id);
-            }}
-          >
-            <div className="postit-note-content">
-              <div className="postit-image-placeholder">{note.imageLabel}</div>
-              <p>{note.title}</p>
-            </div>
-          </Html>
+          <mesh position={[0.005, 0.11, 0.013]}>
+            <sphereGeometry args={[0.017, 6, 6]} />
+            <meshStandardMaterial color="#b9a277" flatShading />
+          </mesh>
         </group>
       ))}
     </group>
