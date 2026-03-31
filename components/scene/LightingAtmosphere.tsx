@@ -2,89 +2,36 @@
 
 import { Sky } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { ACESFilmicToneMapping, Color, FogExp2, PCFSoftShadowMap } from 'three';
 import { PALETTE } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
-type LightProfile = {
-  fogDensity: number;
-  fogColor: string;
-  exposure: number;
-  keyIntensity: number;
-  fillIntensity: number;
-  rimIntensity: number;
-  hemiIntensity: number;
-  ambientIntensity: number;
-  sunColor: string;
-  skySunPosition: [number, number, number];
-  skyRayleigh: number;
-  skyTurbidity: number;
-};
-
-const ATMOSPHERE_PROFILES: Record<'day' | 'goldenHour', LightProfile> = {
-  day: {
-    fogDensity: 0.024,
-    fogColor: '#aec7da',
-    exposure: 1,
-    keyIntensity: 1.75,
-    fillIntensity: 0.85,
-    rimIntensity: 0.65,
-    hemiIntensity: 0.52,
-    ambientIntensity: 0.18,
-    sunColor: '#ffe2b8',
-    skySunPosition: [4.9, 2.5, -10],
-    skyRayleigh: 1.45,
-    skyTurbidity: 7.1
-  },
-  goldenHour: {
-    fogDensity: 0.032,
-    fogColor: '#e39e74',
-    exposure: 1.08,
-    keyIntensity: 2.2,
-    fillIntensity: 0.66,
-    rimIntensity: 1.05,
-    hemiIntensity: 0.6,
-    ambientIntensity: 0.24,
-    sunColor: '#ffbc84',
-    skySunPosition: [4.4, 1.05, -10],
-    skyRayleigh: 1.12,
-    skyTurbidity: 8.2
-  }
-};
-
-function getProfileVariant() {
-  const utcHour = new Date().getUTCHours();
-  return utcHour >= 16 && utcHour <= 23 ? 'goldenHour' : 'day';
-}
-
 export function LightingAtmosphere() {
   const scene = useThree((state) => state.scene);
   const gl = useThree((state) => state.gl);
-  const profileVariant = useMemo(getProfileVariant, []);
-  const profile = ATMOSPHERE_PROFILES[profileVariant];
 
   useEffect(() => {
     scene.background = new Color(PALETTE.skyBottom);
-    scene.fog = new FogExp2(profile.fogColor, profile.fogDensity);
+    scene.fog = new FogExp2(PALETTE.fog, 0.034);
 
     gl.toneMapping = ACESFilmicToneMapping;
-    gl.toneMappingExposure = profile.exposure;
+    gl.toneMappingExposure = 1.08;
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = PCFSoftShadowMap;
-  }, [gl, profile.exposure, profile.fogColor, profile.fogDensity, scene]);
+  }, [gl, scene]);
 
   const lighting = VISUAL_TOKENS.lighting;
 
   return (
     <>
-      <hemisphereLight intensity={profile.hemiIntensity} color="#ffe3c6" groundColor="#2d3a34" />
-      <ambientLight intensity={profile.ambientIntensity} color="#ffd8bf" />
+      <hemisphereLight intensity={lighting.hemisphere.intensity} color={lighting.hemisphere.skyTint} groundColor={lighting.hemisphere.groundTint} />
+      <ambientLight intensity={lighting.ambient.intensity} color={lighting.ambient.tint} />
 
       <directionalLight
-        intensity={profile.keyIntensity}
+        intensity={lighting.key.intensity}
         position={[15, 14, 4]}
-        color={profile.sunColor}
+        color={lighting.key.tint}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -97,8 +44,7 @@ export function LightingAtmosphere() {
         shadow-bias={-0.0003}
       />
 
-      <directionalLight intensity={profile.fillIntensity} position={[-9, 8, -12]} color="#9ab8ff" />
-      <directionalLight intensity={profile.rimIntensity} position={[8, 3, -16]} color="#ffc98a" />
+      <directionalLight intensity={lighting.fill.intensity} position={[-9, 8, -12]} color={lighting.fill.tint} />
 
       <pointLight intensity={2.1} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} distance={8} decay={2} />
       <pointLight intensity={1.25} color={lighting.warmBounce.tint} position={[12, 9, -26]} distance={130} decay={2} />
@@ -111,9 +57,9 @@ export function LightingAtmosphere() {
 
       <Sky
         distance={260}
-        sunPosition={profile.skySunPosition}
-        turbidity={profile.skyTurbidity}
-        rayleigh={profile.skyRayleigh}
+        sunPosition={[4.5, 1.1, -10]}
+        turbidity={8}
+        rayleigh={1.2}
         mieCoefficient={0.018}
         mieDirectionalG={0.9}
       />

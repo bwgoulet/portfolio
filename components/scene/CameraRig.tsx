@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { ANIMATION_CONFIG, CAMERA_PRESETS, FocusTarget, ViewportTarget } from '@/config/sceneConfig';
+import { CAMERA_PRESETS, FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { animateValue } from '@/lib/animation';
 
 type CameraRigProps = {
@@ -13,21 +13,12 @@ type CameraRigProps = {
   reducedMotion: boolean;
 };
 
-function getViewportTarget(aspect: number): ViewportTarget {
-  if (aspect >= 1.75) return 'desktopWide';
-  if (aspect >= 1.5) return 'desktopStandard';
-  return 'laptop';
-}
-
-export function CameraRig({ targetKey, isTransitioning, onTransitionEnd }: CameraRigProps) {
+export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, reducedMotion }: CameraRigProps) {
   const camera = useThree((state) => state.camera as PerspectiveCamera);
-  const size = useThree((state) => state.size);
-  const viewportTarget = useMemo(() => getViewportTarget(size.width / size.height), [size.height, size.width]);
-
-  const lookAt = useRef(new Vector3(...CAMERA_PRESETS.overview[viewportTarget].lookAt));
+  const lookAt = useRef(new Vector3(...CAMERA_PRESETS.overview.lookAt));
 
   useEffect(() => {
-    const preset = CAMERA_PRESETS[targetKey][viewportTarget];
+    const preset = CAMERA_PRESETS[targetKey];
 
     if (!isTransitioning || reducedMotion) {
       camera.position.set(...preset.position);
@@ -74,7 +65,7 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd }: Camer
       tweenFov.kill();
       if (settleTimer) clearTimeout(settleTimer);
     };
-  }, [camera, isTransitioning, onTransitionEnd, targetKey, viewportTarget]);
+  }, [camera, isTransitioning, onTransitionEnd, reducedMotion, targetKey]);
 
   return null;
 }
