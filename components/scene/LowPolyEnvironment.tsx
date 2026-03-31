@@ -175,31 +175,31 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
 
 function ExperienceEngraving() {
   return (
-    <group position={[3.2, 1.06, 4.45]} rotation={[0, 0.22, 0]}>
-      <mesh position={[0, -0.01, 0]} rotation={[-Math.PI / 2, 0, -0.08]} receiveShadow castShadow>
-        <boxGeometry args={[1.92, 0.58, 0.04]} />
-        <meshStandardMaterial color={environmentPalette.engravingPlate} flatShading />
+    <group position={[4.1, 1.14, 3.48]} rotation={[0, -0.22, 0]}>
+      <mesh position={[0, 0, 0]} rotation={[-0.92, 0, -0.04]} receiveShadow castShadow>
+        <boxGeometry args={[1.72, 0.5, 0.12]} />
+        <meshStandardMaterial color="#74614d" flatShading />
       </mesh>
       <Text
-        position={[0, 0.012, 0.04]}
-        rotation={[Math.PI, 0, 0]}
-        fontSize={0.19}
-        letterSpacing={0.03}
+        position={[0, 0.16, 0.165]}
+        rotation={[-0.92, 0, -0.04]}
+        fontSize={0.16}
+        letterSpacing={0.026}
         anchorX="center"
         anchorY="middle"
-        color="#2a1a0f"
+        color="#2d1e10"
       >
         Experience
       </Text>
       <Text
-        position={[0.008, 0.017, 0.044]}
-        rotation={[Math.PI, 0, 0]}
-        fontSize={0.19}
-        letterSpacing={0.03}
+        position={[0.008, 0.168, 0.171]}
+        rotation={[-0.92, 0, -0.04]}
+        fontSize={0.16}
+        letterSpacing={0.026}
         anchorX="center"
         anchorY="middle"
-        color="#d8c3a0"
-        fillOpacity={0.92}
+        color="#ecd4ad"
+        fillOpacity={0.98}
       >
         Experience
       </Text>
