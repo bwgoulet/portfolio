@@ -188,7 +188,7 @@ function ExperienceEngraving() {
 
 function TrailheadTimelineSign() {
   return (
-    <group position={[0.24, 1.14, 1.62]} rotation={[0, 0.22, 0]}>
+    <group position={[-.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
       <mesh position={[-0.14, 0.14, 0]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color="#4c382c" flatShading />
