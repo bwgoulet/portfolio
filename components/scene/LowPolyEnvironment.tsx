@@ -2,6 +2,8 @@
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { RefObject } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 
@@ -81,8 +83,53 @@ function MountainBackdrop() {
       </mesh>
       <mesh position={[-1.8, -0.3, 1.2]} rotation={[0, 0.4, 0]} castShadow>
         <coneGeometry args={[3.5, 4.8, 7]} />
-        <meshStandardMaterial color="#343d4a" flatShading />
+        <meshStandardMaterial color="#2b3443" flatShading />
       </mesh>
+    </group>
+  );
+}
+
+function Clouds() {
+  const cloudGroupRef = useRef<Group>(null);
+  const cloudOffsets = useMemo(
+    () => [0, Math.PI * 0.8, Math.PI * 1.45, Math.PI * 2.15],
+    []
+  );
+
+  useFrame(({ clock }) => {
+    const group = cloudGroupRef.current;
+    if (!group) return;
+    group.children.forEach((cloud, index) => {
+      const offset = cloudOffsets[index] ?? 0;
+      const t = clock.getElapsedTime() * 0.06 + offset;
+      cloud.position.x = Math.sin(t) * 10.5;
+      cloud.position.z = -18.5 + index * 1.9 + Math.cos(t * 0.7) * 1.3;
+      cloud.position.y = 6.45 + Math.sin(t * 1.45) * 0.22;
+    });
+  });
+
+  return (
+    <group ref={cloudGroupRef}>
+      {cloudOffsets.map((offset, index) => (
+        <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.2, 0.58, 0.82]}>
+          <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[1.15, 12, 10]} />
+            <meshStandardMaterial color="#edf5ff" flatShading transparent opacity={0.88} />
+          </mesh>
+          <mesh position={[-1.18, 0.12, 0.12]}>
+            <sphereGeometry args={[0.82, 12, 10]} />
+            <meshStandardMaterial color="#f7fbff" flatShading transparent opacity={0.9} />
+          </mesh>
+          <mesh position={[1.12, 0.1, 0.04]}>
+            <sphereGeometry args={[0.9, 12, 10]} />
+            <meshStandardMaterial color="#e8f1ff" flatShading transparent opacity={0.86} />
+          </mesh>
+          <mesh position={[0.26, 0.28, 0.08]}>
+            <sphereGeometry args={[0.68, 12, 10]} />
+            <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.9} />
+          </mesh>
+        </group>
+      ))}
     </group>
   );
 }
@@ -167,6 +214,7 @@ export function LowPolyEnvironment({
           onClick={onTabletsClick}
         />
       </group>
+      <Clouds />
       <MountainBackdrop />
     </group>
   );

@@ -54,7 +54,7 @@ export const PALETTE: Record<string, ColorRepresentation> = {
   islandSide: '#1f2926',
   trail: '#526354',
   trailBlocker: '#444040',
-  mountain: '#38414f',
+  mountain: '#465c7a',
   rock: '#515d68',
   tablet: '#808486',
   tabletRune: '#c9d9d2',
