@@ -34,15 +34,15 @@ export const Billboard = memo(function Billboard({
     <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
       <mesh position={[-1.04, 0.88, -0.02]} castShadow>
         <boxGeometry args={[0.16, 1.78, 0.16]} />
-        <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
+        <meshStandardMaterial color={PALETTE.billboardFrame} roughness={0.72} metalness={0.08} flatShading />
       </mesh>
       <mesh position={[1.04, 0.88, -0.02]} castShadow>
         <boxGeometry args={[0.16, 1.78, 0.16]} />
-        <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
+        <meshStandardMaterial color={PALETTE.billboardFrame} roughness={0.72} metalness={0.08} flatShading />
       </mesh>
       <mesh position={[0, 2.38, -0.02]} castShadow>
         <boxGeometry args={[2.38, 0.16, 0.16]} />
-        <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
+        <meshStandardMaterial color={PALETTE.billboardFrame} roughness={0.72} metalness={0.08} flatShading />
       </mesh>
 
       <mesh
@@ -65,8 +65,10 @@ export const Billboard = memo(function Billboard({
         <boxGeometry args={[2.18, 1.46, 0.1]} />
         <meshStandardMaterial
           color={hovered ? '#dcca9f' : PALETTE.billboardFace}
-          emissive={hovered ? '#433318' : '#1f180f'}
-          emissiveIntensity={hovered ? 0.18 : 0.06}
+          emissive={hovered ? PALETTE.brandAccent : '#1f180f'}
+          emissiveIntensity={hovered ? 0.14 : 0.05}
+          roughness={0.58}
+          metalness={0.04}
           flatShading
         />
       </mesh>
@@ -136,8 +138,10 @@ export const Billboard = memo(function Billboard({
               <boxGeometry args={[0.38, 0.28, 0.024]} />
               <meshStandardMaterial
                 color={note.color}
-                emissive={notesInteractive ? '#534212' : '#32270d'}
-                emissiveIntensity={notesInteractive ? 0.12 : 0.04}
+                emissive={notesInteractive ? '#3d6558' : '#32270d'}
+                emissiveIntensity={notesInteractive ? 0.07 : 0.03}
+                roughness={0.74}
+                metalness={0.03}
                 flatShading
               />
             </mesh>

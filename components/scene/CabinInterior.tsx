@@ -24,33 +24,33 @@ export const CabinInterior = memo(function CabinInterior() {
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[1.28, 0.04, 1.02]} />
-        <meshStandardMaterial color="#3d2f25" flatShading />
+        <meshStandardMaterial color="#3d2f25" roughness={0.86} metalness={0.03} flatShading />
       </mesh>
 
       <mesh position={[0, 0.94, -0.54]} receiveShadow>
         <boxGeometry args={[1.28, 1.8, 0.08]} />
-        <meshStandardMaterial color="#4a382d" flatShading />
+        <meshStandardMaterial color="#4a382d" roughness={0.81} metalness={0.03} flatShading />
       </mesh>
 
       <mesh position={[-0.58, 0.94, 0]} receiveShadow>
         <boxGeometry args={[0.08, 1.8, 1.02]} />
-        <meshStandardMaterial color="#433226" flatShading />
+        <meshStandardMaterial color="#433226" roughness={0.81} metalness={0.03} flatShading />
       </mesh>
 
       <mesh position={[0.2, 0.42, -0.42]} castShadow receiveShadow>
         <boxGeometry args={[0.68, 0.08, 0.28]} />
-        <meshStandardMaterial color="#5b4334" flatShading />
+        <meshStandardMaterial color="#5b4334" roughness={0.73} metalness={0.04} flatShading />
       </mesh>
       {[-0.06, 0.05, 0.46].map((x) => (
         <mesh key={x} position={[x, 0.23, -0.46]} castShadow receiveShadow>
           <boxGeometry args={[0.06, 0.38, 0.06]} />
-          <meshStandardMaterial color="#3a2a1f" flatShading />
+          <meshStandardMaterial color="#3a2a1f" roughness={0.76} metalness={0.04} flatShading />
         </mesh>
       ))}
 
       <mesh position={[0.23, 0.56, -0.42]} castShadow>
         <boxGeometry args={[0.28, 0.2, 0.18]} />
-        <meshStandardMaterial color="#3e444f" flatShading />
+        <meshStandardMaterial color="#3e444f" roughness={0.52} metalness={0.2} flatShading />
       </mesh>
       <mesh position={[0.23, 0.55, -0.315]}>
         <planeGeometry args={[0.2, 0.12]} />
@@ -65,7 +65,7 @@ export const CabinInterior = memo(function CabinInterior() {
           </mesh>
           <mesh position={[0, 0, -0.002]}>
             <planeGeometry args={[0.175, 0.125]} />
-            <meshStandardMaterial color={PALETTE.cabinWall} flatShading />
+            <meshStandardMaterial color={PALETTE.cabinWall} roughness={0.7} metalness={0.04} flatShading />
           </mesh>
         </group>
       ))}
