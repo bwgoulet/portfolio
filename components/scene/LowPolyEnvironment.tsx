@@ -4,9 +4,10 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import type { Group } from 'three';
+import { Color, Object3D } from 'three';
+import type { Group, InstancedMesh } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
 
@@ -45,7 +46,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
       {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const height = 0.88 + index * 0.08;
+        const height = 1.04;
         const rotationY = -0.11 + index * 0.09;
 
         return (
@@ -215,6 +216,106 @@ function TrailheadTimelineSign() {
   );
 }
 
+type GrassBlade = {
+  x: number;
+  z: number;
+  scale: number;
+  lean: number;
+  rotationY: number;
+  color: string;
+};
+
+function GrassDetail() {
+  const denseBladesRef = useRef<InstancedMesh>(null);
+  const accentBladesRef = useRef<InstancedMesh>(null);
+  const denseBlades = useMemo<GrassBlade[]>(
+    () =>
+      Array.from({ length: 240 }, (_, index) => {
+        const ringMix = (index % 24) / 24;
+        const radius = 0.9 + ringMix * 6 + ((index * 13) % 11) * 0.03;
+        const angle = (index * 2.399963229728653) % (Math.PI * 2);
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const trailGap = Math.abs(x) < 0.78 && z < 0.8 && z > -8.2;
+        const tabletGap = z > 2.8 && Math.abs(x) < 3.1;
+        const scale = 0.72 + ((index * 7) % 10) * 0.05;
+        const lean = (((index * 17) % 15) - 7) * 0.014;
+        const colorLightness = 27 + ((index * 19) % 8);
+
+        return {
+          x: trailGap || tabletGap ? x * 1.1 : x,
+          z: trailGap ? z - 1.4 : z,
+          scale,
+          lean,
+          rotationY: angle + (index % 5) * 0.18,
+          color: `hsl(${118 + (index % 7)}, 34%, ${colorLightness}%)`
+        };
+      }),
+    []
+  );
+
+  const accentBlades = useMemo<GrassBlade[]>(
+    () =>
+      Array.from({ length: 72 }, (_, index) => {
+        const radius = 1.2 + (index % 9) * 0.58 + ((index * 11) % 7) * 0.06;
+        const angle = (index * 1.987) % (Math.PI * 2);
+        return {
+          x: Math.cos(angle) * radius + ((index % 3) - 1) * 0.1,
+          z: Math.sin(angle) * radius + ((index % 4) - 1.5) * 0.12,
+          scale: 1 + ((index * 5) % 6) * 0.06,
+          lean: (((index * 9) % 11) - 5) * 0.02,
+          rotationY: angle + 0.5,
+          color: `hsl(${112 + (index % 6)}, 38%, ${31 + (index % 6)}%)`
+        };
+      }),
+    []
+  );
+
+  useEffect(() => {
+    const denseMesh = denseBladesRef.current;
+    const accentMesh = accentBladesRef.current;
+    if (!denseMesh || !accentMesh) return;
+
+    const dummy = new Object3D();
+    const color = new Color();
+
+    denseBlades.forEach((blade, index) => {
+      dummy.position.set(blade.x, 1.17 + (index % 6) * 0.004, blade.z);
+      dummy.rotation.set(blade.lean, blade.rotationY, blade.lean * 0.65);
+      dummy.scale.setScalar(blade.scale);
+      dummy.updateMatrix();
+      denseMesh.setMatrixAt(index, dummy.matrix);
+      denseMesh.setColorAt(index, color.set(blade.color));
+    });
+    denseMesh.instanceMatrix.needsUpdate = true;
+    if (denseMesh.instanceColor) denseMesh.instanceColor.needsUpdate = true;
+
+    accentBlades.forEach((blade, index) => {
+      dummy.position.set(blade.x, 1.175 + (index % 4) * 0.005, blade.z);
+      dummy.rotation.set(blade.lean, blade.rotationY, -blade.lean * 0.7);
+      dummy.scale.setScalar(blade.scale * 1.1);
+      dummy.updateMatrix();
+      accentMesh.setMatrixAt(index, dummy.matrix);
+      accentMesh.setColorAt(index, color.set(blade.color));
+    });
+    accentMesh.instanceMatrix.needsUpdate = true;
+    if (accentMesh.instanceColor) accentMesh.instanceColor.needsUpdate = true;
+  }, [accentBlades, denseBlades]);
+
+  return (
+    <group>
+      <instancedMesh ref={denseBladesRef} args={[undefined, undefined, denseBlades.length]} castShadow receiveShadow>
+        <coneGeometry args={[0.03, 0.2, 5]} />
+        <meshStandardMaterial flatShading vertexColors />
+      </instancedMesh>
+      <instancedMesh ref={accentBladesRef} args={[undefined, undefined, accentBlades.length]} castShadow receiveShadow>
+        <coneGeometry args={[0.045, 0.25, 5]} />
+        <meshStandardMaterial flatShading vertexColors />
+      </instancedMesh>
+    </group>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -258,6 +359,7 @@ export function LowPolyEnvironment({
         <cylinderGeometry args={[1.8, 2.2, 0.18, 7]} />
         <meshStandardMaterial color={environmentPalette.mossB} flatShading />
       </mesh>
+      <GrassDetail />
 
       <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[1.2, 34]} />
