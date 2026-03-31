@@ -1,14 +1,17 @@
 'use client';
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
+
+const environmentPalette = VISUAL_TOKENS.scene.environment;
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -43,14 +46,14 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
       {EXPERIENCE_ENTRIES.map((entry, index) => {
         const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const height = 0.88 + index * 0.08;
+        const height = 1.04;
         const rotationY = -0.11 + index * 0.09;
 
         return (
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
             <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
               <cylinderGeometry args={[0.24, 0.29, 0.1, 6]} />
-              <meshStandardMaterial color="#5a615f" flatShading />
+              <meshStandardMaterial color={environmentPalette.tabletBase} flatShading />
             </mesh>
             <mesh
               castShadow
@@ -75,21 +78,21 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
             >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
               <meshStandardMaterial
-                color={hoveredTabletId === entry.id ? '#9da3a6' : PALETTE.tablet}
-                emissive={hoveredTabletId === entry.id || hovered ? '#49605a' : '#1e2322'}
+                color={hoveredTabletId === entry.id ? environmentPalette.tabletHover : PALETTE.tablet}
+                emissive={hoveredTabletId === entry.id || hovered ? environmentPalette.tabletEmissiveHover : environmentPalette.tabletEmissiveIdle}
                 emissiveIntensity={hoveredTabletId === entry.id || hovered ? 0.28 : 0.08}
                 flatShading
               />
             </mesh>
             <mesh position={[0, height * 0.52, 0]} castShadow>
               <cylinderGeometry args={[0.12, 0.14, 0.06, 6]} />
-              <meshStandardMaterial color="#95a3a0" flatShading />
+              <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
               <planeGeometry args={[0.2, 0.5]} />
               <meshBasicMaterial
                 map={tabletTextures[index]}
-                color={hoveredTabletId === entry.id ? '#ffffff' : '#e0e0dd'}
+                color={hoveredTabletId === entry.id ? environmentPalette.tabletImageHover : environmentPalette.tabletImageIdle}
                 transparent
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
               />
@@ -110,21 +113,21 @@ function MountainBackdrop() {
       </mesh>
       <mesh position={[-2.2, -0.5, 1.6]} rotation={[0, 0.42, 0]} castShadow>
         <coneGeometry args={[4.1, 5.1, 8]} />
-        <meshStandardMaterial color="#2b3443" flatShading />
+        <meshStandardMaterial color={environmentPalette.mountainMid} flatShading />
       </mesh>
       <mesh position={[2.8, -0.7, 2.1]} rotation={[0, -0.36, 0]} castShadow>
         <coneGeometry args={[3.8, 4.4, 8]} />
-        <meshStandardMaterial color="#344256" flatShading />
+        <meshStandardMaterial color={environmentPalette.mountainFront} flatShading />
       </mesh>
       <mesh position={[0.4, 1.95, 0.2]} scale={[1.1, 0.5, 0.9]} castShadow>
         <dodecahedronGeometry args={[1.05, 0]} />
-        <meshStandardMaterial color="#7f95ad" flatShading />
+        <meshStandardMaterial color={environmentPalette.mountainSnow} flatShading />
       </mesh>
     </group>
   );
 }
 
-function Clouds() {
+function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
   const cloudGroupRef = useRef<Group>(null);
   const cloudOffsets = useMemo(
     () => [0, Math.PI * 0.8, Math.PI * 1.45, Math.PI * 2.15],
@@ -136,6 +139,7 @@ function Clouds() {
     if (!group) return;
     group.children.forEach((cloud, index) => {
       const offset = cloudOffsets[index] ?? 0;
+      if (reducedMotion) return;
       const t = clock.getElapsedTime() * 0.06 + offset;
       cloud.position.x = Math.sin(t) * 10.5;
       cloud.position.z = -18.5 + index * 1.9 + Math.cos(t * 0.7) * 1.3;
@@ -149,19 +153,19 @@ function Clouds() {
         <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.24, 0.56, 0.86]}>
           <mesh position={[0, 0, 0]}>
             <dodecahedronGeometry args={[1.06, 0]} />
-            <meshStandardMaterial color="#edf5ff" flatShading transparent opacity={0.88} />
+            <meshStandardMaterial color={environmentPalette.cloudMain} flatShading transparent opacity={0.88} />
           </mesh>
           <mesh position={[-1.18, 0.12, 0.12]}>
             <dodecahedronGeometry args={[0.75, 0]} />
-            <meshStandardMaterial color="#f7fbff" flatShading transparent opacity={0.9} />
+            <meshStandardMaterial color={environmentPalette.cloudBright} flatShading transparent opacity={0.9} />
           </mesh>
           <mesh position={[1.12, 0.1, 0.04]}>
             <dodecahedronGeometry args={[0.83, 0]} />
-            <meshStandardMaterial color="#e8f1ff" flatShading transparent opacity={0.86} />
+            <meshStandardMaterial color={environmentPalette.cloudCool} flatShading transparent opacity={0.86} />
           </mesh>
           <mesh position={[0.22, 0.3, 0.12]} scale={[0.88, 0.78, 0.9]}>
             <dodecahedronGeometry args={[0.63, 0]} />
-            <meshStandardMaterial color="#ffffff" flatShading transparent opacity={0.9} />
+            <meshStandardMaterial color={environmentPalette.cloudCore} flatShading transparent opacity={0.9} />
           </mesh>
         </group>
       ))}
@@ -174,7 +178,7 @@ function ExperienceEngraving() {
     <group position={[2.78, 1.126, 3.96]} rotation={[-Math.PI / 2, 0, -0.08]}>
       <mesh receiveShadow>
         <planeGeometry args={[1.44, 0.44]} />
-        <meshStandardMaterial color="#28372d" flatShading />
+        <meshStandardMaterial color={environmentPalette.engravingPlate} flatShading />
       </mesh>
       <Text
         position={[0, 0.002, 0.01]}
@@ -183,7 +187,7 @@ function ExperienceEngraving() {
         letterSpacing={0.03}
         anchorX="center"
         anchorY="middle"
-        color="#1a261f"
+        color={environmentPalette.engravingText}
       >
         Experience
       </Text>
@@ -191,22 +195,31 @@ function ExperienceEngraving() {
   );
 }
 
-function TrailheadTimelineSign() {
+function TrailheadTimelineSign({ reducedMotion }: { reducedMotion: boolean }) {
+  const signRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (reducedMotion || !signRef.current) return;
+    const t = clock.getElapsedTime();
+    signRef.current.rotation.z = Math.sin(t * 0.18) * 0.012;
+    signRef.current.position.y = 1.2 + Math.sin(t * 0.22) * 0.02;
+  });
+
   return (
-    <group position={[-.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
+    <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
       <mesh position={[-0.14, 0.14, 0]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
-        <meshStandardMaterial color="#4c382c" flatShading />
+        <meshStandardMaterial color={environmentPalette.signPost} flatShading />
       </mesh>
       <mesh position={[0.14, 0.14, 0]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
-        <meshStandardMaterial color="#4c382c" flatShading />
+        <meshStandardMaterial color={environmentPalette.signPost} flatShading />
       </mesh>
       <mesh position={[0, 0.32, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.36, 0.16, 0.04]} />
-        <meshStandardMaterial color="#7a5639" flatShading />
+        <meshStandardMaterial color={environmentPalette.signBoard} flatShading />
       </mesh>
-      <Text position={[0, 0.325, 0.026]} fontSize={0.06} anchorX="center" anchorY="middle" color="#f6e5be">
+      <Text position={[0, 0.325, 0.026]} fontSize={0.06} anchorX="center" anchorY="middle" color={environmentPalette.signText}>
         Timeline
       </Text>
     </group>
@@ -270,6 +283,7 @@ type LowPolyEnvironmentProps = {
   onTabletsClick: (target: InteractiveTarget) => void;
   onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
+  reducedMotion: boolean;
 };
 
 export function LowPolyEnvironment({
@@ -279,13 +293,14 @@ export function LowPolyEnvironment({
   onTabletsHoverChange,
   onTabletsClick,
   onTabletDetailSelect,
-  tabletsRef
+  tabletsRef,
+  reducedMotion
 }: LowPolyEnvironmentProps) {
   return (
     <group>
       <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <circleGeometry args={[60, 32]} />
-        <meshStandardMaterial color="#274431" flatShading />
+        <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
       </mesh>
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
@@ -301,15 +316,15 @@ export function LowPolyEnvironment({
       </mesh>
       <mesh position={[0.25, 1.035, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
         <planeGeometry args={[0.7, 22]} />
-        <meshStandardMaterial color="#66766a" flatShading />
+        <meshStandardMaterial color={environmentPalette.pathEdge} flatShading />
       </mesh>
       <mesh position={[1.38, 1.035, -6.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
         <planeGeometry args={[0.62, 22]} />
-        <meshStandardMaterial color="#495b50" flatShading />
+        <meshStandardMaterial color={environmentPalette.pathLow} flatShading />
       </mesh>
 
       <ExperienceEngraving />
-      <TrailheadTimelineSign />
+      <TrailheadTimelineSign reducedMotion={reducedMotion} />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
@@ -335,7 +350,7 @@ export function LowPolyEnvironment({
           onDetailSelect={onTabletDetailSelect}
         />
       </group>
-      <Clouds />
+      <Clouds reducedMotion={reducedMotion} />
       <MountainBackdrop />
     </group>
   );
