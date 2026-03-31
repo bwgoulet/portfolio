@@ -43,9 +43,9 @@ export const SCENE_ANCHORS = {
 };
 
 export const PALETTE: Record<string, ColorRepresentation> = {
-  skyBottom: '#091017',
-  fog: '#0b1119',
-  islandTop: '#293b33',
+  skyBottom: '#ffb27a',
+  fog: '#d78a67',
+  islandTop: '#2f4a38',
   islandSide: '#1f2926',
   trail: '#526354',
   trailBlocker: '#444040',

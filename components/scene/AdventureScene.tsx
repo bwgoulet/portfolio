@@ -91,7 +91,7 @@ export function AdventureScene() {
 
   return (
     <main>
-      <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]}>
+      <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
         <Suspense fallback={null}>
           <CameraRig
             targetKey={focusTarget}
