@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import type { RefObject } from 'react';
+import { Text } from '@react-three/drei';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 
@@ -63,6 +64,33 @@ export const Cabin = memo(function Cabin({
         <planeGeometry args={[0.22, 0.19]} />
         <meshBasicMaterial color="#d2bc90" />
       </mesh>
+
+      {interactiveEnabled && hovered && (
+        <group position={[0, 0.92, 0.62]}>
+          <Text
+            fontSize={0.1}
+            maxWidth={0.9}
+            anchorX="center"
+            anchorY="bottom"
+            color="#f6e6be"
+            outlineWidth={0.01}
+            outlineColor="#15100a"
+          >
+            About/Gallery
+          </Text>
+          <Text
+            position={[0, -0.12, 0]}
+            fontSize={0.075}
+            anchorX="center"
+            anchorY="top"
+            color="#e7d3a0"
+            outlineWidth={0.008}
+            outlineColor="#15100a"
+          >
+            Click to go inside
+          </Text>
+        </group>
+      )}
     </group>
   );
 });

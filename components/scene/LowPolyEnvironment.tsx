@@ -84,6 +84,19 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
               />
             </mesh>
+            <Text
+              position={[0, height * 0.23, 0.181]}
+              rotation={[0, 0, 0]}
+              fontSize={0.06}
+              lineHeight={0.95}
+              maxWidth={0.18}
+              textAlign="center"
+              anchorX="center"
+              anchorY="middle"
+              color="#dfe8e4"
+            >
+              {entry.tabletLabel}
+            </Text>
           </group>
         );
       })}
@@ -173,6 +186,28 @@ function ExperienceEngraving() {
   );
 }
 
+function TrailheadTimelineSign() {
+  return (
+    <group position={[1.42, 1.14, 2.42]} rotation={[0, -0.24, 0]}>
+      <mesh position={[-0.14, 0.14, 0]} castShadow>
+        <boxGeometry args={[0.04, 0.28, 0.04]} />
+        <meshStandardMaterial color="#4c382c" flatShading />
+      </mesh>
+      <mesh position={[0.14, 0.14, 0]} castShadow>
+        <boxGeometry args={[0.04, 0.28, 0.04]} />
+        <meshStandardMaterial color="#4c382c" flatShading />
+      </mesh>
+      <mesh position={[0, 0.32, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.36, 0.16, 0.04]} />
+        <meshStandardMaterial color="#7a5639" flatShading />
+      </mesh>
+      <Text position={[0, 0.325, 0.026]} fontSize={0.06} anchorX="center" anchorY="middle" color="#f6e5be">
+        Timeline
+      </Text>
+    </group>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -215,6 +250,7 @@ export function LowPolyEnvironment({
       </mesh>
 
       <ExperienceEngraving />
+      <TrailheadTimelineSign />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />
