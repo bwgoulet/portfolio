@@ -366,39 +366,6 @@ export function AdventureScene() {
         </button>
       )}
 
-      {interactionState === 'billboardCloseup' && !selectedNote && (
-        <section className="detail-actions" aria-label="Project note actions">
-          {Object.values(PROJECT_NOTE_RECORD).map((note) => (
-            <button
-              key={note.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedNoteId(note.id);
-              }}
-            >
-              {note.title}
-            </button>
-          ))}
-        </section>
-      )}
-
-      {interactionState === 'tabletsCloseup' && !selectedExperience && (
-        <section className="detail-actions" aria-label="Experience entry actions">
-          {Object.values(EXPERIENCE_RECORD).map((entry) => (
-            <button
-              key={entry.id}
-              className="detail-action"
-              onClick={(event) => {
-                lastTriggerRef.current = event.currentTarget;
-                setSelectedExperienceId(entry.id);
-              }}
-            >
-              {entry.role}
-            </button>
-          ))}
-        </section>
-      )}
     </main>
   );
 }

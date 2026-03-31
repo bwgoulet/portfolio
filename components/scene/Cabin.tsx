@@ -1,8 +1,9 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
+import type { ThreeEvent } from '@react-three/fiber';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
@@ -23,6 +24,23 @@ export const Cabin = memo(function Cabin({
   cabinRef
 }: CabinProps) {
   const { cabin } = VISUAL_TOKENS.scene;
+  const engravingPosition: [number, number, number] = [0, 0.93, 0.67];
+
+  const handleHoverStart = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
+    if (interactiveEnabled) onHoverChange(true);
+  };
+
+  const handleHoverEnd = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
+    onHoverChange(false);
+  };
+
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    if (interactiveEnabled) onClick();
+  };
+
   return (
     <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
       <mesh position={[0, 0.11, 0.03]} castShadow receiveShadow>
@@ -52,18 +70,9 @@ export const Cabin = memo(function Cabin({
 
       <mesh
         position={[0, 0.35, 0.58]}
-        onPointerEnter={(event) => {
-          event.stopPropagation();
-          if (interactiveEnabled) onHoverChange(true);
-        }}
-        onPointerLeave={(event) => {
-          event.stopPropagation();
-          onHoverChange(false);
-        }}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (interactiveEnabled) onClick();
-        }}
+        onPointerEnter={handleHoverStart}
+        onPointerLeave={handleHoverEnd}
+        onClick={handleClick}
       >
         <boxGeometry args={[0.36, 0.56, 0.06]} />
         <meshStandardMaterial
@@ -91,32 +100,44 @@ export const Cabin = memo(function Cabin({
         <meshStandardMaterial color={cabin.windowFrame} flatShading />
       </mesh>
 
-      {interactiveEnabled && hovered && (
-        <group position={[0, 0.92, 0.62]}>
-          <Text
-            fontSize={0.1}
-            maxWidth={0.9}
-            anchorX="center"
-            anchorY="bottom"
-            color={cabin.label}
-            outlineWidth={0.01}
-            outlineColor={cabin.labelOutline}
-          >
-            About/Gallery
-          </Text>
-          <Text
-            position={[0, -0.12, 0]}
-            fontSize={0.075}
-            anchorX="center"
-            anchorY="top"
-            color={cabin.labelSubtle}
-            outlineWidth={0.008}
-            outlineColor={cabin.labelOutline}
-          >
-            Click to go inside
-          </Text>
-        </group>
-      )}
+      <mesh
+        position={engravingPosition}
+        onPointerEnter={handleHoverStart}
+        onPointerLeave={handleHoverEnd}
+        onClick={handleClick}
+      >
+        <planeGeometry args={[0.92, 0.22]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
+
+      <group position={engravingPosition} scale={hovered ? 1.1 : 1}>
+        <Text
+          fontSize={hovered ? 0.104 : 0.094}
+          maxWidth={0.9}
+          letterSpacing={0.028}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? cabin.label : '#7a592f'}
+          outlineWidth={hovered ? 0.012 : 0.006}
+          outlineColor={hovered ? cabin.labelOutline : '#2d210f'}
+          depthOffset={-1}
+        >
+          About/Gallery
+        </Text>
+        <Text
+          position={[0.006, -0.004, -0.004]}
+          fontSize={hovered ? 0.104 : 0.094}
+          maxWidth={0.9}
+          letterSpacing={0.028}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? cabin.labelSubtle : '#c79b62'}
+          fillOpacity={hovered ? 1 : 0.92}
+          depthOffset={-1}
+        >
+          About/Gallery
+        </Text>
+      </group>
     </group>
   );
 });
