@@ -12,7 +12,6 @@ import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
-const TABLETS_CLUSTER_OFFSET_Y = -0.12;
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -378,20 +377,7 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={environmentPalette.pathLow} flatShading />
       </mesh>
 
-      <group position={[0, TABLETS_CLUSTER_OFFSET_Y, 0]}>
-        <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
-        <group ref={tabletsRef}>
-          <StoneTablets
-            interactiveEnabled={tabletsInteractiveEnabled}
-            detailInteractiveEnabled={tabletsDetailInteractiveEnabled}
-            hovered={tabletsHovered}
-            onHoverChange={onTabletsHoverChange}
-            onClick={onTabletsClick}
-            onDetailSelect={onTabletDetailSelect}
-          />
-        </group>
-      </group>
-
+      <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
       <TrailheadTimelineSign reducedMotion={reducedMotion} />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
@@ -408,6 +394,16 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
 
+      <group ref={tabletsRef}>
+        <StoneTablets
+          interactiveEnabled={tabletsInteractiveEnabled}
+          detailInteractiveEnabled={tabletsDetailInteractiveEnabled}
+          hovered={tabletsHovered}
+          onHoverChange={onTabletsHoverChange}
+          onClick={onTabletsClick}
+          onDetailSelect={onTabletDetailSelect}
+        />
+      </group>
       <Clouds reducedMotion={reducedMotion} />
       <MountainBackdrop />
     </group>
