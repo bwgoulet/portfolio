@@ -1,5 +1,3 @@
-import type { FocusTarget } from '@/config/sceneConfig';
-
 export type InteractionState =
   | 'idleOverview'
   | 'hoverBillboard'
@@ -10,4 +8,4 @@ export type InteractionState =
   | 'cabinCloseup'
   | 'tabletsCloseup';
 
-export type InteractiveTarget = Exclude<FocusTarget, 'overview'>;
+export type InteractiveTarget = 'billboard' | 'cabin' | 'tablets';
