@@ -24,25 +24,6 @@ main {
   position: relative;
 }
 
-.scene-hud {
-  position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  background: rgba(5, 14, 22, 0.7);
-  border: 1px solid rgba(196, 221, 242, 0.28);
-  border-radius: 8px;
-  padding: 0.68rem 0.86rem;
-  backdrop-filter: blur(3px);
-  font-size: 0.9rem;
-  letter-spacing: 0.02em;
-  max-width: 34rem;
-  pointer-events: none;
-}
-
-.scene-hud code {
-  color: #f4d282;
-}
-
 .scene-brand {
   position: absolute;
   top: 1rem;

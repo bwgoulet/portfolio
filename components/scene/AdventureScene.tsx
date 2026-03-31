@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
@@ -90,24 +90,6 @@ export function AdventureScene() {
     [animateFocusNudge, isOverviewState, isTransitioning]
   );
 
-  const closeupLabel = useMemo(() => {
-    if (interactionState === 'billboardCloseup') {
-      return selectedNote
-        ? `${selectedNote.title} selected — open project preview + tech stack.`
-        : 'Projects Board: click any post-it to open its image and full scribbled note.';
-    }
-    if (interactionState === 'cabinCloseup') return 'Cabin interior: CRT setup + photo wall.';
-    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: click each tablet to open one resume experience entry.';
-    return null;
-  }, [interactionState, selectedNote]);
-
-  const hoverLabel = useMemo(() => {
-    if (interactionState === 'hoverCabin') return 'Cabin: click the door to enter.';
-    if (interactionState === 'hoverBillboard') return 'Projects: click the board to zoom into project notes.';
-    if (interactionState === 'hoverTablets') return 'Experience: click the tablets to navigate the 4-tablet experience.';
-    return null;
-  }, [interactionState]);
-
   return (
     <main>
       <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
@@ -170,14 +152,6 @@ export function AdventureScene() {
         <h1>Ben Goulet</h1>
         <p>an interactive portfolio</p>
       </header>
-
-      <aside className="scene-hud">
-        {closeupLabel ?? hoverLabel ?? (
-          <span>
-            Click the <code>billboard</code> for projects, the <code>tablets</code> for tablet navigation, or the <code>cabin door</code> for about/gallery.
-          </span>
-        )}
-      </aside>
 
       {interactionState === 'billboardCloseup' && selectedNote && (
         <article
