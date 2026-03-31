@@ -175,16 +175,16 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
 
 function ExperienceEngraving() {
   return (
-    <group position={[4.1, 1.14, 3.48]} rotation={[0, -0.22, 0]}>
-      <mesh position={[0, 0, 0]} rotation={[-0.92, 0, -0.04]} receiveShadow castShadow>
-        <boxGeometry args={[1.72, 0.5, 0.12]} />
+    <group position={[2.86, 1.085, 3.92]} rotation={[0, 0.04, 0]}>
+      <mesh position={[0, 0, 0]} rotation={[-1.06, 0, -0.04]} receiveShadow castShadow>
+        <boxGeometry args={[0.92, 0.26, 0.08]} />
         <meshStandardMaterial color="#74614d" flatShading />
       </mesh>
       <Text
-        position={[0, 0.16, 0.165]}
-        rotation={[-0.92, 0, -0.04]}
-        fontSize={0.16}
-        letterSpacing={0.026}
+        position={[0, 0.09, 0.11]}
+        rotation={[-1.06, 0, -0.04]}
+        fontSize={0.08}
+        letterSpacing={0.02}
         anchorX="center"
         anchorY="middle"
         color="#2d1e10"
@@ -192,10 +192,10 @@ function ExperienceEngraving() {
         Experience
       </Text>
       <Text
-        position={[0.008, 0.168, 0.171]}
-        rotation={[-0.92, 0, -0.04]}
-        fontSize={0.16}
-        letterSpacing={0.026}
+        position={[0.004, 0.093, 0.114]}
+        rotation={[-1.06, 0, -0.04]}
+        fontSize={0.08}
+        letterSpacing={0.02}
         anchorX="center"
         anchorY="middle"
         color="#ecd4ad"
