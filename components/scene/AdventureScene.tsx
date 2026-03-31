@@ -11,7 +11,7 @@ import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
-import { EXPERIENCE_ENTRIES } from './experienceData';
+import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
 
 export function AdventureScene() {
@@ -22,6 +22,7 @@ export function AdventureScene() {
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin' | 'tablets'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
 
   const isTransitioning = interactionState === 'transitioning';
   const isOverviewState =
@@ -31,6 +32,7 @@ export function AdventureScene() {
     interactionState === 'hoverTablets';
 
   const selectedNote = selectedNoteId ? PROJECT_NOTE_RECORD[selectedNoteId] : null;
+  const selectedExperience = selectedExperienceId ? EXPERIENCE_RECORD[selectedExperienceId] : null;
 
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
@@ -81,6 +83,7 @@ export function AdventureScene() {
       setInteractionState('transitioning');
       setFocusTarget(target);
       setSelectedNoteId(null);
+      setSelectedExperienceId(null);
       animateFocusNudge(target);
     },
     [animateFocusNudge, isOverviewState, isTransitioning]
@@ -93,7 +96,7 @@ export function AdventureScene() {
         : 'Projects Board: click any post-it to open its image and full scribbled note.';
     }
     if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
-    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: each tablet now maps to one role from my resume experience section.';
+    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: click each tablet to open one resume experience entry.';
     return null;
   }, [interactionState, selectedNote]);
 
@@ -128,9 +131,11 @@ export function AdventureScene() {
           <LightingAtmosphere />
           <LowPolyEnvironment
             tabletsInteractiveEnabled={isOverviewState}
-            tabletsHovered={interactionState === 'hoverTablets'}
+            tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
+            tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
             onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
             onTabletsClick={handleFocusClick}
+            onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
             tabletsRef={tabletsRef}
           />
           <Billboard
@@ -197,25 +202,38 @@ export function AdventureScene() {
         </article>
       )}
 
-
-      {interactionState === 'tabletsCloseup' && (
-        <section className="experience-panel" aria-label="Experience copied from resume">
-          <h2>Experience</h2>
-          <div className="experience-grid">
-            {EXPERIENCE_ENTRIES.map((entry) => (
-              <article key={entry.id} className="experience-tablet">
-                <h3>{entry.role}</h3>
-                <p className="experience-meta">{entry.company}</p>
-                <p className="experience-meta">{entry.dateLocation}</p>
-                <ul>
-                  {entry.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+      {interactionState === 'tabletsCloseup' && selectedExperience && (
+        <article
+          className="note-detail"
+          aria-live="polite"
+          onClick={() => setSelectedExperienceId(null)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              setSelectedExperienceId(null);
+            }
+          }}
+        >
+          <div
+            className="experience-detail-card"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${selectedExperience.role} details`}
+          >
+            <h2>{selectedExperience.role}</h2>
+            <p className="experience-detail-meta">{selectedExperience.company}</p>
+            <p className="experience-detail-meta">{selectedExperience.dateLocation}</p>
+            <ul>
+              {selectedExperience.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
           </div>
-        </section>
+        </article>
       )}
 
       {!isOverviewState && !isTransitioning && (
@@ -226,6 +244,7 @@ export function AdventureScene() {
             setFocusTarget('overview');
             setInteractionState('transitioning');
             setSelectedNoteId(null);
+            setSelectedExperienceId(null);
           }}
         >
           ←
