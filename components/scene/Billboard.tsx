@@ -72,28 +72,30 @@ export const Billboard = memo(function Billboard({
       </mesh>
 
 
-      <Text
-        position={[0, 2.26, 0.106]}
-        rotation={[0, 0, -0.02]}
-        fontSize={0.14}
-        letterSpacing={0.04}
-        anchorX="center"
-        anchorY="middle"
-        color="#7a592f"
-      >
-        Projects
-      </Text>
-      <Text
-        position={[0.008, 2.255, 0.102]}
-        rotation={[0, 0, -0.02]}
-        fontSize={0.14}
-        letterSpacing={0.04}
-        anchorX="center"
-        anchorY="middle"
-        color="#c79b62"
-      >
-        Projects
-      </Text>
+      <group position={[0, 2.26, 0.106]} rotation={[0, 0, -0.02]} scale={hovered ? 1.14 : 1}>
+        <Text
+          fontSize={hovered ? 0.158 : 0.14}
+          letterSpacing={0.045}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? '#f8d899' : '#7a592f'}
+          outlineWidth={hovered ? 0.012 : 0.006}
+          outlineColor={hovered ? '#3a2a16' : '#2d210f'}
+        >
+          Projects
+        </Text>
+        <Text
+          position={[0.008, -0.005, -0.004]}
+          fontSize={hovered ? 0.158 : 0.14}
+          letterSpacing={0.045}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? '#ffd8a5' : '#c79b62'}
+          fillOpacity={hovered ? 1 : 0.92}
+        >
+          Projects
+        </Text>
+      </group>
       {!detailOpen &&
         PROJECT_NOTES.map((note) => (
           <group
