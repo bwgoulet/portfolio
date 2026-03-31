@@ -5,6 +5,7 @@ import { Text, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -212,6 +213,55 @@ function TrailheadTimelineSign() {
   );
 }
 
+function GrassGround() {
+  const grassTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+
+    context.fillStyle = '#35573e';
+    context.fillRect(0, 0, size, size);
+    for (let index = 0; index < 340; index += 1) {
+      const x = (index * 47) % size;
+      const y = (index * 89) % size;
+      const radius = 4 + (index % 5);
+      const shade = 30 + (index % 12);
+      context.fillStyle = `hsla(${112 + (index % 6)}, 32%, ${shade}%, 0.35)`;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    const texture = new CanvasTexture(canvas);
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(4.8, 4.8);
+    texture.colorSpace = SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
+  return (
+    <>
+      <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.95, 8.05, 0.25, 20]} />
+        <meshStandardMaterial color={PALETTE.islandTop} map={grassTexture} roughness={0.98} metalness={0.03} />
+      </mesh>
+      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
+        <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
+        <meshStandardMaterial color="#3d5d48" map={grassTexture} roughness={0.99} metalness={0.03} />
+      </mesh>
+      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
+        <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
+        <meshStandardMaterial color="#3c5d4a" map={grassTexture} roughness={0.99} metalness={0.03} />
+      </mesh>
+    </>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -243,18 +293,7 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
-      <mesh position={[0, 1.12, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.95, 8.05, 0.25, 8]} />
-        <meshStandardMaterial color={PALETTE.islandTop} flatShading />
-      </mesh>
-      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
-        <cylinderGeometry args={[2.4, 2.9, 0.21, 7]} />
-        <meshStandardMaterial color="#365441" flatShading />
-      </mesh>
-      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
-        <cylinderGeometry args={[1.8, 2.2, 0.18, 7]} />
-        <meshStandardMaterial color="#35513f" flatShading />
-      </mesh>
+      <GrassGround />
 
       <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[1.2, 34]} />
