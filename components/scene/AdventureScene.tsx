@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
@@ -19,6 +19,10 @@ export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const lastTriggerRef = useRef<HTMLElement | null>(null);
+  const noteTitleId = useId();
+  const experienceTitleId = useId();
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
@@ -292,6 +296,7 @@ export function AdventureScene() {
         >
           <div
             className={`note-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
+            ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -324,6 +329,7 @@ export function AdventureScene() {
         >
           <div
             className={`experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
+            ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
