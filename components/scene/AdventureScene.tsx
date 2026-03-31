@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
@@ -14,41 +14,59 @@ import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
+import { ExperienceDetailOverlay } from './ExperienceDetailOverlay';
+import { ProjectDetailOverlay } from './ProjectDetailOverlay';
+import { getCloseupStateForFocus, getHoverStateForLandmark, getNudgeRotationDelta, isOverviewState } from './interactionController';
+import { LANDMARKS } from './landmarks';
+import { SceneDebugOverlay } from './SceneDebugOverlay';
+
+const IS_DEV = process.env.NODE_ENV !== 'production';
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
+  const landmarkRefs = useMemo(
+    () => ({
+      billboard: billboardRef,
+      cabin: cabinRef,
+      tablets: tabletsRef
+    }),
+    []
+  );
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
+  const [debugEnabled, setDebugEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!IS_DEV) return;
+    const debugFromUrl = new URLSearchParams(window.location.search).get('sceneDebug') === '1';
+    setDebugEnabled(debugFromUrl);
+  }, [landmarkRefs]);
 
   const isTransitioning = interactionState === 'transitioning';
-  const isOverviewState =
-    interactionState === 'idleOverview' ||
-    interactionState === 'hoverBillboard' ||
-    interactionState === 'hoverCabin' ||
-    interactionState === 'hoverTablets';
+  const inOverviewState = isOverviewState(interactionState);
 
   const selectedNote = selectedNoteId ? PROJECT_NOTE_RECORD[selectedNoteId] : null;
   const selectedExperience = selectedExperienceId ? EXPERIENCE_RECORD[selectedExperienceId] : null;
 
+  const landmarksById = useMemo(() => Object.fromEntries(LANDMARKS.map((landmark) => [landmark.id, landmark])), []);
+  const landmarksByFocus = useMemo(() => Object.fromEntries(LANDMARKS.map((landmark) => [landmark.focusPresetKey, landmark])), []);
+  const activeLandmark = focusTarget === 'overview' ? null : landmarksByFocus[focusTarget];
+
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
-      if (!isOverviewState || isTransitioning) return;
-      if (!hovered) {
-        setInteractionState('idleOverview');
-        return;
-      }
-      setInteractionState(target === 'billboard' ? 'hoverBillboard' : target === 'cabin' ? 'hoverCabin' : 'hoverTablets');
+      if (!inOverviewState || isTransitioning) return;
+      setInteractionState(hovered ? getHoverStateForLandmark(target) : 'idleOverview');
     },
-    [isOverviewState, isTransitioning]
+    [inOverviewState, isTransitioning]
   );
 
   const animateFocusNudge = useCallback((target: InteractiveTarget) => {
-    const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
+    const group = landmarkRefs[target].current;
     if (!group) return;
 
     const startY = group.position.y;
@@ -60,7 +78,15 @@ export function AdventureScene() {
         duration: ANIMATION_CONFIG.nudgeDuration,
         ease: 'power2.out'
       })
-      .to(group.rotation, { y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05), duration: ANIMATION_CONFIG.nudgeDuration, ease: 'sine.out' }, '<')
+      .to(
+        group.rotation,
+        {
+          y: startRotationY + getNudgeRotationDelta(target),
+          duration: ANIMATION_CONFIG.nudgeDuration,
+          ease: 'sine.out'
+        },
+        '<'
+      )
       .to(group.position, {
         y: startY,
         duration: ANIMATION_CONFIG.resetDuration,
@@ -75,19 +101,19 @@ export function AdventureScene() {
         },
         '<'
       );
-  }, []);
+  }, [landmarkRefs]);
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
-      if (!isOverviewState || isTransitioning) return;
+      if (!inOverviewState || isTransitioning) return;
 
       setInteractionState('transitioning');
-      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
+      setFocusTarget(landmarksById[target].focusPresetKey);
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       animateFocusNudge(target);
     },
-    [animateFocusNudge, isOverviewState, isTransitioning]
+    [animateFocusNudge, inOverviewState, isTransitioning, landmarksById]
   );
 
   return (
@@ -97,35 +123,23 @@ export function AdventureScene() {
           <CameraRig
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
-            onTransitionEnd={() => {
-              if (focusTarget === 'overview') {
-                setInteractionState('idleOverview');
-                return;
-              }
-              setInteractionState(
-                focusTarget === 'billboard'
-                  ? 'billboardCloseup'
-                  : focusTarget === 'cabinInterior'
-                    ? 'cabinCloseup'
-                    : 'tabletsCloseup'
-              );
-            }}
+            onTransitionEnd={() => setInteractionState(getCloseupStateForFocus(focusTarget))}
           />
           <LightingAtmosphere />
           {interactionState !== 'cabinCloseup' && (
             <>
               <LowPolyEnvironment
-                tabletsInteractiveEnabled={isOverviewState}
+                tabletsInteractiveEnabled={inOverviewState}
                 tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
                 tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
                 onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
                 onTabletsClick={handleFocusClick}
                 onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
-                tabletsRef={tabletsRef}
+                tabletsRef={landmarkRefs.tablets}
               />
               <Billboard
-                billboardRef={billboardRef}
-                interactiveEnabled={isOverviewState}
+                billboardRef={landmarkRefs.billboard}
+                interactiveEnabled={inOverviewState}
                 notesInteractive={interactionState === 'billboardCloseup'}
                 hovered={interactionState === 'hoverBillboard'}
                 onHoverChange={(hovered) => updateHover('billboard', hovered)}
@@ -134,8 +148,8 @@ export function AdventureScene() {
                 detailOpen={selectedNoteId !== null}
               />
               <Cabin
-                cabinRef={cabinRef}
-                interactiveEnabled={isOverviewState}
+                cabinRef={landmarkRefs.cabin}
+                interactiveEnabled={inOverviewState}
                 hovered={interactionState === 'hoverCabin'}
                 onHoverChange={(hovered) => updateHover('cabin', hovered)}
                 onClick={() => handleFocusClick('cabin')}
@@ -143,6 +157,7 @@ export function AdventureScene() {
             </>
           )}
           {interactionState === 'cabinCloseup' && <CabinInterior />}
+          {IS_DEV && debugEnabled && <SceneDebugOverlay />}
         </Suspense>
       </Canvas>
 
@@ -153,70 +168,15 @@ export function AdventureScene() {
         <p>an interactive portfolio</p>
       </header>
 
-      {interactionState === 'billboardCloseup' && selectedNote && (
-        <article
-          className="note-detail"
-          aria-live="polite"
-          onClick={() => setSelectedNoteId(null)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              setSelectedNoteId(null);
-            }
-          }}
-        >
-          <div
-            className="note-detail-card"
-            onClick={(event) => event.stopPropagation()}
-            onKeyDown={(event) => event.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${selectedNote.title} details`}
-          >
-            <img src={selectedNote.imageSrc} alt={`${selectedNote.title} post-it sketch`} />
-            <h2>{selectedNote.title}</h2>
-            <p>{selectedNote.detail}</p>
-          </div>
-        </article>
+      {activeLandmark?.detailRendererKey === 'project' && interactionState === 'billboardCloseup' && selectedNote && (
+        <ProjectDetailOverlay note={selectedNote} onClose={() => setSelectedNoteId(null)} />
       )}
 
-      {interactionState === 'tabletsCloseup' && selectedExperience && (
-        <article
-          className="note-detail"
-          aria-live="polite"
-          onClick={() => setSelectedExperienceId(null)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              setSelectedExperienceId(null);
-            }
-          }}
-        >
-          <div
-            className="experience-detail-card"
-            onClick={(event) => event.stopPropagation()}
-            onKeyDown={(event) => event.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${selectedExperience.role} details`}
-          >
-            <h2>{selectedExperience.role}</h2>
-            <p className="experience-detail-meta">{selectedExperience.company}</p>
-            <p className="experience-detail-meta">{selectedExperience.dateLocation}</p>
-            <ul>
-              {selectedExperience.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-              ))}
-            </ul>
-          </div>
-        </article>
+      {activeLandmark?.detailRendererKey === 'experience' && interactionState === 'tabletsCloseup' && selectedExperience && (
+        <ExperienceDetailOverlay experience={selectedExperience} onClose={() => setSelectedExperienceId(null)} />
       )}
 
-      {!isOverviewState && !isTransitioning && (
+      {!inOverviewState && !isTransitioning && (
         <button
           className="scene-back"
           aria-label="Return to overview"
@@ -228,6 +188,12 @@ export function AdventureScene() {
           }}
         >
           ←
+        </button>
+      )}
+
+      {IS_DEV && (
+        <button className="scene-debug-toggle" onClick={() => setDebugEnabled((current) => !current)}>
+          {debugEnabled ? 'Hide scene debug' : 'Show scene debug'}
         </button>
       )}
     </main>
