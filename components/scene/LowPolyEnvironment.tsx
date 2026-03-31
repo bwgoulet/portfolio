@@ -1,6 +1,9 @@
 'use client';
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import type { RefObject } from 'react';
+import type { Group } from 'three';
+import type { InteractiveTarget } from './types';
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -17,7 +20,14 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
   );
 }
 
-function StoneTablets() {
+type StoneTabletsProps = {
+  interactiveEnabled: boolean;
+  hovered: boolean;
+  onHoverChange: (hovered: boolean) => void;
+  onClick: (target: InteractiveTarget) => void;
+};
+
+function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: StoneTabletsProps) {
   return (
     <group>
       {Array.from({ length: 4 }).map((_, index) => {
@@ -27,9 +37,29 @@ function StoneTablets() {
 
         return (
           <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]}>
-            <mesh castShadow receiveShadow>
+            <mesh
+              castShadow
+              receiveShadow
+              onPointerEnter={(event) => {
+                event.stopPropagation();
+                if (interactiveEnabled) onHoverChange(true);
+              }}
+              onPointerLeave={(event) => {
+                event.stopPropagation();
+                onHoverChange(false);
+              }}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (interactiveEnabled) onClick('tablets');
+              }}
+            >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
-              <meshStandardMaterial color={PALETTE.tablet} flatShading />
+              <meshStandardMaterial
+                color={hovered ? '#9da3a6' : PALETTE.tablet}
+                emissive={hovered ? '#49605a' : '#1e2322'}
+                emissiveIntensity={hovered ? 0.28 : 0.08}
+                flatShading
+              />
             </mesh>
             <mesh position={[0, height * 0.26, 0.18]}>
               <planeGeometry args={[0.18, 0.42]} />
@@ -57,7 +87,21 @@ function MountainBackdrop() {
   );
 }
 
-export function LowPolyEnvironment() {
+type LowPolyEnvironmentProps = {
+  tabletsInteractiveEnabled: boolean;
+  tabletsHovered: boolean;
+  onTabletsHoverChange: (hovered: boolean) => void;
+  onTabletsClick: (target: InteractiveTarget) => void;
+  tabletsRef: RefObject<Group | null>;
+};
+
+export function LowPolyEnvironment({
+  tabletsInteractiveEnabled,
+  tabletsHovered,
+  onTabletsHoverChange,
+  onTabletsClick,
+  tabletsRef
+}: LowPolyEnvironmentProps) {
   return (
     <group>
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
@@ -94,7 +138,14 @@ export function LowPolyEnvironment() {
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
 
-      <StoneTablets />
+      <group ref={tabletsRef}>
+        <StoneTablets
+          interactiveEnabled={tabletsInteractiveEnabled}
+          hovered={tabletsHovered}
+          onHoverChange={onTabletsHoverChange}
+          onClick={onTabletsClick}
+        />
+      </group>
       <MountainBackdrop />
     </group>
   );

@@ -15,12 +15,17 @@ import { makeTimeline } from '@/lib/animation';
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
+  const tabletsRef = useRef<Group>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin'>('overview');
+  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin' | 'tablets'>('overview');
 
   const isTransitioning = interactionState === 'transitioning';
-  const isOverviewState = interactionState === 'idleOverview' || interactionState === 'hoverBillboard' || interactionState === 'hoverCabin';
+  const isOverviewState =
+    interactionState === 'idleOverview' ||
+    interactionState === 'hoverBillboard' ||
+    interactionState === 'hoverCabin' ||
+    interactionState === 'hoverTablets';
 
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
@@ -29,13 +34,13 @@ export function AdventureScene() {
         setInteractionState('idleOverview');
         return;
       }
-      setInteractionState(target === 'billboard' ? 'hoverBillboard' : 'hoverCabin');
+      setInteractionState(target === 'billboard' ? 'hoverBillboard' : target === 'cabin' ? 'hoverCabin' : 'hoverTablets');
     },
     [isOverviewState, isTransitioning]
   );
 
   const animateFocusNudge = useCallback((target: InteractiveTarget) => {
-    const group = target === 'billboard' ? billboardRef.current : cabinRef.current;
+    const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
     if (!group) return;
 
     const startY = group.position.y;
@@ -47,15 +52,7 @@ export function AdventureScene() {
         duration: ANIMATION_CONFIG.nudgeDuration,
         ease: 'power2.out'
       })
-      .to(
-        group.rotation,
-        {
-          y: startRotationY + (target === 'billboard' ? -0.12 : 0.09),
-          duration: ANIMATION_CONFIG.nudgeDuration,
-          ease: 'sine.out'
-        },
-        '<'
-      )
+      .to(group.rotation, { y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05), duration: ANIMATION_CONFIG.nudgeDuration, ease: 'sine.out' }, '<')
       .to(group.position, {
         y: startY,
         duration: ANIMATION_CONFIG.resetDuration,
@@ -86,6 +83,7 @@ export function AdventureScene() {
   const closeupLabel = useMemo(() => {
     if (interactionState === 'billboardCloseup') return 'Projects Board: ready for post-it portfolio navigation.';
     if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
+    if (interactionState === 'tabletsCloseup') return 'Stone Tablets: ready for 4-tablet project navigation.';
     return null;
   }, [interactionState]);
 
@@ -101,11 +99,23 @@ export function AdventureScene() {
                 setInteractionState('idleOverview');
                 return;
               }
-              setInteractionState(focusTarget === 'billboard' ? 'billboardCloseup' : 'cabinCloseup');
+              setInteractionState(
+                focusTarget === 'billboard'
+                  ? 'billboardCloseup'
+                  : focusTarget === 'cabin'
+                    ? 'cabinCloseup'
+                    : 'tabletsCloseup'
+              );
             }}
           />
           <LightingAtmosphere />
-          <LowPolyEnvironment />
+          <LowPolyEnvironment
+            tabletsInteractiveEnabled={isOverviewState}
+            tabletsHovered={interactionState === 'hoverTablets'}
+            onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
+            onTabletsClick={handleFocusClick}
+            tabletsRef={tabletsRef}
+          />
           <Billboard
             billboardRef={billboardRef}
             interactiveEnabled={isOverviewState}
@@ -126,7 +136,7 @@ export function AdventureScene() {
       <aside className="scene-hud">
         {closeupLabel ?? (
           <span>
-            Click the <code>billboard</code> for projects or the <code>cabin door</code> for about/gallery.
+            Click the <code>billboard</code> for projects, the <code>tablets</code> for tablet navigation, or the <code>cabin door</code> for about/gallery.
           </span>
         )}
       </aside>
