@@ -1,24 +1,11 @@
 'use client';
 
+import { Html } from '@react-three/drei';
 import { memo } from 'react';
 import type { RefObject } from 'react';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
-
-type ProjectNote = {
-  id: string;
-  position: [number, number, number];
-  rotation: number;
-  color: string;
-};
-
-const PROJECT_NOTES: ProjectNote[] = [
-  { id: 'summit-ui', position: [-0.66, 1.94, 0.19], rotation: -0.14, color: '#f5dfa4' },
-  { id: 'trail-maps', position: [-0.2, 1.92, 0.19], rotation: -0.03, color: '#efe3b4' },
-  { id: 'night-camp', position: [0.26, 1.9, 0.19], rotation: 0.09, color: '#f8e6ad' },
-  { id: 'route-planner', position: [-0.36, 1.58, 0.19], rotation: -0.08, color: '#f0dca3' },
-  { id: 'gear-check', position: [0.1, 1.56, 0.19], rotation: 0.06, color: '#f7e5b8' }
-];
+import { PROJECT_NOTES } from './projectNotes';
 
 type BillboardProps = {
   interactiveEnabled: boolean;
@@ -93,7 +80,7 @@ export const Billboard = memo(function Billboard({
               onNoteClick(note.id);
             }}
           >
-            <boxGeometry args={[0.38, 0.28, 0.024]} />
+            <boxGeometry args={[0.42, 0.31, 0.024]} />
             <meshStandardMaterial
               color={note.color}
               emissive={notesInteractive ? '#534212' : '#32270d'}
@@ -101,10 +88,19 @@ export const Billboard = memo(function Billboard({
               flatShading
             />
           </mesh>
-          <mesh position={[0.005, 0.11, 0.013]}>
+          <mesh position={[0.005, 0.122, 0.013]}>
             <sphereGeometry args={[0.017, 6, 6]} />
             <meshStandardMaterial color="#b9a277" flatShading />
           </mesh>
+          <Html transform position={[0, -0.01, 0.015]} distanceFactor={3.2} occlude>
+            <div className="note-preview" aria-hidden>
+              <img src={note.imageSrc} alt="" />
+              <div className="note-scribbles">
+                <span />
+                <span />
+              </div>
+            </div>
+          </Html>
         </group>
       ))}
     </group>

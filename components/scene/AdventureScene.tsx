@@ -9,16 +9,9 @@ import { CameraRig } from './CameraRig';
 import { LightingAtmosphere } from './LightingAtmosphere';
 import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
+import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { makeTimeline } from '@/lib/animation';
-
-const NOTE_LABELS: Record<string, string> = {
-  'summit-ui': 'Summit UI selected — open project preview + tech stack.',
-  'trail-maps': 'Trail Maps selected — open geospatial data story.',
-  'night-camp': 'Night Camp selected — open branding + motion case study.',
-  'route-planner': 'Route Planner selected — open planning workflow demo.',
-  'gear-check': 'Gear Check selected — open accessibility + QA checklist.'
-};
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
@@ -35,6 +28,8 @@ export function AdventureScene() {
     interactionState === 'hoverBillboard' ||
     interactionState === 'hoverCabin' ||
     interactionState === 'hoverTablets';
+
+  const selectedNote = selectedNoteId ? PROJECT_NOTE_RECORD[selectedNoteId] : null;
 
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
@@ -92,14 +87,14 @@ export function AdventureScene() {
 
   const closeupLabel = useMemo(() => {
     if (interactionState === 'billboardCloseup') {
-      return selectedNoteId
-        ? NOTE_LABELS[selectedNoteId]
-        : 'Projects Board: every post-it is clickable and can hold an image + text preview.';
+      return selectedNote
+        ? `${selectedNote.title} selected — open project preview + tech stack.`
+        : 'Projects Board: click any post-it to open its image and full scribbled note.';
     }
     if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
     if (interactionState === 'tabletsCloseup') return 'Stone Tablets: ready for 4-tablet project navigation.';
     return null;
-  }, [interactionState, selectedNoteId]);
+  }, [interactionState, selectedNote]);
 
   return (
     <main>
@@ -163,6 +158,16 @@ export function AdventureScene() {
           </span>
         )}
       </aside>
+
+      {interactionState === 'billboardCloseup' && selectedNote && (
+        <article className="note-detail" aria-live="polite">
+          <div className="note-detail-card">
+            <img src={selectedNote.imageSrc} alt={`${selectedNote.title} post-it sketch`} />
+            <h2>{selectedNote.title}</h2>
+            <p>{selectedNote.detail}</p>
+          </div>
+        </article>
+      )}
 
       {!isOverviewState && !isTransitioning && (
         <button

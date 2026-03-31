@@ -169,3 +169,82 @@ main {
 .scene-back:hover {
   background: rgba(20, 34, 46, 0.92);
 }
+
+.note-preview {
+  width: 118px;
+  height: 86px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+.note-preview img {
+  width: 92px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid rgba(44, 34, 18, 0.24);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.note-scribbles {
+  margin-top: 6px;
+  width: 74px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-scribbles span {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(50, 38, 17, 0.58);
+}
+
+.note-scribbles span:nth-child(2) {
+  width: 82%;
+}
+
+.note-detail {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.note-detail-card {
+  width: min(760px, 86vw);
+  background: rgba(246, 242, 231, 0.94);
+  border: 2px solid rgba(22, 24, 23, 0.68);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: clamp(1rem, 2.5vw, 1.8rem);
+  color: #121314;
+  pointer-events: auto;
+}
+
+.note-detail-card img {
+  width: 100%;
+  max-height: min(46vh, 350px);
+  object-fit: cover;
+  border: 2px solid rgba(15, 17, 16, 0.8);
+  border-radius: 8px;
+  display: block;
+}
+
+.note-detail-card h2 {
+  margin: 0.9rem 0 0.45rem;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.note-detail-card p {
+  margin: 0;
+  font-size: clamp(0.98rem, 1.4vw, 1.1rem);
+  line-height: 1.5;
+  color: rgba(19, 20, 18, 0.88);
+}
