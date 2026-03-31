@@ -36,11 +36,11 @@ main {
   text-align: right;
   padding: var(--vt-overlay-padding-brand);
   border-radius: var(--vt-overlay-radius-md);
-  border: 1px solid var(--vt-brand-border);
-  background: var(--vt-overlay-glass);
-  backdrop-filter: blur(3px);
-  overflow: hidden;
+  border: 1px solid rgba(255, 238, 212, 0.5);
+  background: rgba(42, 55, 69, 0.86);
+  backdrop-filter: blur(5px);
   pointer-events: none;
+  box-shadow: 0 10px 24px rgba(12, 18, 24, 0.35);
 }
 
 .scene-brand h1 {
@@ -49,7 +49,7 @@ main {
   line-height: 1.1;
   color: var(--vt-brand-title);
   letter-spacing: 0.02em;
-  text-shadow: var(--vt-overlay-shadow-subtle);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 .scene-brand p {
@@ -58,78 +58,7 @@ main {
   text-transform: lowercase;
   color: var(--vt-brand-subtitle);
   letter-spacing: 0.12em;
-}
-
-.scene-brand-cloud {
-  position: absolute;
-  border-radius: var(--vt-overlay-radius-pill);
-  background: radial-gradient(circle at 35% 35%, var(--vt-brand-cloud-inner), var(--vt-brand-cloud-outer));
-  filter: blur(0.6px);
-  animation: brand-cloud-float var(--vt-motion-cloud) linear infinite;
-}
-
-.scene-brand-cloud::before,
-.scene-brand-cloud::after {
-  content: '';
-  position: absolute;
-  border-radius: var(--vt-overlay-radius-pill);
-  background: inherit;
-}
-
-.scene-brand-cloud--left {
-  width: 56px;
-  height: 26px;
-  left: -34px;
-  top: 14px;
-}
-
-.scene-brand-cloud--left::before {
-  width: 24px;
-  height: 18px;
-  left: 8px;
-  top: -8px;
-}
-
-.scene-brand-cloud--left::after {
-  width: 20px;
-  height: 14px;
-  right: 10px;
-  top: -5px;
-}
-
-.scene-brand-cloud--right {
-  width: 62px;
-  height: 30px;
-  right: -30px;
-  bottom: 8px;
-  animation-duration: var(--vt-motion-cloud-slow);
-  animation-direction: reverse;
-}
-
-.scene-brand-cloud--right::before {
-  width: 25px;
-  height: 18px;
-  left: 11px;
-  top: -10px;
-}
-
-.scene-brand-cloud--right::after {
-  width: 22px;
-  height: 16px;
-  right: 9px;
-  top: -7px;
-}
-
-@keyframes brand-cloud-float {
-  0% {
-    transform: translateX(-4px);
-  }
-  50% {
-    transform: translateX(6px);
-  }
-  100% {
-    transform: translateX(-4px);
-  }
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 .scene-back {
