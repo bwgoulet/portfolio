@@ -26,12 +26,14 @@ function Tree({ position, scale = 1 }: { position: [number, number, number]; sca
 
 type StoneTabletsProps = {
   interactiveEnabled: boolean;
+  detailInteractiveEnabled: boolean;
   hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
+  onDetailSelect: (entryId: string) => void;
 };
 
-function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: StoneTabletsProps) {
+function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, onHoverChange, onClick, onDetailSelect }: StoneTabletsProps) {
   return (
     <group>
       {EXPERIENCE_ENTRIES.map((entry, index) => {
@@ -46,7 +48,7 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               receiveShadow
               onPointerEnter={(event) => {
                 event.stopPropagation();
-                if (interactiveEnabled) onHoverChange(true);
+                if (interactiveEnabled || detailInteractiveEnabled) onHoverChange(true);
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
@@ -55,6 +57,7 @@ function StoneTablets({ interactiveEnabled, hovered, onHoverChange, onClick }: S
               onClick={(event) => {
                 event.stopPropagation();
                 if (interactiveEnabled) onClick('tablets');
+                if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
               <capsuleGeometry args={[0.17, height, 4, 6]} />
@@ -195,17 +198,21 @@ function TrailheadTimelineSign() {
 
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
+  tabletsDetailInteractiveEnabled: boolean;
   tabletsHovered: boolean;
   onTabletsHoverChange: (hovered: boolean) => void;
   onTabletsClick: (target: InteractiveTarget) => void;
+  onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
 };
 
 export function LowPolyEnvironment({
   tabletsInteractiveEnabled,
+  tabletsDetailInteractiveEnabled,
   tabletsHovered,
   onTabletsHoverChange,
   onTabletsClick,
+  onTabletDetailSelect,
   tabletsRef
 }: LowPolyEnvironmentProps) {
   return (
@@ -250,9 +257,11 @@ export function LowPolyEnvironment({
       <group ref={tabletsRef}>
         <StoneTablets
           interactiveEnabled={tabletsInteractiveEnabled}
+          detailInteractiveEnabled={tabletsDetailInteractiveEnabled}
           hovered={tabletsHovered}
           onHoverChange={onTabletsHoverChange}
           onClick={onTabletsClick}
+          onDetailSelect={onTabletDetailSelect}
         />
       </group>
       <Clouds />
