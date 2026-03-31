@@ -338,7 +338,7 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={environmentPalette.pathLow} flatShading />
       </mesh>
 
-      <ExperienceEngraving hovered={tabletsHovered} />
+      <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
       <TrailheadTimelineSign reducedMotion={reducedMotion} />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
