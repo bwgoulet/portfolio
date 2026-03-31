@@ -23,13 +23,29 @@ export const Cabin = memo(function Cabin({
 }: CabinProps) {
   return (
     <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
+      <mesh position={[0, 0.11, 0.03]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.94, 1.02, 0.2, 6]} />
+        <meshStandardMaterial color="#3e352f" flatShading />
+      </mesh>
       <mesh position={[0, 0.46, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.35, 0.92, 1.1]} />
         <meshStandardMaterial color={PALETTE.cabinWall} flatShading />
       </mesh>
+      <mesh position={[0, 0.72, 0]} castShadow>
+        <boxGeometry args={[1.46, 0.1, 1.2]} />
+        <meshStandardMaterial color="#6b5642" flatShading />
+      </mesh>
       <mesh position={[0, 1.12, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
         <coneGeometry args={[1.18, 0.96, 4]} />
         <meshStandardMaterial color={PALETTE.cabinRoof} flatShading />
+      </mesh>
+      <mesh position={[0.54, 1.18, -0.14]} rotation={[0, 0.2, 0]} castShadow>
+        <boxGeometry args={[0.18, 0.5, 0.18]} />
+        <meshStandardMaterial color="#534b4f" flatShading />
+      </mesh>
+      <mesh position={[0, 0.2, 0.67]} castShadow receiveShadow>
+        <boxGeometry args={[0.72, 0.12, 0.3]} />
+        <meshStandardMaterial color="#604a39" flatShading />
       </mesh>
 
       <mesh
@@ -60,9 +76,17 @@ export const Cabin = memo(function Cabin({
         <planeGeometry args={[0.22, 0.19]} />
         <meshBasicMaterial color="#d2bc90" />
       </mesh>
+      <mesh position={[-0.3, 0.52, 0.565]}>
+        <boxGeometry args={[0.26, 0.23, 0.03]} />
+        <meshStandardMaterial color="#4a3528" flatShading />
+      </mesh>
       <mesh position={[0.31, 0.52, 0.57]}>
         <planeGeometry args={[0.22, 0.19]} />
         <meshBasicMaterial color="#d2bc90" />
+      </mesh>
+      <mesh position={[0.31, 0.52, 0.565]}>
+        <boxGeometry args={[0.26, 0.23, 0.03]} />
+        <meshStandardMaterial color="#4a3528" flatShading />
       </mesh>
 
       {interactiveEnabled && hovered && (
