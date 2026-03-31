@@ -6,6 +6,7 @@ import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { PROJECT_NOTES } from './projectNotes';
 
 type BillboardProps = {
@@ -30,6 +31,8 @@ export const Billboard = memo(function Billboard({
   billboardRef
 }: BillboardProps) {
   const noteRefs = useRef<Record<string, Group | null>>({});
+  const { billboard } = VISUAL_TOKENS.scene;
+  const { duration, ease } = VISUAL_TOKENS.motion;
   return (
     <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
       <mesh position={[-1.04, 0.88, -0.02]} castShadow>
@@ -64,8 +67,8 @@ export const Billboard = memo(function Billboard({
       >
         <boxGeometry args={[2.18, 1.46, 0.1]} />
         <meshStandardMaterial
-          color={hovered ? '#dcca9f' : PALETTE.billboardFace}
-          emissive={hovered ? '#433318' : '#1f180f'}
+          color={hovered ? VISUAL_TOKENS.colorRoles.hover.interactive : PALETTE.billboardFace}
+          emissive={hovered ? billboard.emissiveHover : billboard.emissiveIdle}
           emissiveIntensity={hovered ? 0.18 : 0.06}
           flatShading
         />
@@ -78,9 +81,9 @@ export const Billboard = memo(function Billboard({
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#f8d899' : '#7a592f'}
+          color={hovered ? billboard.titlePrimaryHover : billboard.titlePrimaryIdle}
           outlineWidth={hovered ? 0.012 : 0.006}
-          outlineColor={hovered ? '#3a2a16' : '#2d210f'}
+          outlineColor={hovered ? billboard.titlePrimaryOutlineHover : billboard.titlePrimaryOutlineIdle}
         >
           Projects
         </Text>
@@ -90,7 +93,7 @@ export const Billboard = memo(function Billboard({
           letterSpacing={0.045}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#ffd8a5' : '#c79b62'}
+          color={hovered ? billboard.titleSecondaryHover : billboard.titleSecondaryIdle}
           fillOpacity={hovered ? 1 : 0.92}
         >
           Projects
@@ -112,16 +115,16 @@ export const Billboard = memo(function Billboard({
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: 0.18, ease: 'power2.out' });
-                gsap.to(group.position, { z: note.position[2] + 0.028, duration: 0.18, ease: 'power2.out' });
+                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: duration.fast, ease: ease.smoothOut });
+                gsap.to(group.position, { z: note.position[2] + 0.028, duration: duration.fast, ease: ease.smoothOut });
               }}
               onPointerLeave={(event) => {
                 if (!notesInteractive) return;
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.2, ease: 'power2.out' });
-                gsap.to(group.position, { z: note.position[2], duration: 0.2, ease: 'power2.out' });
+                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: duration.normal, ease: ease.smoothOut });
+                gsap.to(group.position, { z: note.position[2], duration: duration.normal, ease: ease.smoothOut });
               }}
               onPointerDown={(event) => {
                 if (!notesInteractive) return;
@@ -136,14 +139,14 @@ export const Billboard = memo(function Billboard({
               <boxGeometry args={[0.38, 0.28, 0.024]} />
               <meshStandardMaterial
                 color={note.color}
-                emissive={notesInteractive ? '#534212' : '#32270d'}
+                emissive={notesInteractive ? billboard.noteEmissiveActive : billboard.noteEmissiveIdle}
                 emissiveIntensity={notesInteractive ? 0.12 : 0.04}
                 flatShading
               />
             </mesh>
             <mesh position={[0.005, 0.11, 0.013]}>
               <sphereGeometry args={[0.017, 6, 6]} />
-              <meshStandardMaterial color="#b9a277" flatShading />
+              <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
             <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} style={{ pointerEvents: "none" }}>
               <div className="note-preview" aria-hidden>

@@ -5,6 +5,7 @@ import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 type CabinProps = {
   interactiveEnabled: boolean;
@@ -21,11 +22,12 @@ export const Cabin = memo(function Cabin({
   onClick,
   cabinRef
 }: CabinProps) {
+  const { cabin } = VISUAL_TOKENS.scene;
   return (
     <group ref={cabinRef} position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]}>
       <mesh position={[0, 0.11, 0.03]} castShadow receiveShadow>
         <cylinderGeometry args={[0.94, 1.02, 0.2, 6]} />
-        <meshStandardMaterial color="#3e352f" flatShading />
+        <meshStandardMaterial color={cabin.base} flatShading />
       </mesh>
       <mesh position={[0, 0.46, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.35, 0.92, 1.1]} />
@@ -33,7 +35,7 @@ export const Cabin = memo(function Cabin({
       </mesh>
       <mesh position={[0, 0.72, 0]} castShadow>
         <boxGeometry args={[1.46, 0.1, 1.2]} />
-        <meshStandardMaterial color="#6b5642" flatShading />
+        <meshStandardMaterial color={cabin.trim} flatShading />
       </mesh>
       <mesh position={[0, 1.12, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
         <coneGeometry args={[1.18, 0.96, 4]} />
@@ -41,11 +43,11 @@ export const Cabin = memo(function Cabin({
       </mesh>
       <mesh position={[0.54, 1.18, -0.14]} rotation={[0, 0.2, 0]} castShadow>
         <boxGeometry args={[0.18, 0.5, 0.18]} />
-        <meshStandardMaterial color="#534b4f" flatShading />
+        <meshStandardMaterial color={cabin.chimney} flatShading />
       </mesh>
       <mesh position={[0, 0.2, 0.67]} castShadow receiveShadow>
         <boxGeometry args={[0.72, 0.12, 0.3]} />
-        <meshStandardMaterial color="#604a39" flatShading />
+        <meshStandardMaterial color={cabin.porch} flatShading />
       </mesh>
 
       <mesh
@@ -66,7 +68,7 @@ export const Cabin = memo(function Cabin({
         <boxGeometry args={[0.36, 0.56, 0.06]} />
         <meshStandardMaterial
           color={PALETTE.cabinDoor}
-          emissive={hovered ? '#6d4f2f' : '#17100a'}
+          emissive={hovered ? cabin.doorHover : cabin.doorIdle}
           emissiveIntensity={hovered ? 0.26 : 0.05}
           flatShading
         />
@@ -74,19 +76,19 @@ export const Cabin = memo(function Cabin({
 
       <mesh position={[-0.3, 0.52, 0.57]}>
         <planeGeometry args={[0.22, 0.19]} />
-        <meshBasicMaterial color="#d2bc90" />
+        <meshBasicMaterial color={cabin.windowGlow} />
       </mesh>
       <mesh position={[-0.3, 0.52, 0.565]}>
         <boxGeometry args={[0.26, 0.23, 0.03]} />
-        <meshStandardMaterial color="#4a3528" flatShading />
+        <meshStandardMaterial color={cabin.windowFrame} flatShading />
       </mesh>
       <mesh position={[0.31, 0.52, 0.57]}>
         <planeGeometry args={[0.22, 0.19]} />
-        <meshBasicMaterial color="#d2bc90" />
+        <meshBasicMaterial color={cabin.windowGlow} />
       </mesh>
       <mesh position={[0.31, 0.52, 0.565]}>
         <boxGeometry args={[0.26, 0.23, 0.03]} />
-        <meshStandardMaterial color="#4a3528" flatShading />
+        <meshStandardMaterial color={cabin.windowFrame} flatShading />
       </mesh>
 
       {interactiveEnabled && hovered && (
@@ -96,9 +98,9 @@ export const Cabin = memo(function Cabin({
             maxWidth={0.9}
             anchorX="center"
             anchorY="bottom"
-            color="#f6e6be"
+            color={cabin.label}
             outlineWidth={0.01}
-            outlineColor="#15100a"
+            outlineColor={cabin.labelOutline}
           >
             About/Gallery
           </Text>
@@ -107,9 +109,9 @@ export const Cabin = memo(function Cabin({
             fontSize={0.075}
             anchorX="center"
             anchorY="top"
-            color="#e7d3a0"
+            color={cabin.labelSubtle}
             outlineWidth={0.008}
-            outlineColor="#15100a"
+            outlineColor={cabin.labelOutline}
           >
             Click to go inside
           </Text>
