@@ -80,7 +80,7 @@ export const Billboard = memo(function Billboard({
               onNoteClick(note.id);
             }}
           >
-            <boxGeometry args={[0.38, 0.28, 0.024]} />
+            <boxGeometry args={[0.42, 0.31, 0.024]} />
             <meshStandardMaterial
               color={note.color}
               emissive={notesInteractive ? '#534212' : '#32270d'}
@@ -88,7 +88,7 @@ export const Billboard = memo(function Billboard({
               flatShading
             />
           </mesh>
-          <mesh position={[0.005, 0.11, 0.013]}>
+          <mesh position={[0.005, 0.122, 0.013]}>
             <sphereGeometry args={[0.017, 6, 6]} />
             <meshStandardMaterial color="#b9a277" flatShading />
           </mesh>

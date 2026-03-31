@@ -190,14 +190,15 @@ export function AdventureScene() {
 
       {!isOverviewState && !isTransitioning && (
         <button
-          className="scene-reset"
+          className="scene-back"
+          aria-label="Return to overview"
           onClick={() => {
             setFocusTarget('overview');
             setInteractionState('transitioning');
             setSelectedNoteId(null);
           }}
         >
-          Return to overview
+          ←
         </button>
       )}
     </main>
