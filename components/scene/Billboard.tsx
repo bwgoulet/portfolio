@@ -3,10 +3,10 @@
 import { Html, Text } from '@react-three/drei';
 import gsap from 'gsap';
 import { memo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import type { RefObject } from 'react';
-import { Group } from 'three';
-import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
-import { VISUAL_TOKENS } from '@/config/visualTokens';
+import { Group, MeshStandardMaterial } from 'three';
+import { MOTION_TIERS, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { PROJECT_NOTES } from './projectNotes';
 
 type BillboardProps = {
@@ -18,6 +18,7 @@ type BillboardProps = {
   onNoteClick: (noteId: string) => void;
   detailOpen: boolean;
   billboardRef: RefObject<Group | null>;
+  reducedMotion: boolean;
 };
 
 export const Billboard = memo(function Billboard({
@@ -28,11 +29,23 @@ export const Billboard = memo(function Billboard({
   onClick,
   onNoteClick,
   detailOpen,
-  billboardRef
+  billboardRef,
+  reducedMotion
 }: BillboardProps) {
   const noteRefs = useRef<Record<string, Group | null>>({});
-  const { billboard } = VISUAL_TOKENS.scene;
-  const { duration, ease } = VISUAL_TOKENS.motion;
+  const boardMaterialRef = useRef<MeshStandardMaterial>(null);
+  const labelRef = useRef<Group>(null);
+
+  useFrame(({ clock }) => {
+    if (!reducedMotion && boardMaterialRef.current && !hovered) {
+      const pulse = (Math.sin(clock.getElapsedTime() * 3.5) + 1) * 0.5;
+      boardMaterialRef.current.emissiveIntensity = 0.06 + pulse * 0.015;
+    }
+    if (hovered || reducedMotion || !labelRef.current) return;
+    const t = clock.getElapsedTime();
+    labelRef.current.rotation.z = Math.sin(t * 0.42) * 0.01;
+    labelRef.current.position.y = 2.26 + Math.sin(t * 0.48) * 0.015;
+  });
   return (
     <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
       <mesh position={[-1.04, 0.88, -0.02]} castShadow>
@@ -67,15 +80,16 @@ export const Billboard = memo(function Billboard({
       >
         <boxGeometry args={[2.18, 1.46, 0.1]} />
         <meshStandardMaterial
-          color={hovered ? VISUAL_TOKENS.colorRoles.hover.interactive : PALETTE.billboardFace}
-          emissive={hovered ? billboard.emissiveHover : billboard.emissiveIdle}
+          ref={boardMaterialRef}
+          color={hovered ? '#dcca9f' : PALETTE.billboardFace}
+          emissive={hovered ? '#433318' : '#1f180f'}
           emissiveIntensity={hovered ? 0.18 : 0.06}
           flatShading
         />
       </mesh>
 
 
-      <group position={[0, 2.26, 0.106]} rotation={[0, 0, -0.02]} scale={hovered ? 1.14 : 1}>
+      <group ref={labelRef} position={[0, 2.26, 0.106]} rotation={[0, 0, -0.02]} scale={hovered ? 1.14 : 1}>
         <Text
           fontSize={hovered ? 0.158 : 0.14}
           letterSpacing={0.045}
@@ -115,16 +129,16 @@ export const Billboard = memo(function Billboard({
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: duration.fast, ease: ease.smoothOut });
-                gsap.to(group.position, { z: note.position[2] + 0.028, duration: duration.fast, ease: ease.smoothOut });
+                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                gsap.to(group.position, { z: note.position[2] + 0.028, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
               }}
               onPointerLeave={(event) => {
                 if (!notesInteractive) return;
                 event.stopPropagation();
                 const group = noteRefs.current[note.id];
                 if (!group) return;
-                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: duration.normal, ease: ease.smoothOut });
-                gsap.to(group.position, { z: note.position[2], duration: duration.normal, ease: ease.smoothOut });
+                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                gsap.to(group.position, { z: note.position[2], duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
               }}
               onPointerDown={(event) => {
                 if (!notesInteractive) return;

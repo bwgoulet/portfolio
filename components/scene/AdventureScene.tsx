@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
@@ -11,9 +11,9 @@ import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
 import { CabinInterior } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
-import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
+import { MOTION_TIERS } from '@/config/sceneConfig';
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
@@ -24,10 +24,9 @@ export function AdventureScene() {
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  const lastTriggerRef = useRef<HTMLElement | null>(null);
-  const noteTitleId = useId();
-  const experienceTitleId = useId();
+  const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
+  const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   const isTransitioning = interactionState === 'transitioning';
   const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null;
@@ -37,8 +36,42 @@ export function AdventureScene() {
     interactionState === 'hoverCabin' ||
     interactionState === 'hoverTablets';
 
-  const selectedNote = selectedNoteId ? PROJECT_NOTE_RECORD[selectedNoteId] : null;
-  const selectedExperience = selectedExperienceId ? EXPERIENCE_RECORD[selectedExperienceId] : null;
+  const activeNoteId = selectedNoteId ?? closingNoteId;
+  const activeExperienceId = selectedExperienceId ?? closingExperienceId;
+  const selectedNote = activeNoteId ? PROJECT_NOTE_RECORD[activeNoteId] : null;
+  const selectedExperience = activeExperienceId ? EXPERIENCE_RECORD[activeExperienceId] : null;
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  const closeNoteDetail = useCallback(() => {
+    if (!selectedNoteId) return;
+    if (reducedMotion) {
+      setSelectedNoteId(null);
+      setClosingNoteId(null);
+      return;
+    }
+    setClosingNoteId(selectedNoteId);
+    setSelectedNoteId(null);
+    window.setTimeout(() => setClosingNoteId(null), MOTION_TIERS.macro.overlayFadeDuration * 1000);
+  }, [reducedMotion, selectedNoteId]);
+
+  const closeExperienceDetail = useCallback(() => {
+    if (!selectedExperienceId) return;
+    if (reducedMotion) {
+      setSelectedExperienceId(null);
+      setClosingExperienceId(null);
+      return;
+    }
+    setClosingExperienceId(selectedExperienceId);
+    setSelectedExperienceId(null);
+    window.setTimeout(() => setClosingExperienceId(null), MOTION_TIERS.macro.overlayFadeDuration * 1000);
+  }, [reducedMotion, selectedExperienceId]);
 
   const closeNoteDialog = useCallback(() => {
     setSelectedNoteId(null);
@@ -103,35 +136,47 @@ export function AdventureScene() {
     [isOverviewState, isTransitioning]
   );
 
-  const animateFocusNudge = useCallback((target: InteractiveTarget) => {
-    const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
-    if (!group) return;
+  const animateFocusNudge = useCallback(
+    (target: InteractiveTarget) => {
+      const group = target === 'billboard' ? billboardRef.current : target === 'cabin' ? cabinRef.current : tabletsRef.current;
+      if (!group) return;
+      if (reducedMotion) return;
 
-    const startY = group.position.y;
-    const startRotationY = group.rotation.y;
+      const startY = group.position.y;
+      const startRotationY = group.rotation.y;
 
-    makeTimeline()
-      .to(group.position, {
-        y: startY + 0.18,
-        duration: ANIMATION_CONFIG.nudgeDuration,
-        ease: 'power2.out'
-      })
-      .to(group.rotation, { y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05), duration: ANIMATION_CONFIG.nudgeDuration, ease: 'sine.out' }, '<')
-      .to(group.position, {
-        y: startY,
-        duration: ANIMATION_CONFIG.resetDuration,
-        ease: 'power1.inOut'
-      })
-      .to(
-        group.rotation,
-        {
-          y: startRotationY,
-          duration: ANIMATION_CONFIG.resetDuration,
-          ease: 'power1.inOut'
-        },
-        '<'
-      );
-  }, []);
+      makeTimeline()
+        .to(group.position, {
+          y: startY + 0.18,
+          duration: MOTION_TIERS.medium.landmarkNudgeDuration,
+          ease: MOTION_TIERS.medium.easeOut
+        })
+        .to(
+          group.rotation,
+          {
+            y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05),
+            duration: MOTION_TIERS.medium.landmarkNudgeDuration,
+            ease: MOTION_TIERS.medium.easeOut
+          },
+          '<'
+        )
+        .to(group.position, {
+          y: startY,
+          duration: MOTION_TIERS.medium.landmarkResetDuration,
+          ease: MOTION_TIERS.medium.easeInOut
+        })
+        .to(
+          group.rotation,
+          {
+            y: startRotationY,
+            duration: MOTION_TIERS.medium.landmarkResetDuration,
+            ease: MOTION_TIERS.medium.easeInOut
+          },
+          '<'
+        );
+    },
+    [reducedMotion]
+  );
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
@@ -146,6 +191,9 @@ export function AdventureScene() {
     [animateFocusNudge, isOverviewState, isTransitioning]
   );
 
+  const detailCardStateClass = (isClosing: boolean) =>
+    reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
+
   return (
     <main>
       <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
@@ -154,6 +202,7 @@ export function AdventureScene() {
           <CameraRig
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
+            reducedMotion={reducedMotion}
             onTransitionEnd={() => {
               if (focusTarget === 'overview') {
                 setInteractionState('idleOverview');
@@ -179,6 +228,7 @@ export function AdventureScene() {
                 onTabletsClick={handleFocusClick}
                 onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
                 tabletsRef={tabletsRef}
+                reducedMotion={reducedMotion}
               />
               <Billboard
                 billboardRef={billboardRef}
@@ -189,6 +239,7 @@ export function AdventureScene() {
                 onClick={() => handleFocusClick('billboard')}
                 onNoteClick={(noteId) => setSelectedNoteId(noteId)}
                 detailOpen={selectedNoteId !== null}
+                reducedMotion={reducedMotion}
               />
               <Cabin
                 cabinRef={cabinRef}
@@ -204,7 +255,7 @@ export function AdventureScene() {
         </Canvas>
       </div>
 
-      <header className="scene-brand" aria-label="Site title">
+      <header className={`scene-brand ${reducedMotion ? 'motion-reduced' : 'anim-enter'}`} aria-label="Site title">
         <span className="scene-brand-cloud scene-brand-cloud--left" />
         <span className="scene-brand-cloud scene-brand-cloud--right" />
         <h1>Ben Goulet</h1>
@@ -227,19 +278,20 @@ export function AdventureScene() {
 
       {interactionState === 'billboardCloseup' && selectedNote && (
         <article
-          className="note-detail"
+          className={`note-detail ${detailCardStateClass(Boolean(closingNoteId))}`}
           aria-live="polite"
-          onClick={closeNoteDialog}
+          onClick={closeNoteDetail}
+          role="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               event.preventDefault();
-              closeNoteDialog();
+              closeNoteDetail();
             }
           }}
         >
           <div
-            ref={modalRef}
-            className="note-detail-card"
+            className={`note-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -258,19 +310,20 @@ export function AdventureScene() {
 
       {interactionState === 'tabletsCloseup' && selectedExperience && (
         <article
-          className="note-detail"
+          className={`note-detail ${detailCardStateClass(Boolean(closingExperienceId))}`}
           aria-live="polite"
-          onClick={closeExperienceDialog}
+          onClick={closeExperienceDetail}
+          role="button"
+          tabIndex={0}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               event.preventDefault();
-              closeExperienceDialog();
+              closeExperienceDetail();
             }
           }}
         >
           <div
-            ref={modalRef}
-            className="experience-detail-card"
+            className={`experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
