@@ -31,7 +31,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     id: 'night-camp',
     title: 'Night Camp',
     detail: 'A moody branding exercise with motion studies, ambient gradients, and playful mascot illustrations for launch content.',
-    imageSrc: '/note-images/night-camp.svg',
+    imageSrc: '/note-images/brevity-logo.svg',
     position: [0.4, 1.91, 0.19],
     rotation: 0.1,
     color: '#f8e6ad'
