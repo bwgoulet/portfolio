@@ -1,4 +1,6 @@
-import { ColorRepresentation, Euler, Vector3Tuple } from 'three';
+import { ColorRepresentation, Vector3Tuple } from 'three';
+
+export type FocusTarget = 'overview' | 'billboard' | 'cabin';
 
 export type CameraPreset = {
   position: Vector3Tuple;
@@ -6,40 +8,57 @@ export type CameraPreset = {
   fov: number;
 };
 
-export type SceneState = 'overview' | 'transitioning' | 'billboardCloseup';
-
-export const CAMERA_PRESETS: Record<'overview' | 'billboardCloseup', CameraPreset> = {
+export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
   overview: {
-    position: [-8, 5.3, 10.5],
-    lookAt: [0.8, 1.2, -1.2],
-    fov: 40
+    position: [-7.8, 4.7, 11.8],
+    lookAt: [0.2, 1.9, -3.4],
+    fov: 36
   },
-  billboardCloseup: {
-    position: [1.55, 2.0, 3.15],
-    lookAt: [1.3, 1.65, -0.6],
-    fov: 34
+  billboard: {
+    position: [-3.9, 2.5, 2.7],
+    lookAt: [-4.85, 2.25, 0.45],
+    fov: 29
+  },
+  cabin: {
+    position: [3.65, 1.8, 1.8],
+    lookAt: [3.9, 1.45, -0.35],
+    fov: 31
   }
 };
 
 export const ANIMATION_CONFIG = {
-  cameraDuration: 2.2,
+  cameraDuration: 2.35,
   cameraEase: 'power2.inOut',
-  billboardNudgeDuration: 0.36,
-  billboardNudgeAmountY: 0.23,
-  billboardNudgeRotation: new Euler(0.02, -0.14, 0.01)
+  nudgeDuration: 0.34,
+  resetDuration: 0.3
+};
+
+export const SCENE_ANCHORS = {
+  billboard: [-4.9, 1.42, 0.2] as Vector3Tuple,
+  cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
+  tabletsStart: [1.8, 1.07, 2.9] as Vector3Tuple,
+  mountain: [0.5, 3.15, -9.4] as Vector3Tuple,
+  trailStart: [0.8, 1.03, 1.9] as Vector3Tuple,
+  trailEnd: [0.4, 1.08, -2.7] as Vector3Tuple
 };
 
 export const PALETTE: Record<string, ColorRepresentation> = {
-  skyTop: '#20374a',
-  skyBottom: '#0e171f',
-  fog: '#0d151d',
-  islandTop: '#314f40',
-  islandSide: '#27332f',
-  path: '#4d5c4e',
-  rock: '#4d5862',
-  trunk: '#3a2e2b',
-  leaves: '#4c6d54',
+  skyBottom: '#091017',
+  fog: '#0b1119',
+  islandTop: '#293b33',
+  islandSide: '#1f2926',
+  trail: '#526354',
+  trailBlocker: '#444040',
+  mountain: '#38414f',
+  rock: '#515d68',
+  tablet: '#808486',
+  tabletRune: '#c9d9d2',
+  trunk: '#3c302f',
+  leaves: '#3e5a45',
   billboardFrame: '#645241',
-  billboardFace: '#ccbb96',
-  accentGlow: '#d9b56f'
+  billboardFace: '#d8c5a0',
+  cabinWall: '#5b4737',
+  cabinRoof: '#3a2f34',
+  cabinDoor: '#2b1f16',
+  accentGlow: '#e0bc72'
 };

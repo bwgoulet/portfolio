@@ -1,101 +1,147 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useCallback, useRef, useState } from 'react';
+import { Suspense, useCallback, useMemo, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
+import { Cabin } from './Cabin';
 import { CameraRig } from './CameraRig';
 import { LightingAtmosphere } from './LightingAtmosphere';
 import { LowPolyEnvironment } from './LowPolyEnvironment';
-import { InteractionState } from './types';
+import { InteractionState, InteractiveTarget } from './types';
 import { ANIMATION_CONFIG } from '@/config/sceneConfig';
 import { makeTimeline } from '@/lib/animation';
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
+  const cabinRef = useRef<Group>(null);
+
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
+  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabin'>('overview');
 
-  const isTransitioning = interactionState === 'transitionToBillboard';
-  const isInteractive = interactionState === 'idleOverview' || interactionState === 'hoverBillboard';
+  const isTransitioning = interactionState === 'transitioning';
+  const isOverviewState = interactionState === 'idleOverview' || interactionState === 'hoverBillboard' || interactionState === 'hoverCabin';
 
-  const handleHoverChange = useCallback(
-    (hovered: boolean) => {
-      if (isTransitioning || interactionState === 'billboardCloseup') return;
-      setInteractionState(hovered ? 'hoverBillboard' : 'idleOverview');
+  const updateHover = useCallback(
+    (target: InteractiveTarget, hovered: boolean) => {
+      if (!isOverviewState || isTransitioning) return;
+      if (!hovered) {
+        setInteractionState('idleOverview');
+        return;
+      }
+      setInteractionState(target === 'billboard' ? 'hoverBillboard' : 'hoverCabin');
     },
-    [interactionState, isTransitioning]
+    [isOverviewState, isTransitioning]
   );
 
-  const handleBillboardClick = useCallback(() => {
-    if (isTransitioning || interactionState === 'billboardCloseup' || !billboardRef.current) return;
+  const animateFocusNudge = useCallback((target: InteractiveTarget) => {
+    const group = target === 'billboard' ? billboardRef.current : cabinRef.current;
+    if (!group) return;
 
-    setInteractionState('transitionToBillboard');
-
-    const board = billboardRef.current;
-    const startY = board.position.y;
-    const startRotationY = board.rotation.y;
+    const startY = group.position.y;
+    const startRotationY = group.rotation.y;
 
     makeTimeline()
-      .to(board.position, {
-        y: startY + ANIMATION_CONFIG.billboardNudgeAmountY,
-        duration: ANIMATION_CONFIG.billboardNudgeDuration,
+      .to(group.position, {
+        y: startY + 0.18,
+        duration: ANIMATION_CONFIG.nudgeDuration,
         ease: 'power2.out'
       })
       .to(
-        board.rotation,
+        group.rotation,
         {
-          y: startRotationY + ANIMATION_CONFIG.billboardNudgeRotation.y,
-          duration: ANIMATION_CONFIG.billboardNudgeDuration,
+          y: startRotationY + (target === 'billboard' ? -0.12 : 0.09),
+          duration: ANIMATION_CONFIG.nudgeDuration,
           ease: 'sine.out'
         },
         '<'
       )
-      .to(board.position, {
+      .to(group.position, {
         y: startY,
-        duration: ANIMATION_CONFIG.billboardNudgeDuration,
+        duration: ANIMATION_CONFIG.resetDuration,
         ease: 'power1.inOut'
       })
       .to(
-        board.rotation,
+        group.rotation,
         {
           y: startRotationY,
-          duration: ANIMATION_CONFIG.billboardNudgeDuration,
+          duration: ANIMATION_CONFIG.resetDuration,
           ease: 'power1.inOut'
         },
         '<'
       );
-  }, [interactionState, isTransitioning]);
+  }, []);
+
+  const handleFocusClick = useCallback(
+    (target: InteractiveTarget) => {
+      if (!isOverviewState || isTransitioning) return;
+
+      setInteractionState('transitioning');
+      setFocusTarget(target);
+      animateFocusNudge(target);
+    },
+    [animateFocusNudge, isOverviewState, isTransitioning]
+  );
+
+  const closeupLabel = useMemo(() => {
+    if (interactionState === 'billboardCloseup') return 'Projects Board: ready for post-it portfolio navigation.';
+    if (interactionState === 'cabinCloseup') return 'Cabin Interior: ready for About/Gallery entry transition.';
+    return null;
+  }, [interactionState]);
 
   return (
     <main>
-      <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.6]}>
+      <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]}>
         <Suspense fallback={null}>
           <CameraRig
-            targetKey={interactionState === 'billboardCloseup' ? 'billboardCloseup' : 'overview'}
+            targetKey={focusTarget}
             isTransitioning={isTransitioning}
-            onTransitionEnd={() => setInteractionState('billboardCloseup')}
+            onTransitionEnd={() => {
+              if (focusTarget === 'overview') {
+                setInteractionState('idleOverview');
+                return;
+              }
+              setInteractionState(focusTarget === 'billboard' ? 'billboardCloseup' : 'cabinCloseup');
+            }}
           />
           <LightingAtmosphere />
           <LowPolyEnvironment />
           <Billboard
             billboardRef={billboardRef}
-            interactiveEnabled={isInteractive}
-            interactionState={interactionState}
-            onHoverChange={handleHoverChange}
-            onClick={handleBillboardClick}
+            interactiveEnabled={isOverviewState}
+            hovered={interactionState === 'hoverBillboard'}
+            onHoverChange={(hovered) => updateHover('billboard', hovered)}
+            onClick={() => handleFocusClick('billboard')}
+          />
+          <Cabin
+            cabinRef={cabinRef}
+            interactiveEnabled={isOverviewState}
+            hovered={interactionState === 'hoverCabin'}
+            onHoverChange={(hovered) => updateHover('cabin', hovered)}
+            onClick={() => handleFocusClick('cabin')}
           />
         </Suspense>
       </Canvas>
 
       <aside className="scene-hud">
-        {interactionState === 'billboardCloseup' ? (
-          <span>Close-up reached. Replace this state with portal/content UI next.</span>
-        ) : (
+        {closeupLabel ?? (
           <span>
-            Click the sign to inspect it. Current state: <code>{interactionState}</code>
+            Click the <code>billboard</code> for projects or the <code>cabin door</code> for about/gallery.
           </span>
         )}
       </aside>
+
+      {!isOverviewState && !isTransitioning && (
+        <button
+          className="scene-reset"
+          onClick={() => {
+            setFocusTarget('overview');
+            setInteractionState('transitioning');
+          }}
+        >
+          Return to overview
+        </button>
+      )}
     </main>
   );
 }

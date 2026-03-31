@@ -1,6 +1,6 @@
 'use client';
 
-import { Environment, Sky } from '@react-three/drei';
+import { Sky } from '@react-three/drei';
 import { Color, Fog } from 'three';
 import { useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
@@ -11,21 +11,15 @@ export function LightingAtmosphere() {
 
   useEffect(() => {
     scene.background = new Color(PALETTE.skyBottom);
-    scene.fog = new Fog(PALETTE.fog, 8, 35);
+    scene.fog = new Fog(PALETTE.fog, 9, 38);
   }, [scene]);
 
   return (
     <>
-      <ambientLight intensity={0.52} color="#c7ddf4" />
-      <directionalLight
-        intensity={1.25}
-        position={[6, 10, 5]}
-        color="#f5ecd8"
-        castShadow
-      />
-      <pointLight intensity={1.5} color={PALETTE.accentGlow} position={[1.3, 2.8, 1.1]} />
-      <Sky distance={160} sunPosition={[4, 1, -8]} turbidity={8} rayleigh={1.2} mieCoefficient={0.008} />
-      <Environment preset="night" />
+      <ambientLight intensity={0.55} color="#bed3e8" />
+      <directionalLight intensity={1.35} position={[7, 11, 6]} color="#f7e8cb" castShadow />
+      <pointLight intensity={1.35} color={PALETTE.accentGlow} position={[-4.8, 2.9, 0.4]} />
+      <Sky distance={180} sunPosition={[4, 1, -8]} turbidity={7} rayleigh={1.1} mieCoefficient={0.012} />
     </>
   );
 }

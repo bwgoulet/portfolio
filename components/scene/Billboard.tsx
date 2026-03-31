@@ -1,50 +1,34 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import type { RefObject } from 'react';
-import { Group, MeshStandardMaterial } from 'three';
-import { PALETTE } from '@/config/sceneConfig';
-import { InteractionState } from './types';
+import { Group } from 'three';
+import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 
 type BillboardProps = {
   interactiveEnabled: boolean;
-  interactionState: InteractionState;
+  hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: () => void;
   billboardRef: RefObject<Group | null>;
 };
 
-export const BILLBOARD_ANCHOR: [number, number, number] = [1.2, 1.5, -0.8];
-
 export const Billboard = memo(function Billboard({
   interactiveEnabled,
-  interactionState,
+  hovered,
   onHoverChange,
   onClick,
   billboardRef
 }: BillboardProps) {
-  const isHovered = interactionState === 'hoverBillboard';
-
-  const faceMaterial = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: isHovered ? '#e0cfad' : PALETTE.billboardFace,
-        flatShading: true,
-        emissive: isHovered ? '#6b5a2b' : '#1f1a0f',
-        emissiveIntensity: isHovered ? 0.28 : 0.05
-      }),
-    [isHovered]
-  );
-
   return (
-    <group ref={billboardRef} position={BILLBOARD_ANCHOR} rotation={[0, -0.33, 0]}>
-      <mesh position={[0, 0.7, 0]} castShadow>
-        <boxGeometry args={[0.12, 1.4, 0.12]} />
+    <group ref={billboardRef} position={SCENE_ANCHORS.billboard} rotation={[0, 0.42, 0]}>
+      <mesh position={[0, 0.78, 0]} castShadow>
+        <boxGeometry args={[0.15, 1.6, 0.15]} />
         <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
       </mesh>
 
       <mesh
-        position={[0, 1.32, 0.05]}
+        position={[0, 1.62, 0.06]}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (interactiveEnabled) onHoverChange(true);
@@ -59,14 +43,27 @@ export const Billboard = memo(function Billboard({
         }}
         castShadow
       >
-        <boxGeometry args={[1.45, 0.84, 0.12]} />
-        <primitive object={faceMaterial} attach="material" />
+        <boxGeometry args={[2.25, 1.25, 0.12]} />
+        <meshStandardMaterial
+          color={hovered ? '#e2cfab' : PALETTE.billboardFace}
+          emissive={hovered ? '#4a3b1f' : '#1f180f'}
+          emissiveIntensity={hovered ? 0.3 : 0.09}
+          flatShading
+        />
       </mesh>
 
-      <mesh position={[0, 1.32, 0.12]}>
-        <planeGeometry args={[1.18, 0.58]} />
-        <meshBasicMaterial color={isHovered ? '#2c1f1f' : '#252220'} />
-      </mesh>
+      {[
+        [-0.62, 1.76, 0.14],
+        [-0.01, 1.82, 0.14],
+        [0.61, 1.7, 0.14],
+        [-0.33, 1.37, 0.14],
+        [0.34, 1.42, 0.14]
+      ].map((position, idx) => (
+        <mesh key={idx} position={position as [number, number, number]} rotation={[0, 0, (idx - 2) * 0.06]}>
+          <planeGeometry args={[0.42, 0.33]} />
+          <meshBasicMaterial color={idx % 2 === 0 ? '#f2d882' : '#f3c4a1'} />
+        </mesh>
+      ))}
     </group>
   );
 });

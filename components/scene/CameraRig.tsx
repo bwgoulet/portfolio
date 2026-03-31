@@ -3,11 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { PerspectiveCamera, Vector3 } from 'three';
-import { ANIMATION_CONFIG, CAMERA_PRESETS } from '@/config/sceneConfig';
+import { ANIMATION_CONFIG, CAMERA_PRESETS, FocusTarget } from '@/config/sceneConfig';
 import { animateValue } from '@/lib/animation';
 
 type CameraRigProps = {
-  targetKey: 'overview' | 'billboardCloseup';
+  targetKey: FocusTarget;
   isTransitioning: boolean;
   onTransitionEnd: () => void;
 };
