@@ -39,8 +39,35 @@ export const Billboard = memo(function Billboard({
 }: BillboardProps) {
   const billboard = VISUAL_TOKENS.scene.billboard;
   const noteRefs = useRef<Record<string, Group | null>>({});
+  const hoveredNoteIdRef = useRef<string | null>(null);
   const boardMaterialRef = useRef<MeshStandardMaterial>(null);
   const labelRef = useRef<Group>(null);
+
+  const startNoteHover = (noteId: string) => {
+    if (!notesInteractive || hoveredNoteIdRef.current === noteId) return;
+    hoveredNoteIdRef.current = noteId;
+    setInteractiveCursor(true);
+    const note = PROJECT_NOTES.find((entry) => entry.id === noteId);
+    const group = noteRefs.current[noteId];
+    if (!group || !note) return;
+    gsap.killTweensOf(group.scale);
+    gsap.killTweensOf(group.position);
+    gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+    gsap.to(group.position, { z: note.position[2] + 0.028, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+  };
+
+  const endNoteHover = (noteId: string) => {
+    if (hoveredNoteIdRef.current !== noteId) return;
+    hoveredNoteIdRef.current = null;
+    setInteractiveCursor(false);
+    const note = PROJECT_NOTES.find((entry) => entry.id === noteId);
+    const group = noteRefs.current[noteId];
+    if (!group || !note) return;
+    gsap.killTweensOf(group.scale);
+    gsap.killTweensOf(group.position);
+    gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+    gsap.to(group.position, { z: note.position[2], duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+  };
 
   useFrame(({ clock }) => {
     if (!reducedMotion && boardMaterialRef.current && !hovered) {
@@ -134,23 +161,17 @@ export const Billboard = memo(function Billboard({
             }}
           >
             <mesh
-              onPointerEnter={(event) => {
-                if (!notesInteractive) return;
+              onPointerOver={(event) => {
                 event.stopPropagation();
-                setInteractiveCursor(true);
-                const group = noteRefs.current[note.id];
-                if (!group) return;
-                gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
-                gsap.to(group.position, { z: note.position[2] + 0.028, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                startNoteHover(note.id);
               }}
-              onPointerLeave={(event) => {
-                if (!notesInteractive) return;
+              onPointerMove={(event) => {
                 event.stopPropagation();
-                setInteractiveCursor(false);
-                const group = noteRefs.current[note.id];
-                if (!group) return;
-                gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
-                gsap.to(group.position, { z: note.position[2], duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
+                startNoteHover(note.id);
+              }}
+              onPointerOut={(event) => {
+                event.stopPropagation();
+                endNoteHover(note.id);
               }}
               onPointerDown={(event) => {
                 if (!notesInteractive) return;
@@ -183,6 +204,30 @@ export const Billboard = memo(function Billboard({
                 </div>
               </div>
             </Html>
+            <mesh
+              position={[0, 0, 0.03]}
+              onPointerOver={(event) => {
+                event.stopPropagation();
+                startNoteHover(note.id);
+              }}
+              onPointerMove={(event) => {
+                event.stopPropagation();
+                startNoteHover(note.id);
+              }}
+              onPointerOut={(event) => {
+                event.stopPropagation();
+                endNoteHover(note.id);
+              }}
+              onClick={(event) => {
+                if (!notesInteractive) return;
+                event.stopPropagation();
+                onNoteClick(note.id);
+              }}
+              visible={false}
+            >
+              <boxGeometry args={[0.46, 0.36, 0.08]} />
+              <meshBasicMaterial transparent opacity={0} />
+            </mesh>
           </group>
         ))}
     </group>
