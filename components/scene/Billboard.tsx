@@ -10,6 +10,10 @@ import { MOTION_TIERS, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { PROJECT_NOTES } from './projectNotes';
 
+const setInteractiveCursor = (isPointer: boolean) => {
+  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+};
+
 type BillboardProps = {
   interactiveEnabled: boolean;
   hovered: boolean;
@@ -67,11 +71,15 @@ export const Billboard = memo(function Billboard({
         position={[0, 1.72, 0.05]}
         onPointerEnter={(event) => {
           event.stopPropagation();
-          if (interactiveEnabled) onHoverChange(true);
+          if (interactiveEnabled) {
+            onHoverChange(true);
+            setInteractiveCursor(true);
+          }
         }}
         onPointerLeave={(event) => {
           event.stopPropagation();
           onHoverChange(false);
+          setInteractiveCursor(false);
         }}
         onClick={(event) => {
           event.stopPropagation();
@@ -129,6 +137,7 @@ export const Billboard = memo(function Billboard({
               onPointerEnter={(event) => {
                 if (!notesInteractive) return;
                 event.stopPropagation();
+                setInteractiveCursor(true);
                 const group = noteRefs.current[note.id];
                 if (!group) return;
                 gsap.to(group.scale, { x: 1.08, y: 1.08, z: 1.08, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
@@ -137,6 +146,7 @@ export const Billboard = memo(function Billboard({
               onPointerLeave={(event) => {
                 if (!notesInteractive) return;
                 event.stopPropagation();
+                setInteractiveCursor(false);
                 const group = noteRefs.current[note.id];
                 if (!group) return;
                 gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: MOTION_TIERS.micro.hoverPopDuration, ease: MOTION_TIERS.micro.ease });
