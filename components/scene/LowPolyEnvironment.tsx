@@ -452,10 +452,6 @@ export function LowPolyEnvironment({
         <dodecahedronGeometry args={[0.7, 0]} />
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
-      <mesh position={[-2.2, 1.22, 2.2]} scale={[1.2, 1.1, 1.4]} castShadow receiveShadow>
-        <dodecahedronGeometry args={[0.54, 0]} />
-        <meshStandardMaterial color={PALETTE.rock} flatShading />
-      </mesh>
 
       <group ref={tabletsRef}>
         <StoneTablets
