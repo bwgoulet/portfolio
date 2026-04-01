@@ -1,9 +1,9 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import { Text } from '@react-three/drei';
-import type { ThreeEvent } from '@react-three/fiber';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
@@ -15,20 +15,58 @@ const setInteractiveCursor = (isPointer: boolean) => {
 type CabinProps = {
   interactiveEnabled: boolean;
   hovered: boolean;
+  isDoorOpen: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: () => void;
+  onDoorOpenStart?: () => void;
+  onDoorOpenComplete?: () => void;
   cabinRef: RefObject<Group | null>;
 };
 
 export const Cabin = memo(function Cabin({
   interactiveEnabled,
   hovered,
+  isDoorOpen,
   onHoverChange,
   onClick,
+  onDoorOpenStart,
+  onDoorOpenComplete,
   cabinRef
 }: CabinProps) {
   const { cabin } = VISUAL_TOKENS.scene;
   const engravingPosition: [number, number, number] = [0, 0.93, 0.67];
+  const doorPivotRef = useRef<Group>(null);
+  const hasNotifiedDoorStartRef = useRef(false);
+  const hasNotifiedDoorCompleteRef = useRef(false);
+  const DOOR_OPEN_ANGLE = -Math.PI * 0.52;
+
+  useEffect(() => {
+    if (!isDoorOpen) {
+      hasNotifiedDoorStartRef.current = false;
+      hasNotifiedDoorCompleteRef.current = false;
+      return;
+    }
+    if (!hasNotifiedDoorStartRef.current) {
+      hasNotifiedDoorStartRef.current = true;
+      onDoorOpenStart?.();
+    }
+  }, [isDoorOpen, onDoorOpenStart]);
+
+  useFrame((_, delta) => {
+    const doorPivot = doorPivotRef.current;
+    if (!doorPivot) return;
+
+    const target = isDoorOpen ? DOOR_OPEN_ANGLE : 0;
+    const rotationDelta = (target - doorPivot.rotation.y) * Math.min(1, delta * 8);
+    doorPivot.rotation.y += rotationDelta;
+
+    if (!isDoorOpen) return;
+    if (hasNotifiedDoorCompleteRef.current) return;
+    if (Math.abs(doorPivot.rotation.y - DOOR_OPEN_ANGLE) > 0.02) return;
+
+    hasNotifiedDoorCompleteRef.current = true;
+    onDoorOpenComplete?.();
+  });
 
   const handleHoverStart = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
@@ -76,20 +114,24 @@ export const Cabin = memo(function Cabin({
         <meshStandardMaterial color={cabin.porch} flatShading />
       </mesh>
 
-      <mesh
-        position={[0, 0.35, 0.58]}
-        onPointerEnter={handleHoverStart}
-        onPointerLeave={handleHoverEnd}
-        onClick={handleClick}
-      >
-        <boxGeometry args={[0.36, 0.56, 0.06]} />
-        <meshStandardMaterial
-          color={PALETTE.cabinDoor}
-          emissive={hovered ? cabin.doorHover : cabin.doorIdle}
-          emissiveIntensity={hovered ? 0.26 : 0.05}
-          flatShading
-        />
-      </mesh>
+      <group position={[0, 0.35, 0.58]}>
+        <group ref={doorPivotRef} position={[-0.18, 0, 0]}>
+          <mesh
+            position={[0.18, 0, 0]}
+            onPointerEnter={handleHoverStart}
+            onPointerLeave={handleHoverEnd}
+            onClick={handleClick}
+          >
+            <boxGeometry args={[0.36, 0.56, 0.06]} />
+            <meshStandardMaterial
+              color={PALETTE.cabinDoor}
+              emissive={hovered ? cabin.doorHover : cabin.doorIdle}
+              emissiveIntensity={hovered ? 0.26 : 0.05}
+              flatShading
+            />
+          </mesh>
+        </group>
+      </group>
 
       <mesh position={[-0.3, 0.52, 0.57]}>
         <planeGeometry args={[0.22, 0.19]} />
