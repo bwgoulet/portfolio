@@ -249,9 +249,23 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
   );
 }
 
-function TrailheadTimelineSign({ reducedMotion }: { reducedMotion: boolean }) {
-  const signRef = useRef<Group>(null);
+type TrailheadTimelineSignProps = {
+  reducedMotion: boolean;
+  interactiveEnabled: boolean;
+  hovered: boolean;
+  onHoverChange: (hovered: boolean) => void;
+  onClick: (target: InteractiveTarget) => void;
+  signRef: RefObject<Group | null>;
+};
 
+function TrailheadTimelineSign({
+  reducedMotion,
+  interactiveEnabled,
+  hovered,
+  onHoverChange,
+  onClick,
+  signRef
+}: TrailheadTimelineSignProps) {
   useFrame(({ clock }) => {
     if (reducedMotion || !signRef.current) return;
     const t = clock.getElapsedTime();
@@ -269,11 +283,38 @@ function TrailheadTimelineSign({ reducedMotion }: { reducedMotion: boolean }) {
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color={environmentPalette.signPost} flatShading />
       </mesh>
-      <mesh position={[0, 0.32, 0]} castShadow receiveShadow>
+      <mesh
+        position={[0, 0.32, 0]}
+        castShadow
+        receiveShadow
+        onPointerEnter={(event) => {
+          event.stopPropagation();
+          if (interactiveEnabled) onHoverChange(true);
+        }}
+        onPointerLeave={(event) => {
+          event.stopPropagation();
+          onHoverChange(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (interactiveEnabled) onClick('timeline');
+        }}
+      >
         <boxGeometry args={[0.36, 0.16, 0.04]} />
-        <meshStandardMaterial color={environmentPalette.signBoard} flatShading />
+        <meshStandardMaterial
+          color={hovered ? '#9b8564' : environmentPalette.signBoard}
+          emissive={hovered ? '#372912' : '#241a0d'}
+          emissiveIntensity={hovered ? 0.2 : 0.07}
+          flatShading
+        />
       </mesh>
-      <Text position={[0, 0.325, 0.026]} fontSize={0.06} anchorX="center" anchorY="middle" color={environmentPalette.signText}>
+      <Text
+        position={[0, 0.325, 0.026]}
+        fontSize={hovered ? 0.066 : 0.06}
+        anchorX="center"
+        anchorY="middle"
+        color={hovered ? '#f7ebd2' : environmentPalette.signText}
+      >
         Timeline
       </Text>
     </group>
@@ -337,6 +378,11 @@ type LowPolyEnvironmentProps = {
   onTabletsClick: (target: InteractiveTarget) => void;
   onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
+  timelineSignRef: RefObject<Group | null>;
+  timelineInteractiveEnabled: boolean;
+  timelineHovered: boolean;
+  onTimelineHoverChange: (hovered: boolean) => void;
+  onTimelineClick: (target: InteractiveTarget) => void;
   reducedMotion: boolean;
 };
 
@@ -348,6 +394,11 @@ export function LowPolyEnvironment({
   onTabletsClick,
   onTabletDetailSelect,
   tabletsRef,
+  timelineSignRef,
+  timelineInteractiveEnabled,
+  timelineHovered,
+  onTimelineHoverChange,
+  onTimelineClick,
   reducedMotion
 }: LowPolyEnvironmentProps) {
   return (
@@ -378,7 +429,14 @@ export function LowPolyEnvironment({
       </mesh>
 
       <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
-      <TrailheadTimelineSign reducedMotion={reducedMotion} />
+      <TrailheadTimelineSign
+        reducedMotion={reducedMotion}
+        signRef={timelineSignRef}
+        interactiveEnabled={timelineInteractiveEnabled}
+        hovered={timelineHovered}
+        onHoverChange={onTimelineHoverChange}
+        onClick={onTimelineClick}
+      />
 
       <Tree position={[-3.5, 1.13, -1.4]} scale={1.2} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1.35} />

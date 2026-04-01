@@ -21,6 +21,7 @@ export function AdventureScene() {
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
   const introductionRef = useRef<Group>(null);
+  const timelineSignRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
   const noteTitleId = useId();
@@ -28,7 +29,7 @@ export function AdventureScene() {
   const cabinRevealTimerRef = useRef<number | null>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction'>('overview');
+  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction' | 'timeline'>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
@@ -43,7 +44,8 @@ export function AdventureScene() {
     interactionState === 'hoverBillboard' ||
     interactionState === 'hoverCabin' ||
     interactionState === 'hoverTablets' ||
-    interactionState === 'hoverIntroduction';
+    interactionState === 'hoverIntroduction' ||
+    interactionState === 'hoverTimeline';
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -147,7 +149,9 @@ export function AdventureScene() {
             ? 'hoverCabin'
             : target === 'tablets'
               ? 'hoverTablets'
-              : 'hoverIntroduction'
+              : target === 'introduction'
+                ? 'hoverIntroduction'
+                : 'hoverTimeline'
       );
     },
     [isOverviewState, isTransitioning]
@@ -162,7 +166,9 @@ export function AdventureScene() {
             ? cabinRef.current
             : target === 'tablets'
               ? tabletsRef.current
-              : introductionRef.current;
+              : target === 'introduction'
+                ? introductionRef.current
+                : timelineSignRef.current;
       if (!group) return;
       if (reducedMotion) return;
 
@@ -263,7 +269,9 @@ export function AdventureScene() {
                     ? 'cabinCloseup'
                     : focusTarget === 'tablets'
                       ? 'tabletsCloseup'
-                      : 'introductionCloseup'
+                      : focusTarget === 'introduction'
+                        ? 'introductionCloseup'
+                        : 'timelineCloseup'
               );
             }}
           />
@@ -278,6 +286,11 @@ export function AdventureScene() {
                 onTabletsClick={handleFocusClick}
                 onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
                 tabletsRef={tabletsRef}
+                timelineSignRef={timelineSignRef}
+                timelineInteractiveEnabled={isOverviewState}
+                timelineHovered={interactionState === 'hoverTimeline'}
+                onTimelineHoverChange={(hovered) => updateHover('timeline', hovered)}
+                onTimelineClick={handleFocusClick}
                 reducedMotion={reducedMotion}
               />
               <IntroductionLandmark
