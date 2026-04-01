@@ -24,6 +24,7 @@ export function AdventureScene() {
   const timelineSignRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
+  const cabinRevealTimerRef = useRef<number | null>(null);
   const noteTitleId = useId();
   const experienceTitleId = useId();
 
@@ -228,6 +229,9 @@ export function AdventureScene() {
   useEffect(
     () => () => {
       document.body.style.cursor = 'auto';
+      if (cabinRevealTimerRef.current !== null) {
+        window.clearTimeout(cabinRevealTimerRef.current);
+      }
     },
     []
   );
@@ -249,8 +253,14 @@ export function AdventureScene() {
                 if (reducedMotion) {
                   setIsCabinInteriorRevealed(true);
                 } else {
+                  if (cabinRevealTimerRef.current !== null) {
+                    window.clearTimeout(cabinRevealTimerRef.current);
+                  }
                   cabinRevealTimerRef.current = window.setTimeout(
-                    () => setIsCabinInteriorRevealed(true),
+                    () => {
+                      setIsCabinInteriorRevealed(true);
+                      cabinRevealTimerRef.current = null;
+                    },
                     MOTION_TIERS.macro.cameraDuration * 0.32 * 1000
                   );
                 }
