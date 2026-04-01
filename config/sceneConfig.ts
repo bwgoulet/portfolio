@@ -67,7 +67,7 @@ export const SCENE_ANCHORS = {
   billboard: [-4.9, 1.42, 0.2] as Vector3Tuple,
   cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
   tabletsStart: [1.8, 0.93, 2.9] as Vector3Tuple,
-  introductionLandmark: [0.15, 1.27, 1.42] as Vector3Tuple,
+  introductionLandmark: [0.2, 1.2, 1.33] as Vector3Tuple,
   mountain: [0.8, 2.95, -24.5] as Vector3Tuple,
   trailStart: [0.8, 1.03, 2.9] as Vector3Tuple,
   trailEnd: [0.8, 1.03, -14.2] as Vector3Tuple
