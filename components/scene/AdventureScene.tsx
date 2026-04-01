@@ -13,7 +13,7 @@ import { CabinInterior } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
-import { MOTION_TIERS } from '@/config/sceneConfig';
+import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
 
 export function AdventureScene() {
@@ -28,7 +28,7 @@ export function AdventureScene() {
   const experienceTitleId = useId();
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction' | 'timeline'>('overview');
+  const [focusTarget, setFocusTarget] = useState<FocusTarget>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
@@ -213,12 +213,14 @@ export function AdventureScene() {
       if (!isOverviewState || isTransitioning) return;
 
       setInteractionState('transitioning');
-      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
+      setFocusTarget(target === 'cabin' ? 'cabinDoorway' : target);
       setIsCabinInteriorRevealed(false);
       setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       animateFocusNudge(target);
+
+      if (target === 'cabin' && reducedMotion) setIsCabinInteriorRevealed(true);
     },
     [animateFocusNudge, isOverviewState, isTransitioning]
   );
@@ -242,19 +244,31 @@ export function AdventureScene() {
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
             reducedMotion={reducedMotion}
-            onTransitionEnd={() => {
-              if (focusTarget === 'overview') {
+            onTransitionEnd={(completedTarget) => {
+              if (completedTarget === 'cabinDoorway') {
+                if (reducedMotion) {
+                  setIsCabinInteriorRevealed(true);
+                } else {
+                  cabinRevealTimerRef.current = window.setTimeout(
+                    () => setIsCabinInteriorRevealed(true),
+                    MOTION_TIERS.macro.cameraDuration * 0.32 * 1000
+                  );
+                }
+                setFocusTarget('cabinInterior');
+                return;
+              }
+              if (completedTarget === 'overview') {
                 setInteractionState('idleOverview');
                 return;
               }
               setInteractionState(
-                focusTarget === 'billboard'
+                completedTarget === 'billboard'
                   ? 'billboardCloseup'
-                  : focusTarget === 'cabinInterior'
+                  : completedTarget === 'cabinInterior'
                     ? 'cabinCloseup'
-                    : focusTarget === 'tablets'
+                    : completedTarget === 'tablets'
                       ? 'tabletsCloseup'
-                      : focusTarget === 'introduction'
+                      : completedTarget === 'introduction'
                         ? 'introductionCloseup'
                         : 'timelineCloseup'
               );
