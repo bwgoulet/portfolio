@@ -285,54 +285,49 @@ export function AdventureScene() {
             }}
           />
           <LightingAtmosphere />
+          <LowPolyEnvironment
+            tabletsInteractiveEnabled={isOverviewState}
+            tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
+            tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
+            onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
+            onTabletsClick={handleFocusClick}
+            onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
+            tabletsRef={tabletsRef}
+            timelineSignRef={timelineSignRef}
+            timelineInteractiveEnabled={isOverviewState}
+            timelineHovered={interactionState === 'hoverTimeline'}
+            onTimelineHoverChange={(hovered) => updateHover('timeline', hovered)}
+            onTimelineClick={handleFocusClick}
+            reducedMotion={reducedMotion}
+          />
+          <IntroductionLandmark
+            landmarkRef={introductionRef}
+            interactiveEnabled={isOverviewState}
+            hovered={interactionState === 'hoverIntroduction'}
+            onHoverChange={(hovered) => updateHover('introduction', hovered)}
+            onClick={handleFocusClick}
+            reducedMotion={reducedMotion}
+          />
+          <Billboard
+            billboardRef={billboardRef}
+            interactiveEnabled={isOverviewState}
+            notesInteractive={interactionState === 'billboardCloseup'}
+            hovered={interactionState === 'hoverBillboard'}
+            onHoverChange={(hovered) => updateHover('billboard', hovered)}
+            onClick={() => handleFocusClick('billboard')}
+            onNoteClick={(noteId) => setSelectedNoteId(noteId)}
+            detailOpen={selectedNoteId !== null}
+            reducedMotion={reducedMotion}
+          />
           {!isCabinInteriorRevealed && (
-            <>
-              <LowPolyEnvironment
-                tabletsInteractiveEnabled={isOverviewState}
-                tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
-                tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
-                onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
-                onTabletsClick={handleFocusClick}
-                onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
-                tabletsRef={tabletsRef}
-                timelineSignRef={timelineSignRef}
-                timelineInteractiveEnabled={isOverviewState}
-                timelineHovered={interactionState === 'hoverTimeline'}
-                onTimelineHoverChange={(hovered) => updateHover('timeline', hovered)}
-                onTimelineClick={handleFocusClick}
-                reducedMotion={reducedMotion}
-              />
-              <IntroductionLandmark
-                landmarkRef={introductionRef}
-                interactiveEnabled={isOverviewState}
-                hovered={interactionState === 'hoverIntroduction'}
-                onHoverChange={(hovered) => updateHover('introduction', hovered)}
-                onClick={handleFocusClick}
-                reducedMotion={reducedMotion}
-              />
-              <Billboard
-                billboardRef={billboardRef}
-                interactiveEnabled={isOverviewState}
-                notesInteractive={interactionState === 'billboardCloseup'}
-                hovered={interactionState === 'hoverBillboard'}
-                onHoverChange={(hovered) => updateHover('billboard', hovered)}
-                onClick={() => handleFocusClick('billboard')}
-                onNoteClick={(noteId) => setSelectedNoteId(noteId)}
-                detailOpen={selectedNoteId !== null}
-                reducedMotion={reducedMotion}
-              />
-              <Cabin
-                cabinRef={cabinRef}
-                interactiveEnabled={isOverviewState}
-                hovered={interactionState === 'hoverCabin'}
-                isDoorOpen={isCabinDoorOpen}
-                onHoverChange={(hovered) => updateHover('cabin', hovered)}
-                onClick={() => handleFocusClick('cabin')}
-                onDoorOpenComplete={() => {
-                  setIsCabinInteriorRevealed(true);
-                }}
-              />
-            </>
+            <Cabin
+              cabinRef={cabinRef}
+              interactiveEnabled={isOverviewState}
+              hovered={interactionState === 'hoverCabin'}
+              isDoorOpen={isCabinDoorOpen}
+              onHoverChange={(hovered) => updateHover('cabin', hovered)}
+              onClick={() => handleFocusClick('cabin')}
+            />
           )}
           {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
             <CabinInterior />
