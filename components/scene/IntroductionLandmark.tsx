@@ -8,6 +8,10 @@ import type { Group, MeshStandardMaterial } from 'three';
 import { SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { InteractiveTarget } from './types';
 
+const setInteractiveCursor = (isPointer: boolean) => {
+  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+};
+
 type IntroductionLandmarkProps = {
   interactiveEnabled: boolean;
   hovered: boolean;
@@ -60,11 +64,15 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         receiveShadow
         onPointerEnter={(event) => {
           event.stopPropagation();
-          if (interactiveEnabled) onHoverChange(true);
+          if (interactiveEnabled) {
+            onHoverChange(true);
+            setInteractiveCursor(true);
+          }
         }}
         onPointerLeave={(event) => {
           event.stopPropagation();
           onHoverChange(false);
+          setInteractiveCursor(false);
         }}
         onClick={(event) => {
           event.stopPropagation();
