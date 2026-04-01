@@ -223,7 +223,6 @@ export const Billboard = memo(function Billboard({
                 event.stopPropagation();
                 onNoteClick(note.id);
               }}
-              visible={false}
             >
               <boxGeometry args={[0.46, 0.36, 0.08]} />
               <meshBasicMaterial transparent opacity={0} />
