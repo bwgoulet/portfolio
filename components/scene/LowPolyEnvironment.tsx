@@ -12,6 +12,9 @@ import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
+const setInteractiveCursor = (isPointer: boolean) => {
+  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+};
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
@@ -96,12 +99,14 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
+                  setInteractiveCursor(true);
                 }
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
                 setHoveredTabletId((current) => (current === entry.id ? null : current));
                 onHoverChange(false);
+                setInteractiveCursor(false);
               }}
               onClick={(event) => {
                 event.stopPropagation();

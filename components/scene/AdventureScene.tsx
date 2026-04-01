@@ -235,6 +235,7 @@ export function AdventureScene() {
   useEffect(
     () => () => {
       if (cabinRevealTimerRef.current) window.clearTimeout(cabinRevealTimerRef.current);
+      document.body.style.cursor = 'auto';
     },
     []
   );

@@ -8,6 +8,10 @@ import { Group } from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
+const setInteractiveCursor = (isPointer: boolean) => {
+  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+};
+
 type CabinProps = {
   interactiveEnabled: boolean;
   hovered: boolean;
@@ -28,12 +32,16 @@ export const Cabin = memo(function Cabin({
 
   const handleHoverStart = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
-    if (interactiveEnabled) onHoverChange(true);
+    if (interactiveEnabled) {
+      onHoverChange(true);
+      setInteractiveCursor(true);
+    }
   };
 
   const handleHoverEnd = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
     onHoverChange(false);
+    setInteractiveCursor(false);
   };
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {

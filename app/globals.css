@@ -163,6 +163,7 @@ main {
   align-items: center;
   justify-content: center;
   pointer-events: auto;
+  cursor: pointer;
   z-index: 20;
   background: var(--vt-overlay-scrim);
   backdrop-filter: blur(8px);
@@ -177,6 +178,7 @@ main {
   padding: var(--vt-overlay-padding-card);
   color: var(--vt-surface-panel-text);
   pointer-events: auto;
+  cursor: auto;
 }
 
 .note-detail-card img {
