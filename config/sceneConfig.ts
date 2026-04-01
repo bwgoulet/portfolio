@@ -1,6 +1,6 @@
 import { ColorRepresentation, Vector3Tuple } from 'three';
 
-export type FocusTarget = 'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction';
+export type FocusTarget = 'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction' | 'timeline';
 
 export type CameraPreset = {
   position: Vector3Tuple;
@@ -33,6 +33,11 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     position: [0.5, 2.46, 4.72],
     lookAt: [0.15, 1.88, 1.26],
     fov: 32
+  },
+  timeline: {
+    position: [1.34, 2.46, -1.9],
+    lookAt: [-0.45, 1.26, -5.45],
+    fov: 34
   }
 };
 
