@@ -385,16 +385,8 @@ export function LowPolyEnvironment({
       <Tree position={[2.2, 1.08, -2.35]} />
       <Tree position={[-4.2, 1.08, 1.8]} scale={0.95} />
 
-      <mesh position={[0.2, 1.2, 1.33]} scale={[1.5, 0.82, 1.15]} castShadow receiveShadow>
-        <dodecahedronGeometry args={[0.58, 0]} />
-        <meshStandardMaterial color="#59626c" flatShading />
-      </mesh>
       <mesh position={[2.7, 1.27, -1.65]} castShadow receiveShadow>
         <dodecahedronGeometry args={[0.7, 0]} />
-        <meshStandardMaterial color={PALETTE.rock} flatShading />
-      </mesh>
-      <mesh position={[-2.2, 1.22, 2.2]} scale={[1.2, 1.1, 1.4]} castShadow receiveShadow>
-        <dodecahedronGeometry args={[0.54, 0]} />
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
 
