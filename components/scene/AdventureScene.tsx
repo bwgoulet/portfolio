@@ -26,7 +26,6 @@ export function AdventureScene() {
   const lastTriggerRef = useRef<HTMLElement | null>(null);
   const noteTitleId = useId();
   const experienceTitleId = useId();
-  const cabinRevealTimerRef = useRef<number | null>(null);
 
   const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
   const [focusTarget, setFocusTarget] = useState<'overview' | 'billboard' | 'cabinInterior' | 'tablets' | 'introduction' | 'timeline'>('overview');
@@ -36,6 +35,7 @@ export function AdventureScene() {
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
+  const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
 
   const isTransitioning = interactionState === 'transitioning';
   const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null;
@@ -212,35 +212,19 @@ export function AdventureScene() {
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
 
-      if (cabinRevealTimerRef.current) {
-        window.clearTimeout(cabinRevealTimerRef.current);
-        cabinRevealTimerRef.current = null;
-      }
-
       setInteractionState('transitioning');
       setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setIsCabinInteriorRevealed(false);
+      setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       animateFocusNudge(target);
-
-      if (target === 'cabin') {
-        if (reducedMotion) {
-          setIsCabinInteriorRevealed(true);
-          return;
-        }
-        cabinRevealTimerRef.current = window.setTimeout(
-          () => setIsCabinInteriorRevealed(true),
-          MOTION_TIERS.macro.cameraDuration * 0.72 * 1000
-        );
-      }
     },
-    [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
+    [animateFocusNudge, isOverviewState, isTransitioning]
   );
 
   useEffect(
     () => () => {
-      if (cabinRevealTimerRef.current) window.clearTimeout(cabinRevealTimerRef.current);
       document.body.style.cursor = 'auto';
     },
     []
@@ -277,7 +261,7 @@ export function AdventureScene() {
             }}
           />
           <LightingAtmosphere />
-          {!(interactionState === 'cabinCloseup' || (focusTarget === 'cabinInterior' && isCabinInteriorRevealed)) && (
+          {!isCabinInteriorRevealed && (
             <>
               <LowPolyEnvironment
                 tabletsInteractiveEnabled={isOverviewState}
@@ -317,12 +301,16 @@ export function AdventureScene() {
                 cabinRef={cabinRef}
                 interactiveEnabled={isOverviewState}
                 hovered={interactionState === 'hoverCabin'}
+                isDoorOpen={isCabinDoorOpen}
                 onHoverChange={(hovered) => updateHover('cabin', hovered)}
                 onClick={() => handleFocusClick('cabin')}
+                onDoorOpenComplete={() => {
+                  setIsCabinInteriorRevealed(true);
+                }}
               />
             </>
           )}
-          {(interactionState === 'cabinCloseup' || (focusTarget === 'cabinInterior' && isCabinInteriorRevealed)) && (
+          {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
             <CabinInterior />
           )}
           </Suspense>
@@ -434,6 +422,8 @@ export function AdventureScene() {
           className="scene-back"
           aria-label="Return to overview"
           onClick={() => {
+            setIsCabinDoorOpen(false);
+            setIsCabinInteriorRevealed(false);
             setFocusTarget('overview');
             setInteractionState('transitioning');
             setSelectedNoteId(null);
