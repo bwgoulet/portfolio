@@ -41,6 +41,16 @@ export function AdventureScene() {
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
 
+  const scheduleCabinFadeReset = useCallback((durationMs: number) => {
+    if (cabinFadeTimerRef.current !== null) {
+      window.clearTimeout(cabinFadeTimerRef.current);
+    }
+    cabinFadeTimerRef.current = window.setTimeout(() => {
+      setCabinTransitionFadeState('idle');
+      cabinFadeTimerRef.current = null;
+    }, durationMs);
+  }, []);
+
   const isTransitioning = interactionState === 'transitioning';
   const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null || isIntroductionDialogOpen;
   const isOverviewState =
@@ -275,17 +285,16 @@ export function AdventureScene() {
                 setIsCabinInteriorRevealed(true);
                 if (!reducedMotion) {
                   setCabinTransitionFadeState('fade-in');
-                  if (cabinFadeTimerRef.current !== null) {
-                    window.clearTimeout(cabinFadeTimerRef.current);
-                  }
-                  cabinFadeTimerRef.current = window.setTimeout(() => {
-                    setCabinTransitionFadeState('idle');
-                    cabinFadeTimerRef.current = null;
-                  }, 220);
+                  scheduleCabinFadeReset(320);
                 }
               }
               if (completedTarget === 'overview') {
-                setCabinTransitionFadeState('idle');
+                if (!reducedMotion && cabinTransitionFadeState === 'fade-out') {
+                  setCabinTransitionFadeState('fade-in');
+                  scheduleCabinFadeReset(320);
+                } else {
+                  setCabinTransitionFadeState('idle');
+                }
                 setIsCabinFadePending(false);
                 setInteractionState('idleOverview');
                 return;
@@ -509,6 +518,12 @@ export function AdventureScene() {
           className="scene-back"
           aria-label="Return to overview"
           onClick={() => {
+            const exitingCabin = focusTarget === 'cabinInterior';
+            if (exitingCabin && !reducedMotion) {
+              setCabinTransitionFadeState('fade-out');
+            } else {
+              setCabinTransitionFadeState('idle');
+            }
             setIsCabinDoorOpen(false);
             setIsCabinInteriorRevealed(false);
             setFocusTarget('overview');
