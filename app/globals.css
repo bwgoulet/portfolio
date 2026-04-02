@@ -269,10 +269,14 @@ main {
 }
 
 .project-detail-card img {
+  width: min(100%, 680px);
+  max-height: min(42vh, 380px);
   border: 2px solid var(--vt-note-image-border);
 }
 
 .experience-detail-card img {
+  width: min(100%, 680px);
+  max-height: min(42vh, 380px);
   border: 1px solid rgba(214, 226, 238, 0.3);
 }
 
