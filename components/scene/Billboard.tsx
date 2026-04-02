@@ -191,15 +191,15 @@ export const Billboard = memo(function Billboard({
             <mesh
               position={[0, 0, 0.03]}
               onPointerEnter={(event) => {
-                event.stopPropagation();
+                if (notesInteractive) event.stopPropagation();
                 startNoteHover(note.id);
               }}
               onPointerMove={(event) => {
-                event.stopPropagation();
+                if (notesInteractive) event.stopPropagation();
                 startNoteHover(note.id);
               }}
               onPointerLeave={(event) => {
-                event.stopPropagation();
+                if (notesInteractive) event.stopPropagation();
                 endNoteHover(note.id);
               }}
               onPointerDown={(event) => {
