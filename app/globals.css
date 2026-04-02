@@ -190,32 +190,30 @@ main {
   color: var(--vt-surface-panel-text);
 }
 
-.note-detail-card ul {
+.detail-content-card ul {
   margin: 1rem 0 0;
   padding-left: 1.28rem;
   display: grid;
-  gap: 0.66rem;
+  gap: 0.72rem;
+  max-width: 74ch;
 }
 
-.note-detail-card li {
-  font-size: clamp(0.94rem, 1.25vw, 1rem);
+.detail-content-card li {
+  font-size: clamp(0.95rem, 1.3vw, 1.02rem);
   line-height: 1.45;
+}
+
+.project-detail-card li {
   color: var(--vt-note-body-text);
 }
 
-.experience-detail-card {
-  background: #0f1217;
-  border: 1px solid rgba(214, 226, 238, 0.3);
-  color: #e7eff7;
-}
-
 .detail-content-card img {
-  width: 100%;
-  max-height: min(58vh, 500px);
+  width: min(100%, 520px);
+  max-height: min(30vh, 260px);
   object-fit: cover;
   border-radius: var(--vt-overlay-radius-sm);
   display: block;
-  margin-bottom: 0.9rem;
+  margin: 0 auto 0.9rem;
 }
 
 .project-detail-card img {
@@ -246,16 +244,6 @@ main {
   color: var(--vt-note-body-text);
 }
 
-.experience-detail-card img {
-  width: 100%;
-  max-height: min(54vh, 420px);
-  object-fit: cover;
-  border: 1px solid var(--vt-experience-border);
-  border-radius: var(--vt-overlay-radius-sm);
-  display: block;
-  margin-bottom: 0.9rem;
-}
-
 .experience-detail-card h2 {
   color: #f2f6fb;
 }
@@ -266,24 +254,18 @@ main {
   color: #b5c3d1;
 }
 
-.experience-detail-card ul {
-  margin: 1rem 0 0;
-  padding-left: 1.28rem;
-  display: grid;
-  gap: 0.72rem;
-  max-width: 74ch;
-}
-
 .experience-detail-card li {
-  font-size: clamp(0.95rem, 1.3vw, 1.02rem);
-  line-height: 1.45;
   color: #e1e9f3;
 }
 
+.experience-detail-card {
+  background: #0f1217;
+  border: 1px solid rgba(214, 226, 238, 0.3);
+  color: #e7eff7;
+}
+
 .detail-impact {
-  margin-top: 1.1rem;
-  padding-top: 0.95rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  margin-top: 0.95rem;
 }
 
 .detail-impact h3 {
@@ -295,35 +277,18 @@ main {
   margin: 0.4rem 0 0;
 }
 
-.note-detail-card .detail-impact h3 {
-  color: #121313;
+.detail-divider {
+  border: 0;
+  margin: 1.1rem 0 0;
+  border-top: 1px solid;
 }
 
-.note-detail-card .detail-impact p {
-  color: var(--vt-note-body-text);
+.project-detail-card .detail-divider {
+  border-top-color: rgba(18, 19, 19, 0.2);
 }
 
-.experience-detail-card .detail-impact h3 {
-  color: #f2f6fb;
-}
-
-.experience-detail-card .detail-impact p {
-  color: #e1e9f3;
-}
-
-.detail-impact {
-  margin-top: 1.1rem;
-  padding-top: 0.95rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.detail-impact h3 {
-  margin: 0;
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-}
-
-.detail-impact p {
-  margin: 0.4rem 0 0;
+.experience-detail-card .detail-divider {
+  border-top-color: rgba(214, 226, 238, 0.28);
 }
 
 .note-detail-card .detail-impact h3 {
