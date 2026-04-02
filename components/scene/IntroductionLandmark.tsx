@@ -147,6 +147,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           <meshStandardMaterial color={hovered ? '#909aa3' : '#7b858f'} flatShading />
         </mesh>
         <Text
+          position={[0, 0, 0.039]}
           fontSize={hovered ? 0.097 : 0.09}
           maxWidth={0.64}
           lineHeight={0.9}
