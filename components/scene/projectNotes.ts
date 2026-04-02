@@ -2,6 +2,9 @@ export type ProjectNote = {
   id: string;
   title: string;
   detail: string;
+  resumeMeta?: string;
+  resumeDate?: string;
+  bullets?: string[];
   imageSrc: string;
   detailImageSrc: string;
   whyItMattered: string;
@@ -37,8 +40,14 @@ export const PROJECT_NOTES: ProjectNote[] = [
   },
   {
     id: 'night-camp',
-    title: 'Night Camp',
-    detail: 'A moody branding exercise with motion studies, ambient gradients, and playful mascot illustrations for launch content.',
+    title: 'Brevity',
+    detail: 'Created an email prioritization system using sentiment analysis and summarization to streamline inbox navigation.',
+    resumeMeta: 'HackNC',
+    resumeDate: 'October 2022 - November 2022',
+    bullets: [
+      'Addressed challenges such as the inadequacy of Google’s Sentiment Analysis API and the complexities of querying GPT-3 before ChatGPT, leading to a pivot to GPT-3 for improved accuracy in email urgency rating.',
+      'Awarded 2nd place overall at HackNC 2022.'
+    ],
     imageSrc: '/projects/brevity-logo.svg',
     detailImageSrc: '/projects/brevity-logo.svg',
     whyItMattered:
@@ -48,9 +57,16 @@ export const PROJECT_NOTES: ProjectNote[] = [
     color: '#f8e6ad'
   },
   {
-    id: 'route-planner',
-    title: 'Route Planner',
-    detail: 'Prototype for trip sequencing, stop optimization, and drag-to-adjust day plans designed for quick itinerary tuning.',
+    id: 'unc-smash',
+    title: 'UNC Smash',
+    detail: 'Directed 80+ gaming tournaments for 170+ students, managing bracket design, scheduling, and live officiating.',
+    resumeMeta: 'University of North Carolina',
+    resumeDate: 'January 2024 - May 2025',
+    bullets: [
+      'Led a team of three officers, delegating match officiating, venue setup, and payout procurement.',
+      'Developed and maintained a weekly Twitch livestream, archiving matches and building community engagement.',
+      'Grew active membership by 136% (25 to 59 weekly participants) and launched the club’s first NC-wide SSBM event.'
+    ],
     imageSrc: '/note-images/route-planner.svg',
     detailImageSrc: '/note-images/route-planner.svg',
     whyItMattered:

@@ -190,6 +190,19 @@ main {
   color: var(--vt-surface-panel-text);
 }
 
+.note-detail-card ul {
+  margin: 1rem 0 0;
+  padding-left: 1.28rem;
+  display: grid;
+  gap: 0.66rem;
+}
+
+.note-detail-card li {
+  font-size: clamp(0.94rem, 1.25vw, 1rem);
+  line-height: 1.45;
+  color: var(--vt-note-body-text);
+}
+
 .experience-detail-card {
   background: #0f1217;
   border: 1px solid rgba(214, 226, 238, 0.3);
