@@ -269,11 +269,33 @@ main {
 }
 
 .project-detail-card img {
+  width: min(100%, 720px);
+  max-height: min(42vh, 380px);
+  margin: 0 auto 0.9rem;
   border: 2px solid var(--vt-note-image-border);
 }
 
 .experience-detail-card img {
+  width: min(100%, 720px);
+  max-height: min(42vh, 380px);
+  margin: 0 auto 0.9rem;
   border: 1px solid rgba(214, 226, 238, 0.3);
+}
+
+.project-detail-card h2,
+.project-detail-card .detail-summary,
+.project-detail-card .detail-meta,
+.project-detail-card ul,
+.project-detail-card .detail-divider,
+.project-detail-card .detail-impact,
+.experience-detail-card h2,
+.experience-detail-card .detail-meta,
+.experience-detail-card ul,
+.experience-detail-card .detail-divider,
+.experience-detail-card .detail-impact {
+  width: min(100%, 720px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-content-card h2 {
@@ -285,6 +307,8 @@ main {
 .project-detail-card h2 {
   color: #121313;
   font-weight: 700;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-content-card p {
@@ -295,6 +319,8 @@ main {
 
 .experience-detail-card h2 {
   color: #f2f6fb;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-summary {
