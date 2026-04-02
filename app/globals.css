@@ -187,7 +187,7 @@ main {
 
 .note-detail-card img {
   width: 100%;
-  max-height: min(46vh, 350px);
+  max-height: min(54vh, 420px);
   object-fit: cover;
   border: 2px solid var(--vt-note-image-border);
   border-radius: var(--vt-overlay-radius-sm);
@@ -221,6 +221,16 @@ main {
   pointer-events: auto;
 }
 
+.experience-detail-card img {
+  width: 100%;
+  max-height: min(54vh, 420px);
+  object-fit: cover;
+  border: 1px solid var(--vt-experience-border);
+  border-radius: var(--vt-overlay-radius-sm);
+  display: block;
+  margin-bottom: 0.9rem;
+}
+
 .experience-detail-card h2 {
   margin: 0;
   font-size: clamp(1.15rem, 2vw, 1.45rem);
@@ -244,6 +254,37 @@ main {
 .experience-detail-card li {
   font-size: clamp(0.95rem, 1.3vw, 1.02rem);
   line-height: 1.45;
+  color: var(--vt-experience-list);
+}
+
+.detail-impact {
+  margin-top: 1.1rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.detail-impact h3 {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+}
+
+.detail-impact p {
+  margin: 0.4rem 0 0;
+}
+
+.note-detail-card .detail-impact h3 {
+  color: #121313;
+}
+
+.note-detail-card .detail-impact p {
+  color: var(--vt-note-body-text);
+}
+
+.experience-detail-card .detail-impact h3 {
+  color: var(--vt-experience-title);
+}
+
+.experience-detail-card .detail-impact p {
   color: var(--vt-experience-list);
 }
 

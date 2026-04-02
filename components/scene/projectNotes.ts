@@ -3,6 +3,8 @@ export type ProjectNote = {
   title: string;
   detail: string;
   imageSrc: string;
+  detailImageSrc: string;
+  whyItMattered: string;
   position: [number, number, number];
   rotation: number;
   color: string;
@@ -14,6 +16,9 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Summit UI',
     detail: 'A polished dashboard concept focused on clean hierarchy, alpine-themed iconography, and reusable tokens for fast iteration.',
     imageSrc: '/note-images/summit-ui.svg',
+    detailImageSrc: '/note-images/summit-ui.svg',
+    whyItMattered:
+      'This project helped sharpen product storytelling and design-system thinking, making future interfaces faster to build and easier to scale.',
     position: [-0.64, 1.96, 0.19],
     rotation: -0.15,
     color: '#f5dfa4'
@@ -23,6 +28,9 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Trail Maps',
     detail: 'Interactive route layers with terrain overlays and waypoint storytelling for planning hikes before stepping outside.',
     imageSrc: '/note-images/trail-maps.svg',
+    detailImageSrc: '/note-images/trail-maps.svg',
+    whyItMattered:
+      'It proved the value of blending data and narrative in a single interface, so users can make confident decisions without friction.',
     position: [-0.12, 1.93, 0.19],
     rotation: -0.04,
     color: '#efe3b4'
@@ -32,6 +40,9 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Night Camp',
     detail: 'A moody branding exercise with motion studies, ambient gradients, and playful mascot illustrations for launch content.',
     imageSrc: '/projects/brevity-logo.svg',
+    detailImageSrc: '/projects/brevity-logo.svg',
+    whyItMattered:
+      'The work pushed creative direction and visual identity skills, showing how cohesive branding can increase clarity and memorability.',
     position: [0.4, 1.91, 0.19],
     rotation: 0.1,
     color: '#f8e6ad'
@@ -41,6 +52,9 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Route Planner',
     detail: 'Prototype for trip sequencing, stop optimization, and drag-to-adjust day plans designed for quick itinerary tuning.',
     imageSrc: '/note-images/route-planner.svg',
+    detailImageSrc: '/note-images/route-planner.svg',
+    whyItMattered:
+      'This concept explored practical UX for complex planning workflows, emphasizing fast edits and clear feedback under real constraints.',
     position: [-0.34, 1.56, 0.19],
     rotation: -0.09,
     color: '#f0dca3'
@@ -50,6 +64,9 @@ export const PROJECT_NOTES: ProjectNote[] = [
     title: 'Gear Check',
     detail: 'Accessibility and QA checklist that tracks readiness across devices, motion preferences, and keyboard-only review.',
     imageSrc: '/note-images/gear-check.svg',
+    detailImageSrc: '/note-images/gear-check.svg',
+    whyItMattered:
+      'It centered inclusive quality as part of everyday delivery, helping ship experiences that are resilient, accessible, and trustworthy.',
     position: [0.24, 1.55, 0.19],
     rotation: 0.07,
     color: '#f7e5b8'
