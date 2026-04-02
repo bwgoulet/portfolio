@@ -96,6 +96,20 @@ export const Billboard = memo(function Billboard({
 
       <mesh
         position={[0, 1.72, 0.05]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[2.18, 1.46, 0.1]} />
+        <meshStandardMaterial
+          ref={boardMaterialRef}
+          color={hovered ? '#dcca9f' : PALETTE.billboardFace}
+          emissive={hovered ? '#433318' : '#1f180f'}
+          emissiveIntensity={hovered ? 0.18 : 0.06}
+          flatShading
+        />
+      </mesh>
+      <mesh
+        position={[0, 1.72, 0.11]}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (interactiveEnabled) {
@@ -112,17 +126,9 @@ export const Billboard = memo(function Billboard({
           event.stopPropagation();
           if (interactiveEnabled) onClick();
         }}
-        castShadow
-        receiveShadow
       >
-        <boxGeometry args={[2.18, 1.46, 0.1]} />
-        <meshStandardMaterial
-          ref={boardMaterialRef}
-          color={hovered ? '#dcca9f' : PALETTE.billboardFace}
-          emissive={hovered ? '#433318' : '#1f180f'}
-          emissiveIntensity={hovered ? 0.18 : 0.06}
-          flatShading
-        />
+        <boxGeometry args={[2.24, 1.52, 0.16]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
 
 
@@ -160,8 +166,31 @@ export const Billboard = memo(function Billboard({
               noteRefs.current[note.id] = group;
             }}
           >
+            <mesh>
+              <boxGeometry args={[0.38, 0.28, 0.024]} />
+              <meshStandardMaterial
+                color={note.color}
+                emissive={notesInteractive ? billboard.noteEmissiveActive : billboard.noteEmissiveIdle}
+                emissiveIntensity={notesInteractive ? 0.12 : 0.04}
+                flatShading
+              />
+            </mesh>
+            <mesh position={[0.005, 0.11, 0.013]}>
+              <sphereGeometry args={[0.017, 6, 6]} />
+              <meshStandardMaterial color={billboard.notePin} flatShading />
+            </mesh>
+            <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} pointerEvents="none">
+              <div className="note-preview" aria-hidden>
+                <img src={note.imageSrc} alt="" />
+                <div className="note-scribbles">
+                  <span />
+                  <span />
+                </div>
+              </div>
+            </Html>
             <mesh
-              onPointerOver={(event) => {
+              position={[0, 0, 0.03]}
+              onPointerEnter={(event) => {
                 event.stopPropagation();
                 startNoteHover(note.id);
               }}
@@ -169,7 +198,7 @@ export const Billboard = memo(function Billboard({
                 event.stopPropagation();
                 startNoteHover(note.id);
               }}
-              onPointerOut={(event) => {
+              onPointerLeave={(event) => {
                 event.stopPropagation();
                 endNoteHover(note.id);
               }}
@@ -183,50 +212,8 @@ export const Billboard = memo(function Billboard({
                 onNoteClick(note.id);
               }}
             >
-              <boxGeometry args={[0.38, 0.28, 0.024]} />
-              <meshStandardMaterial
-                color={note.color}
-                emissive={notesInteractive ? billboard.noteEmissiveActive : billboard.noteEmissiveIdle}
-                emissiveIntensity={notesInteractive ? 0.12 : 0.04}
-                flatShading
-              />
-            </mesh>
-            <mesh position={[0.005, 0.11, 0.013]}>
-              <sphereGeometry args={[0.017, 6, 6]} />
-              <meshStandardMaterial color={billboard.notePin} flatShading />
-            </mesh>
-            <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} style={{ pointerEvents: "none" }}>
-              <div className="note-preview" aria-hidden>
-                <img src={note.imageSrc} alt="" />
-                <div className="note-scribbles">
-                  <span />
-                  <span />
-                </div>
-              </div>
-            </Html>
-            <mesh
-              position={[0, 0, 0.03]}
-              onPointerOver={(event) => {
-                event.stopPropagation();
-                startNoteHover(note.id);
-              }}
-              onPointerMove={(event) => {
-                event.stopPropagation();
-                startNoteHover(note.id);
-              }}
-              onPointerOut={(event) => {
-                event.stopPropagation();
-                endNoteHover(note.id);
-              }}
-              onClick={(event) => {
-                if (!notesInteractive) return;
-                event.stopPropagation();
-                onNoteClick(note.id);
-              }}
-              visible={false}
-            >
               <boxGeometry args={[0.46, 0.36, 0.08]} />
-              <meshBasicMaterial transparent opacity={0} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
             </mesh>
           </group>
         ))}
