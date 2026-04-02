@@ -91,17 +91,17 @@ export const PROJECT_NOTES: ProjectNote[] = [
   },
   {
     id: 'portfolio',
-    title: 'Prtofolio',
+    title: 'Portfolio',
     detail: 'Durham, NC',
-    resumeDate: 'March 2026',
+    resumeDate: 'March 2026 - April 2026',
     bullets: [
       'Directed 80+ gaming tournaments for 170+ students, managing bracket design, scheduling, and live officiating.',
       'Led a team of three officers, delegating match officiating, venue setup, and payout procurement.',
       'Developed and maintained a weekly Twitch livestream, archiving matches and building community engagement.',
       'Grew active membership by 136% (25 to 59 weekly participants) and launched the club’s first NC-wide SSBM event.'
     ],
-    imageSrc: '/projects/bath_bg.jpg',
-    detailImageSrc: '/projects/uncsmash.jpg',
+    imageSrc: '/projects/timeline.png',
+    detailImageSrc: '/projects/portfolio.png',
     whyItMattered:
       'It centered inclusive quality as part of everyday delivery, helping ship experiences that are resilient, accessible, and trustworthy.',
     position: [0.24, 1.55, 0.19],
