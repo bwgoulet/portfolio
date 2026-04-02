@@ -129,6 +129,10 @@ main {
   pointer-events: none;
 }
 
+.note-preview * {
+  pointer-events: none;
+}
+
 .note-preview img {
   width: 44px;
   height: 26px;
