@@ -86,12 +86,12 @@ export function AdventureScene() {
     window.setTimeout(() => setClosingExperienceId(null), MOTION_TIERS.macro.overlayFadeDuration * 1000);
   }, [reducedMotion, selectedExperienceId]);
 
-  const closeNoteDialog = useCallback(() => {
-    setSelectedNoteId(null);
+  const closeIntroductionDialog = useCallback(() => {
+    setIsIntroductionDialogOpen(false);
   }, []);
 
-  const closeExperienceDialog = useCallback(() => {
-    setSelectedExperienceId(null);
+  const closeIntroductionDialog = useCallback(() => {
+    setIsIntroductionDialogOpen(false);
   }, []);
 
   const handleCloseIntroductionDialog = useCallback(() => {
@@ -379,9 +379,6 @@ export function AdventureScene() {
             aria-labelledby={noteTitleId}
             tabIndex={-1}
           >
-            <button className="detail-close" onClick={closeNoteDialog} aria-label="Close project details">
-              Close
-            </button>
             <img src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} />
             <h2 id={noteTitleId}>{selectedNote.title}</h2>
             <p className="detail-summary">{selectedNote.detail}</p>
@@ -430,9 +427,6 @@ export function AdventureScene() {
             aria-labelledby={experienceTitleId}
             tabIndex={-1}
           >
-            <button className="detail-close" onClick={closeExperienceDialog} aria-label="Close experience details">
-              Close
-            </button>
             <img src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
             <p className="detail-meta">{selectedExperience.company}</p>
