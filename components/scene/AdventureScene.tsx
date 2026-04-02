@@ -90,14 +90,6 @@ export function AdventureScene() {
     setIsIntroductionDialogOpen(false);
   }, []);
 
-  const closeIntroductionDialog = useCallback(() => {
-    setIsIntroductionDialogOpen(false);
-  }, []);
-
-  const handleCloseIntroductionDialog = useCallback(() => {
-    setIsIntroductionDialogOpen(false);
-  }, []);
-
   useEffect(() => {
     if (!isDetailDialogOpen || !modalRef.current) return;
     const dialog = modalRef.current;
@@ -449,13 +441,13 @@ export function AdventureScene() {
         <article
           className={`note-detail ${detailCardStateClass(false)}`}
           aria-live="polite"
-          onClick={handleCloseIntroductionDialog}
+          onClick={closeIntroductionDialog}
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               event.preventDefault();
-              handleCloseIntroductionDialog();
+              closeIntroductionDialog();
             }
           }}
         >
@@ -468,7 +460,7 @@ export function AdventureScene() {
             aria-labelledby="introduction-title"
             tabIndex={-1}
           >
-            <button className="detail-close" onClick={handleCloseIntroductionDialog} aria-label="Close introduction details">
+            <button className="detail-close" onClick={closeIntroductionDialog} aria-label="Close introduction details">
               Close
             </button>
             <div className="introduction-detail-layout">
