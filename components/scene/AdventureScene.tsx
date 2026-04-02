@@ -281,7 +281,7 @@ export function AdventureScene() {
                   cabinFadeTimerRef.current = window.setTimeout(() => {
                     setCabinTransitionFadeState('idle');
                     cabinFadeTimerRef.current = null;
-                  }, 320);
+                  }, 220);
                 }
               }
               if (completedTarget === 'overview') {
