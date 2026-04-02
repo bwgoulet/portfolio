@@ -276,7 +276,7 @@ export function AdventureScene() {
             onTransitionProgress={(target, progress) => {
               if (reducedMotion) return;
               if (target !== 'cabinInterior' || !isCabinFadePending) return;
-              if (progress < 0.84) return;
+              if (progress < 0.94) return;
               setCabinTransitionFadeState('fade-out');
               setIsCabinFadePending(false);
             }}
