@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from '@react-three/drei';
+import { Html } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
@@ -18,7 +18,6 @@ type IntroductionLandmarkProps = {
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
   landmarkRef: RefObject<Group | null>;
-  label?: string;
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number;
@@ -31,14 +30,13 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   onHoverChange,
   onClick,
   landmarkRef,
-  label = 'Introduction',
   position = SCENE_ANCHORS.introductionLandmark,
   rotation = [0, -0.1, 0],
   scale = 1,
   reducedMotion
 }: IntroductionLandmarkProps) {
   const plaqueRef = useRef<MeshStandardMaterial>(null);
-  const textGroupRef = useRef<Group>(null);
+  const plaquePreviewRef = useRef<Group>(null);
 
   useFrame(({ clock }) => {
     if (!plaqueRef.current) return;
@@ -48,8 +46,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     }
     const pulse = reducedMotion ? 0 : (Math.sin(clock.getElapsedTime() * 2.3) + 1) * 0.5;
     plaqueRef.current.emissiveIntensity = 0.05 + pulse * 0.03;
-    if (!textGroupRef.current || reducedMotion) return;
-    textGroupRef.current.position.y = 0.36 + Math.sin(clock.getElapsedTime() * 0.72) * 0.012;
+    if (!plaquePreviewRef.current || reducedMotion) return;
+    plaquePreviewRef.current.position.y = 0.36 + Math.sin(clock.getElapsedTime() * 0.72) * 0.012;
   });
 
   return (
@@ -99,30 +97,21 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         />
       </mesh>
 
-      <group ref={textGroupRef} position={[0.03, 0.36, 0.56]} rotation={[-0.08, 0, 0]}>
-        <Text
-          fontSize={0.09}
-          maxWidth={0.64}
-          lineHeight={0.9}
-          letterSpacing={0.012}
-          anchorX="center"
-          anchorY="middle"
-          color="#454e55"
-        >
-          {label}
-        </Text>
-        <Text
-          position={[0.002, 0.003, 0.002]}
-          fontSize={0.088}
-          maxWidth={0.64}
-          lineHeight={0.9}
-          letterSpacing={0.011}
-          anchorX="center"
-          anchorY="middle"
-          color={hovered ? '#d8dee1' : '#bec6cb'}
-        >
-          {label}
-        </Text>
+      <group ref={plaquePreviewRef} position={[0.03, 0.36, 0.56]} rotation={[-0.08, 0, 0]}>
+        <Html transform position={[0, 0, 0.004]} distanceFactor={1.2} pointerEvents="none">
+          <div className={`intro-plaque-preview ${hovered ? 'is-hovered' : ''}`} aria-hidden>
+            <img src="/introimage.png" alt="" />
+            <div className="intro-scribbles" role="presentation">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </Html>
+        <mesh position={[0, 0, -0.001]}>
+          <planeGeometry args={[0.72, 0.26]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
     </group>
   );
