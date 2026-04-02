@@ -129,6 +129,57 @@ main {
   pointer-events: none;
 }
 
+.intro-plaque-preview {
+  width: 94px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(93, 105, 115, 0.9);
+  background: rgba(213, 221, 228, 0.95);
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 5px;
+  box-shadow: 0 3px 8px rgba(20, 28, 36, 0.35);
+}
+
+.intro-plaque-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid rgba(82, 96, 108, 0.7);
+}
+
+.intro-plaque-preview.is-hovered {
+  border-color: rgba(242, 247, 252, 0.95);
+  box-shadow: 0 0 0 1px rgba(241, 247, 252, 0.7), 0 4px 10px rgba(20, 28, 36, 0.42);
+}
+
+.intro-scribbles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.intro-scribbles span {
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(66, 77, 86, 0.92);
+}
+
+.intro-scribbles span:nth-child(1) {
+  width: 100%;
+}
+
+.intro-scribbles span:nth-child(2) {
+  width: 84%;
+}
+
+.intro-scribbles span:nth-child(3) {
+  width: 92%;
+}
+
 .note-preview * {
   pointer-events: none;
 }
