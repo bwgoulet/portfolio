@@ -90,6 +90,10 @@ export function AdventureScene() {
     setIsIntroductionDialogOpen(false);
   }, []);
 
+  const closeIntroductionDialog = useCallback(() => {
+    setIsIntroductionDialogOpen(false);
+  }, []);
+
   useEffect(() => {
     if (!isDetailDialogOpen || !modalRef.current) return;
     const dialog = modalRef.current;
