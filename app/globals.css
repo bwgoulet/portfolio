@@ -201,6 +201,7 @@ main {
 .detail-content-card li {
   font-size: clamp(0.95rem, 1.3vw, 1.02rem);
   line-height: 1.45;
+  font-weight: 500;
 }
 
 .project-detail-card li {
@@ -232,6 +233,7 @@ main {
 
 .project-detail-card h2 {
   color: #121313;
+  font-weight: 700;
 }
 
 .detail-content-card p {
@@ -240,17 +242,28 @@ main {
   line-height: 1.5;
 }
 
-.project-detail-card p {
-  color: var(--vt-note-body-text);
-}
-
 .experience-detail-card h2 {
   color: #f2f6fb;
 }
 
-.experience-detail-meta {
-  margin: 0.35rem 0 0;
+.detail-summary {
+  margin-top: 0.3rem;
+}
+
+.project-detail-card .detail-summary {
+  color: #223143;
+}
+
+.detail-meta {
+  margin: 0.2rem 0 0;
   font-size: 0.9rem;
+}
+
+.project-detail-card .detail-meta {
+  color: #32485f;
+}
+
+.experience-detail-card .detail-meta {
   color: #b5c3d1;
 }
 
@@ -279,12 +292,12 @@ main {
 
 .detail-divider {
   border: 0;
-  margin: 1.1rem 0 0;
+  margin: 1.2rem 0 0;
   border-top: 1px solid;
 }
 
 .project-detail-card .detail-divider {
-  border-top-color: rgba(18, 19, 19, 0.2);
+  border-top-color: rgba(18, 19, 19, 0.38);
 }
 
 .experience-detail-card .detail-divider {
