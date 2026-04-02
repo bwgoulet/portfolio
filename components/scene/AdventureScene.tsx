@@ -383,6 +383,7 @@ export function AdventureScene() {
                 ))}
               </ul>
             )}
+            <hr className="detail-divider" aria-hidden="true" />
             <section className="detail-impact">
               <h3>Why It Mattered</h3>
               <p>{selectedNote.whyItMattered}</p>
@@ -426,6 +427,7 @@ export function AdventureScene() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+            <hr className="detail-divider" aria-hidden="true" />
             <section className="detail-impact">
               <h3>Why It Mattered</h3>
               <p>{selectedExperience.whyItMattered}</p>
