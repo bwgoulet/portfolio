@@ -179,7 +179,7 @@ export const Billboard = memo(function Billboard({
               <sphereGeometry args={[0.017, 6, 6]} />
               <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
-            <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} style={{ pointerEvents: "none" }}>
+            <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} pointerEvents="none">
               <div className="note-preview" aria-hidden>
                 <img src={note.imageSrc} alt="" />
                 <div className="note-scribbles">
