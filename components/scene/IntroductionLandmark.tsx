@@ -4,6 +4,7 @@ import { Text, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
+import { DoubleSide } from 'three';
 import type { Group, MeshStandardMaterial } from 'three';
 import { SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { InteractiveTarget } from './types';
@@ -37,8 +38,9 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 }: IntroductionLandmarkProps) {
   const topStoneRef = useRef<MeshStandardMaterial>(null);
   const engravingGroupRef = useRef<Group>(null);
+  const sideLabelRef = useRef<Group>(null);
   const introTexture = useTexture('/introimage.png');
-  const imageWidth = 0.105;
+  const imageWidth = 0.114;
   const imageHeight = imageWidth / (858 / 1356);
 
   useFrame(({ clock }) => {
@@ -51,6 +53,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     topStoneRef.current.emissiveIntensity = 0.05 + pulse * 0.03;
     if (!engravingGroupRef.current || reducedMotion) return;
     engravingGroupRef.current.position.y = 0.498 + Math.sin(clock.getElapsedTime() * 0.72) * 0.006;
+    if (!sideLabelRef.current) return;
+    sideLabelRef.current.position.y = 0.36 + Math.sin(clock.getElapsedTime() * 0.72) * 0.012;
   });
 
   return (
@@ -105,12 +109,19 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
       </mesh>
 
       <group ref={engravingGroupRef} position={[0, 0.498, 0]}>
-        <mesh position={[-0.16, 0, 0]} rotation={[-Math.PI / 2, 0.24, 0]}>
+        <mesh position={[-0.16, 0.004, 0.005]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[imageWidth, imageHeight]} />
-          <meshStandardMaterial map={introTexture} roughness={0.9} metalness={0.03} />
+          <meshStandardMaterial
+            map={introTexture}
+            roughness={0.9}
+            metalness={0.03}
+            side={DoubleSide}
+            polygonOffset
+            polygonOffsetFactor={-1}
+          />
         </mesh>
 
-        <group position={[0.12, -0.005, -0.005]} rotation={[0, 0.24, 0]}>
+        <group position={[0.12, -0.005, -0.005]} rotation={[0, 0.08, 0]}>
           <mesh position={[0, 0, -0.05]}>
             <boxGeometry args={[0.2, 0.006, 0.014]} />
             <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
@@ -128,24 +139,27 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
           </mesh>
         </group>
+      </group>
 
-        <group position={[-0.05, 0.001, -0.15]} rotation={[0, 0.24, 0]}>
-          <mesh>
-            <boxGeometry args={[0.2, 0.012, 0.06]} />
-            <meshStandardMaterial color={hovered ? '#97a1aa' : '#828d98'} flatShading />
-          </mesh>
-          <Text
-            position={[0, 0.007, 0]}
-            rotation={[-Math.PI / 2, 0, 0]}
-            fontSize={0.024}
-            letterSpacing={0.008}
-            anchorX="center"
-            anchorY="middle"
-            color={hovered ? '#f2f5f8' : '#e1e7ec'}
-          >
-            Introduction
-          </Text>
-        </group>
+      <group ref={sideLabelRef} position={[0.03, 0.36, 0.56]} rotation={[-0.08, 0, 0]}>
+        <mesh>
+          <boxGeometry args={[0.76, 0.22, 0.07]} />
+          <meshStandardMaterial color={hovered ? '#909aa3' : '#7b858f'} flatShading />
+        </mesh>
+        <Text
+          fontSize={hovered ? 0.097 : 0.09}
+          maxWidth={0.64}
+          lineHeight={0.9}
+          letterSpacing={hovered ? 0.015 : 0.012}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? '#f5f8fb' : '#dce3e8'}
+          fontWeight={hovered ? '700' : '500'}
+          outlineWidth={hovered ? 0.01 : 0.006}
+          outlineColor={hovered ? '#2f3840' : '#374149'}
+        >
+          Introduction
+        </Text>
       </group>
     </group>
   );
