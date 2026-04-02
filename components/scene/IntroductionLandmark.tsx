@@ -1,6 +1,6 @@
 'use client';
 
-import { useTexture } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { memo, useRef } from 'react';
 import type { RefObject } from 'react';
@@ -38,6 +38,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const topStoneRef = useRef<MeshStandardMaterial>(null);
   const engravingGroupRef = useRef<Group>(null);
   const introTexture = useTexture('/introimage.png');
+  const imageWidth = 0.105;
+  const imageHeight = imageWidth / (858 / 1356);
 
   useFrame(({ clock }) => {
     if (!topStoneRef.current) return;
@@ -58,15 +60,24 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         <meshStandardMaterial color="#49525a" flatShading />
       </mesh>
 
+      <mesh castShadow receiveShadow>
+        <cylinderGeometry args={[0.56, 0.67, 0.62, 8]} />
+        <meshStandardMaterial color={hovered ? '#73808a' : '#5d6872'} flatShading />
+      </mesh>
+
       <mesh
-        castShadow
-        receiveShadow
+        position={[0, 0.12, 0]}
         onPointerEnter={(event) => {
           event.stopPropagation();
-          if (interactiveEnabled) {
-            onHoverChange(true);
-            setInteractiveCursor(true);
-          }
+          if (!interactiveEnabled) return;
+          onHoverChange(true);
+          setInteractiveCursor(true);
+        }}
+        onPointerMove={(event) => {
+          event.stopPropagation();
+          if (!interactiveEnabled) return;
+          onHoverChange(true);
+          setInteractiveCursor(true);
         }}
         onPointerLeave={(event) => {
           event.stopPropagation();
@@ -78,8 +89,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           if (interactiveEnabled) onClick('introduction');
         }}
       >
-        <cylinderGeometry args={[0.56, 0.67, 0.62, 8]} />
-        <meshStandardMaterial color={hovered ? '#73808a' : '#5d6872'} flatShading />
+        <cylinderGeometry args={[0.62, 0.72, 0.98, 8]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
 
       <mesh position={[0, 0.38, 0]} castShadow receiveShadow>
@@ -95,7 +106,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
       <group ref={engravingGroupRef} position={[0, 0.498, 0]}>
         <mesh position={[-0.16, 0, 0]} rotation={[-Math.PI / 2, 0.24, 0]}>
-          <planeGeometry args={[0.24, 0.16]} />
+          <planeGeometry args={[imageWidth, imageHeight]} />
           <meshStandardMaterial map={introTexture} roughness={0.9} metalness={0.03} />
         </mesh>
 
@@ -116,6 +127,24 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             <boxGeometry args={[0.15, 0.006, 0.014]} />
             <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
           </mesh>
+        </group>
+
+        <group position={[-0.05, 0.001, -0.15]} rotation={[0, 0.24, 0]}>
+          <mesh>
+            <boxGeometry args={[0.2, 0.012, 0.06]} />
+            <meshStandardMaterial color={hovered ? '#97a1aa' : '#828d98'} flatShading />
+          </mesh>
+          <Text
+            position={[0, 0.007, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.024}
+            letterSpacing={0.008}
+            anchorX="center"
+            anchorY="middle"
+            color={hovered ? '#f2f5f8' : '#e1e7ec'}
+          >
+            Introduction
+          </Text>
         </group>
       </group>
     </group>
