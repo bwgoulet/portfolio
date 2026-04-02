@@ -307,6 +307,8 @@ main {
 .project-detail-card h2 {
   color: #121313;
   font-weight: 700;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-content-card p {
@@ -317,6 +319,8 @@ main {
 
 .experience-detail-card h2 {
   color: #f2f6fb;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .detail-summary {
