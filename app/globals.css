@@ -173,67 +173,24 @@ main {
   backdrop-filter: blur(8px);
 }
 
-.note-detail-card {
-  width: min(760px, 86vw);
-  background: var(--vt-surface-panel);
-  border: 2px solid var(--vt-overlay-card-border);
+.detail-content-card {
+  width: min(920px, 92vw);
+  max-height: min(86vh, 900px);
+  overflow: auto;
   border-radius: var(--vt-overlay-radius-md);
   box-shadow: var(--vt-overlay-shadow-elevated);
   padding: var(--vt-overlay-padding-card);
-  color: var(--vt-surface-panel-text);
   pointer-events: auto;
   cursor: auto;
 }
 
-.note-detail-card img {
-  width: 100%;
-  max-height: min(46vh, 350px);
-  object-fit: cover;
-  border: 2px solid var(--vt-note-image-border);
-  border-radius: var(--vt-overlay-radius-sm);
-  display: block;
+.project-detail-card {
+  background: var(--vt-surface-panel);
+  border: 2px solid var(--vt-overlay-card-border);
+  color: var(--vt-surface-panel-text);
 }
 
-.note-detail-card h2 {
-  margin: 0.8rem 0 0.45rem;
-  font-size: clamp(1.26rem, 2.2vw, 1.72rem);
-  letter-spacing: 0.01em;
-  color: #121313;
-}
-
-.note-detail-card p {
-  margin: 0;
-  font-size: clamp(0.98rem, 1.4vw, 1.1rem);
-  line-height: 1.5;
-  color: var(--vt-note-body-text);
-}
-
-.experience-detail-card {
-  width: min(880px, 90vw);
-  max-height: min(76vh, 760px);
-  overflow: auto;
-  background: linear-gradient(170deg, var(--vt-experience-bg-top), var(--vt-experience-bg-bottom));
-  border: 1px solid var(--vt-experience-border);
-  border-radius: var(--vt-overlay-radius-md);
-  box-shadow: var(--vt-overlay-shadow-elevated);
-  padding: var(--vt-overlay-padding-card-compact);
-  color: var(--vt-accent-sky);
-  pointer-events: auto;
-}
-
-.experience-detail-card h2 {
-  margin: 0;
-  font-size: clamp(1.15rem, 2vw, 1.45rem);
-  color: var(--vt-experience-title);
-}
-
-.experience-detail-meta {
-  margin: 0.35rem 0 0;
-  font-size: 0.9rem;
-  color: var(--vt-experience-meta);
-}
-
-.experience-detail-card ul {
+.detail-content-card ul {
   margin: 1rem 0 0;
   padding-left: 1.28rem;
   display: grid;
@@ -241,9 +198,125 @@ main {
   max-width: 74ch;
 }
 
-.experience-detail-card li {
+.detail-content-card li {
   font-size: clamp(0.95rem, 1.3vw, 1.02rem);
   line-height: 1.45;
+  font-weight: 500;
+}
+
+.project-detail-card li {
+  color: var(--vt-note-body-text);
+}
+
+.detail-content-card img {
+  width: min(100%, 520px);
+  max-height: min(30vh, 260px);
+  object-fit: cover;
+  border-radius: var(--vt-overlay-radius-sm);
+  display: block;
+  margin: 0 auto 0.9rem;
+}
+
+.project-detail-card img {
+  border: 2px solid var(--vt-note-image-border);
+}
+
+.experience-detail-card img {
+  border: 1px solid rgba(214, 226, 238, 0.3);
+}
+
+.detail-content-card h2 {
+  margin: 0.8rem 0 0.45rem;
+  font-size: clamp(1.26rem, 2.2vw, 1.72rem);
+  letter-spacing: 0.01em;
+}
+
+.project-detail-card h2 {
+  color: #121313;
+  font-weight: 700;
+}
+
+.detail-content-card p {
+  margin: 0;
+  font-size: clamp(0.98rem, 1.4vw, 1.1rem);
+  line-height: 1.5;
+}
+
+.experience-detail-card h2 {
+  color: #f2f6fb;
+}
+
+.detail-summary {
+  margin-top: 0.3rem;
+}
+
+.project-detail-card .detail-summary {
+  color: #223143;
+}
+
+.detail-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+}
+
+.project-detail-card .detail-meta {
+  color: #32485f;
+}
+
+.experience-detail-card .detail-meta {
+  color: #b5c3d1;
+}
+
+.experience-detail-card li {
+  color: #e1e9f3;
+}
+
+.experience-detail-card {
+  background: #0f1217;
+  border: 1px solid rgba(214, 226, 238, 0.3);
+  color: #e7eff7;
+}
+
+.detail-impact {
+  margin-top: 0.95rem;
+}
+
+.detail-impact h3 {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+}
+
+.detail-impact p {
+  margin: 0.4rem 0 0;
+}
+
+.detail-divider {
+  border: 0;
+  margin: 1.2rem 0 0;
+  border-top: 1px solid;
+}
+
+.project-detail-card .detail-divider {
+  border-top-color: rgba(18, 19, 19, 0.38);
+}
+
+.experience-detail-card .detail-divider {
+  border-top-color: rgba(214, 226, 238, 0.28);
+}
+
+.note-detail-card .detail-impact h3 {
+  color: #121313;
+}
+
+.note-detail-card .detail-impact p {
+  color: var(--vt-note-body-text);
+}
+
+.experience-detail-card .detail-impact h3 {
+  color: var(--vt-experience-title);
+}
+
+.experience-detail-card .detail-impact p {
   color: var(--vt-experience-list);
 }
 

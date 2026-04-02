@@ -9,7 +9,7 @@ import { animateValue } from '@/lib/animation';
 type CameraRigProps = {
   targetKey: FocusTarget;
   isTransitioning: boolean;
-  onTransitionEnd: () => void;
+  onTransitionEnd: (target: FocusTarget) => void;
   reducedMotion: boolean;
 };
 
@@ -26,7 +26,7 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, reduced
       camera.fov = preset.fov;
       camera.lookAt(lookAt.current);
       camera.updateProjectionMatrix();
-      if (isTransitioning) onTransitionEnd();
+      if (isTransitioning) onTransitionEnd(targetKey);
       return;
     }
 
@@ -55,7 +55,7 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, reduced
       ease: MOTION_TIERS.macro.cameraEase,
       onUpdate: () => camera.updateProjectionMatrix(),
       onComplete: () => {
-        settleTimer = setTimeout(onTransitionEnd, MOTION_TIERS.macro.settleDelay * 1000);
+        settleTimer = setTimeout(() => onTransitionEnd(targetKey), MOTION_TIERS.macro.settleDelay * 1000);
       }
     });
 
