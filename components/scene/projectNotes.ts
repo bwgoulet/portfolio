@@ -15,11 +15,17 @@ export type ProjectNote = {
 
 export const PROJECT_NOTES: ProjectNote[] = [
   {
-    id: 'summit-ui',
-    title: 'Summit UI',
-    detail: 'A polished dashboard concept focused on clean hierarchy, alpine-themed iconography, and reusable tokens for fast iteration.',
-    imageSrc: '/note-images/summit-ui.svg',
-    detailImageSrc: '/note-images/summit-ui.svg',
+    id: 'cloudify',
+    title: 'Cloudify',
+    detail: 'University of North Carolina HackNC, Chapel Hill, NC',
+    resumeDate: 'November 2021',
+    bullets: [
+      'Created Cloudify, a user-friendly application developed to simplify local file sharing by enabling users to quickly upload files and generate shareable links locally.',
+      'Acquired valuable skills in Electron, refined React expertise, and mastered working under a tight deadline, significantly contributing to personal and team growth.',
+      'Won Overall 1st place for HackNC 2021',
+    ],
+    imageSrc: '/projects/cloudify.png',
+    detailImageSrc: '/projects/cloudify_gui.png',
     whyItMattered:
       'This project helped sharpen product storytelling and design-system thinking, making future interfaces faster to build and easier to scale.',
     position: [-0.64, 1.96, 0.19],
@@ -27,11 +33,18 @@ export const PROJECT_NOTES: ProjectNote[] = [
     color: '#f5dfa4'
   },
   {
-    id: 'trail-maps',
-    title: 'Trail Maps',
-    detail: 'Interactive route layers with terrain overlays and waypoint storytelling for planning hikes before stepping outside.',
-    imageSrc: '/note-images/trail-maps.svg',
-    detailImageSrc: '/note-images/trail-maps.svg',
+    id: 'fast-wallet',
+    title: 'Fast Wallet',
+    detail: 'Chapel Hill, NC',
+    resumeDate: 'November 2022',
+    bullets: [
+      'Created an email prioritization system that assesses urgency sentiment via the GPT-3 API, complemented by succinct summaries to streamline inbox navigation',
+      'Addressed challenges such as the inadequacy of Google’s Sentiment Analysis API and the complexities of querying GPT-3 before ChatGPT, leading to a pivot to GPT-3 for improved accuracy in email urgency rating.',
+      'Led the integration of a diverse tech stack including React, Tailwind CSS, JavaScript, and the GPT-3 API, following a comprehensive design and development process from storyboarding to deployment',
+      'Awarded 2nd place overall at HackNC 2022.'
+    ],
+    imageSrc: '/projects/fast_wallet.png',
+    detailImageSrc: '/projects/fast_wallet_gui.png',
     whyItMattered:
       'It proved the value of blending data and narrative in a single interface, so users can make confident decisions without friction.',
     position: [-0.12, 1.93, 0.19],
@@ -49,7 +62,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
       'Led the integration of a diverse tech stack including React, Tailwind CSS, JavaScript, and the GPT-3 API, following a comprehensive design and development process from storyboarding to deployment',
       'Awarded 2nd place overall at HackNC 2022.'
     ],
-    imageSrc: '/projects/brevity-logo.svg',
+    imageSrc: '/projects/brevity.png',
     detailImageSrc: '/projects/brevity-logo.svg',
     whyItMattered:
       'It grounded fast product decisions in real user pain, and showed how NLP + summarization can reduce inbox overload in practical ways.',
@@ -60,16 +73,16 @@ export const PROJECT_NOTES: ProjectNote[] = [
   {
     id: 'unc-smash',
     title: 'UNC Smash',
-    detail: 'Directed 80+ gaming tournaments for 170+ students, managing bracket design, scheduling, and live officiating.',
-    resumeMeta: 'University of North Carolina',
-    resumeDate: 'January 2024 - May 2025',
+    detail: 'University of North Carolina',
+    resumeDate: 'January 2024 - Present',
     bullets: [
+      'Directed 80+ gaming tournaments for 170+ students, managing bracket design, scheduling, and live officiating.',
       'Led a team of three officers, delegating match officiating, venue setup, and payout procurement.',
       'Developed and maintained a weekly Twitch livestream, archiving matches and building community engagement.',
       'Grew active membership by 136% (25 to 59 weekly participants) and launched the club’s first NC-wide SSBM event.'
     ],
-    imageSrc: '/note-images/route-planner.svg',
-    detailImageSrc: '/note-images/route-planner.svg',
+    imageSrc: '/projects/bath_bg.jpg',
+    detailImageSrc: '/projects/uncsmash.jpg',
     whyItMattered:
       'This concept explored practical UX for complex planning workflows, emphasizing fast edits and clear feedback under real constraints.',
     position: [-0.34, 1.56, 0.19],
@@ -77,11 +90,18 @@ export const PROJECT_NOTES: ProjectNote[] = [
     color: '#f0dca3'
   },
   {
-    id: 'gear-check',
-    title: 'Gear Check',
-    detail: 'Accessibility and QA checklist that tracks readiness across devices, motion preferences, and keyboard-only review.',
-    imageSrc: '/note-images/gear-check.svg',
-    detailImageSrc: '/note-images/gear-check.svg',
+    id: 'portfolio',
+    title: 'Prtofolio',
+    detail: 'Durham, NC',
+    resumeDate: 'March 2026',
+    bullets: [
+      'Directed 80+ gaming tournaments for 170+ students, managing bracket design, scheduling, and live officiating.',
+      'Led a team of three officers, delegating match officiating, venue setup, and payout procurement.',
+      'Developed and maintained a weekly Twitch livestream, archiving matches and building community engagement.',
+      'Grew active membership by 136% (25 to 59 weekly participants) and launched the club’s first NC-wide SSBM event.'
+    ],
+    imageSrc: '/projects/bath_bg.jpg',
+    detailImageSrc: '/projects/uncsmash.jpg',
     whyItMattered:
       'It centered inclusive quality as part of everyday delivery, helping ship experiences that are resilient, accessible, and trustworthy.',
     position: [0.24, 1.55, 0.19],

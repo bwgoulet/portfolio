@@ -47,9 +47,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 32
   },
   timeline: {
-    position: [4.3, 3.7, 3.4],
-    lookAt: [-1.3, 1.15, -8.1],
-    fov: 54
+    position: [1.5, 2, 1.5],
+    lookAt: [-1, 3, -13],
+    fov: 24
   }
 };
 
