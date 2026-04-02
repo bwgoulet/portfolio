@@ -41,7 +41,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
   {
     id: 'night-camp',
     title: 'Brevity',
-    detail: 'Created an email prioritization system using sentiment analysis and summarization to streamline inbox navigation.',
+    detail: 'Email Management, Reimagined',
     resumeMeta: 'HackNC',
     resumeDate: 'October 2022 - November 2022',
     bullets: [
@@ -51,7 +51,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     imageSrc: '/projects/brevity-logo.svg',
     detailImageSrc: '/projects/brevity-logo.svg',
     whyItMattered:
-      'The work pushed creative direction and visual identity skills, showing how cohesive branding can increase clarity and memorability.',
+      'It grounded fast product decisions in real user pain, and showed how NLP + summarization can reduce inbox overload in practical ways.',
     position: [0.4, 1.91, 0.19],
     rotation: 0.1,
     color: '#f8e6ad'

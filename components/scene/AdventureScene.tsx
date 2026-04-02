@@ -369,12 +369,12 @@ export function AdventureScene() {
             </button>
             <img src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} />
             <h2 id={noteTitleId}>{selectedNote.title}</h2>
-            <p>{selectedNote.detail}</p>
+            <p className="detail-summary">{selectedNote.detail}</p>
             {selectedNote.resumeMeta && (
-              <p className="experience-detail-meta">{selectedNote.resumeMeta}</p>
+              <p className="detail-meta">{selectedNote.resumeMeta}</p>
             )}
             {selectedNote.resumeDate && (
-              <p className="experience-detail-meta">{selectedNote.resumeDate}</p>
+              <p className="detail-meta">{selectedNote.resumeDate}</p>
             )}
             {selectedNote.bullets && selectedNote.bullets.length > 0 && (
               <ul>
@@ -383,6 +383,7 @@ export function AdventureScene() {
                 ))}
               </ul>
             )}
+            <hr className="detail-divider" aria-hidden="true" />
             <section className="detail-impact">
               <h3>Why It Mattered</h3>
               <p>{selectedNote.whyItMattered}</p>
@@ -419,13 +420,14 @@ export function AdventureScene() {
             </button>
             <img src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
-            <p className="experience-detail-meta">{selectedExperience.company}</p>
-            <p className="experience-detail-meta">{selectedExperience.dateLocation}</p>
+            <p className="detail-meta">{selectedExperience.company}</p>
+            <p className="detail-meta">{selectedExperience.dateLocation}</p>
             <ul>
               {selectedExperience.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+            <hr className="detail-divider" aria-hidden="true" />
             <section className="detail-impact">
               <h3>Why It Mattered</h3>
               <p>{selectedExperience.whyItMattered}</p>
