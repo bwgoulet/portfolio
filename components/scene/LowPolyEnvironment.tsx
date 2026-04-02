@@ -271,6 +271,8 @@ function TrailheadTimelineSign({
   onClick,
   signRef
 }: TrailheadTimelineSignProps) {
+  const signScale = hovered ? 1.22 : 1.12;
+
   useFrame(({ clock }) => {
     if (reducedMotion || !signRef.current) return;
     const t = clock.getElapsedTime();
@@ -279,7 +281,7 @@ function TrailheadTimelineSign({
   });
 
   return (
-    <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]}>
+    <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
       <mesh position={[-0.14, 0.14, 0]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color={environmentPalette.signPost} flatShading />
@@ -312,6 +314,26 @@ function TrailheadTimelineSign({
           emissiveIntensity={hovered ? 0.2 : 0.07}
           flatShading
         />
+      </mesh>
+      <mesh
+        position={[0, 0.32, 0.03]}
+        onPointerEnter={(event) => {
+          event.stopPropagation();
+          if (interactiveEnabled) onHoverChange(true);
+          setInteractiveCursor(interactiveEnabled);
+        }}
+        onPointerLeave={(event) => {
+          event.stopPropagation();
+          onHoverChange(false);
+          setInteractiveCursor(false);
+        }}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (interactiveEnabled) onClick('timeline');
+        }}
+      >
+        <boxGeometry args={[0.62, 0.36, 0.16]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       <Text
         position={[0, 0.325, 0.026]}
@@ -422,15 +444,15 @@ export function LowPolyEnvironment({
 
       <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[1.2, 34]} />
-        <meshStandardMaterial color={PALETTE.trail} flatShading />
+        <meshStandardMaterial color={PALETTE.trail} flatShading polygonOffset polygonOffsetFactor={1} />
       </mesh>
-      <mesh position={[0.25, 1.035, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
+      <mesh position={[0.25, 1.038, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
         <planeGeometry args={[0.7, 22]} />
-        <meshStandardMaterial color={environmentPalette.pathEdge} flatShading />
+        <meshStandardMaterial color={environmentPalette.pathEdge} flatShading polygonOffset polygonOffsetFactor={-1} />
       </mesh>
-      <mesh position={[1.38, 1.035, -6.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
+      <mesh position={[1.38, 1.041, -6.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
         <planeGeometry args={[0.62, 22]} />
-        <meshStandardMaterial color={environmentPalette.pathLow} flatShading />
+        <meshStandardMaterial color={environmentPalette.pathLow} flatShading polygonOffset polygonOffsetFactor={-1} />
       </mesh>
 
       <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
