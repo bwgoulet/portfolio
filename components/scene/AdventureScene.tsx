@@ -38,6 +38,7 @@ export function AdventureScene() {
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
   const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
+  const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
 
   const isTransitioning = interactionState === 'transitioning';
@@ -223,12 +224,15 @@ export function AdventureScene() {
       if (target === 'cabin') {
         if (reducedMotion) {
           setCabinTransitionFadeState('idle');
+          setIsCabinFadePending(false);
           setIsCabinInteriorRevealed(true);
         } else {
-          setCabinTransitionFadeState('fade-out');
+          setCabinTransitionFadeState('idle');
+          setIsCabinFadePending(true);
         }
       } else {
         setCabinTransitionFadeState('idle');
+        setIsCabinFadePending(false);
       }
     },
     [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
@@ -259,6 +263,13 @@ export function AdventureScene() {
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
             reducedMotion={reducedMotion}
+            onTransitionProgress={(target, progress) => {
+              if (reducedMotion) return;
+              if (target !== 'cabinInterior' || !isCabinFadePending) return;
+              if (progress < 0.84) return;
+              setCabinTransitionFadeState('fade-out');
+              setIsCabinFadePending(false);
+            }}
             onTransitionEnd={(completedTarget) => {
               if (completedTarget === 'cabinInterior') {
                 setIsCabinInteriorRevealed(true);
@@ -274,6 +285,8 @@ export function AdventureScene() {
                 }
               }
               if (completedTarget === 'overview') {
+                setCabinTransitionFadeState('idle');
+                setIsCabinFadePending(false);
                 setInteractionState('idleOverview');
                 return;
               }
