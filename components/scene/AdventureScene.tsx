@@ -34,12 +34,13 @@ export function AdventureScene() {
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
+  const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
 
   const isTransitioning = interactionState === 'transitioning';
-  const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null;
+  const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null || isIntroductionDialogOpen;
   const isOverviewState =
     interactionState === 'idleOverview' ||
     interactionState === 'hoverBillboard' ||
@@ -91,6 +92,10 @@ export function AdventureScene() {
 
   const closeExperienceDialog = useCallback(() => {
     setSelectedExperienceId(null);
+  }, []);
+
+  const closeIntroductionDialog = useCallback(() => {
+    setIsIntroductionDialogOpen(false);
   }, []);
 
   useEffect(() => {
@@ -219,11 +224,12 @@ export function AdventureScene() {
       setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
+      setIsIntroductionDialogOpen(false);
       animateFocusNudge(target);
 
       if (target === 'cabin' && reducedMotion) setIsCabinInteriorRevealed(true);
     },
-    [animateFocusNudge, isOverviewState, isTransitioning]
+    [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
   );
 
   useEffect(
@@ -302,10 +308,19 @@ export function AdventureScene() {
           />
           <IntroductionLandmark
             landmarkRef={introductionRef}
-            interactiveEnabled={isOverviewState}
-            hovered={interactionState === 'hoverIntroduction'}
-            onHoverChange={(hovered) => updateHover('introduction', hovered)}
-            onClick={handleFocusClick}
+            interactiveEnabled={isOverviewState || interactionState === 'introductionCloseup'}
+            hovered={interactionState === 'hoverIntroduction' || interactionState === 'introductionCloseup'}
+            onHoverChange={(hovered) => {
+              if (interactionState === 'introductionCloseup') return;
+              updateHover('introduction', hovered);
+            }}
+            onClick={() => {
+              if (interactionState === 'introductionCloseup') {
+                setIsIntroductionDialogOpen(true);
+                return;
+              }
+              handleFocusClick('introduction');
+            }}
             reducedMotion={reducedMotion}
           />
           <Billboard
@@ -436,26 +451,47 @@ export function AdventureScene() {
         </article>
       )}
 
-      {interactionState === 'introductionCloseup' && (
-        <article className={`introduction-detail ${detailCardStateClass(false)}`} aria-live="polite">
+      {interactionState === 'introductionCloseup' && isIntroductionDialogOpen && (
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
+          aria-live="polite"
+          onClick={closeIntroductionDialog}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              closeIntroductionDialog();
+            }
+          }}
+        >
           <div
-            className={`introduction-detail-card ${detailCardStateClass(false)}`}
+            className={`detail-content-card introduction-detail-card ${detailCardStateClass(false)}`}
             ref={modalRef}
+            onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="introduction-title"
             tabIndex={-1}
           >
-            <h2 id="introduction-title">Introduction</h2>
-            <p>
-              I&apos;m Ben Goulet, a software engineer focused on building thoughtful, user-facing software across
-              product, backend, and creative technical work.
-            </p>
-            <p>
-              Currently, I&apos;m focused on building interactive web experiences, pursuing strong engineering
-              opportunities, and creating projects that blend technical depth with personality and design.
-            </p>
-            <p>Explore the island to view projects, experience, and more about me.</p>
+            <button className="detail-close" onClick={closeIntroductionDialog} aria-label="Close introduction details">
+              Close
+            </button>
+            <div className="introduction-detail-layout">
+              <img src="/introimage.png" alt="Introduction thumbnail" />
+              <section className="introduction-detail-copy">
+                <h2 id="introduction-title">Introduction</h2>
+                <p>
+                  I&apos;m Ben Goulet, a software engineer focused on building thoughtful, user-facing software across
+                  product, backend, and creative technical work.
+                </p>
+                <p>
+                  Currently, I&apos;m focused on building interactive web experiences, pursuing strong engineering
+                  opportunities, and creating projects that blend technical depth with personality and design.
+                </p>
+                <p>Explore the island to view projects, experience, and more about me.</p>
+              </section>
+            </div>
           </div>
         </article>
       )}
@@ -471,6 +507,7 @@ export function AdventureScene() {
             setInteractionState('transitioning');
             setSelectedNoteId(null);
             setSelectedExperienceId(null);
+            setIsIntroductionDialogOpen(false);
           }}
         >
           ←
