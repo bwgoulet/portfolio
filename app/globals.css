@@ -22,10 +22,27 @@ main {
 .scene-stage {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .scene-stage--locked {
   pointer-events: none;
+}
+
+.cabin-transition-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: #060709;
+}
+
+.cabin-transition-fade--fade-out {
+  animation: cabin-fade-out 240ms ease-out both;
+}
+
+.cabin-transition-fade--fade-in {
+  animation: cabin-fade-in 320ms ease-in both;
 }
 
 .scene-brand {
@@ -521,6 +538,16 @@ main {
     opacity: 0;
     transform: translateY(12px) scale(0.992);
   }
+}
+
+@keyframes cabin-fade-out {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cabin-fade-in {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .motion-reduced {
