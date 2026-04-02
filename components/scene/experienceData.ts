@@ -5,6 +5,8 @@ export type ExperienceEntry = {
   dateLocation: string;
   bullets: string[];
   placeholderImageSrc: string;
+  detailImageSrc: string;
+  whyItMattered: string;
 };
 
 export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
@@ -19,7 +21,10 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Tested applications in pre-production as part of the QA process, while closely communicating with developers and project leads.',
       'Utilized HTML5/CSS, JavaScript, React, PHP, Laravel, AWS, and Docker to support rapid deployment cycles.'
     ],
-    placeholderImageSrc: '/experience/3cinstitute_logo.jpg'
+    placeholderImageSrc: '/experience/3cinstitute_logo.jpg',
+    detailImageSrc: '/experience/3cinstitute_logo.jpg',
+    whyItMattered:
+      'It grounded my engineering in mission-driven outcomes, where technical quality and interdisciplinary collaboration directly impacted real users.'
   },
   {
     id: 'unc-cs',
@@ -31,7 +36,10 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Implemented a challenging single-table inheritance mapping in SQLAlchemy to manage over 200 TA records, optimizing data organization and retrieval efficiency.',
       'Enhanced the CSXL community portal by developing new features, facilitating student engagement and experience in tech for over 2000 students.'
     ],
-    placeholderImageSrc: '/experience/csxl.png'
+    placeholderImageSrc: '/experience/csxl.png',
+    detailImageSrc: '/experience/csxl.png',
+    whyItMattered:
+      'This internship strengthened my ownership on production features and reinforced how thoughtful platform improvements scale student impact.'
   },
   {
     id: 'kinetik',
@@ -43,7 +51,10 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Partnered with an IT firm serving 86% of the Forbes Global 50 to define and track success metrics, improving overall GTM effectiveness.',
       'Leveraged Python, AWS, and SQL to ingest and process datasets of over 500,000 records, enhancing the scalability and efficiency of the GTM engine.'
     ],
-    placeholderImageSrc: '/experience/kinetik_ai_logo.jpg'
+    placeholderImageSrc: '/experience/kinetik_ai_logo.jpg',
+    detailImageSrc: '/experience/kinetik_ai_logo.jpg',
+    whyItMattered:
+      'It connected analytical modeling to real go-to-market decisions, improving my ability to translate data work into business value.'
   },
   {
     id: 'podcast-your-way',
@@ -57,7 +68,10 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       'Implemented secure platform infrastructure across authentication, authorization, payments, and premium access using Supabase Auth, PostgreSQL RLS, RBAC, Stripe checkout, and webhook-driven entitlement updates.',
       'Developed community, admin, and operations tooling spanning live events, RSVP/reminder flows, content publishing, user management, and lifecycle automation for non-technical teammates.'
     ],
-    placeholderImageSrc: '/experience/pyw-icon-logo.png'
+    placeholderImageSrc: '/experience/pyw-icon-logo.png',
+    detailImageSrc: '/experience/pyw-icon-logo.png',
+    whyItMattered:
+      'Building from zero to production as a founding engineer developed full-stack product judgment across architecture, velocity, and user outcomes.'
   }
 ];
 

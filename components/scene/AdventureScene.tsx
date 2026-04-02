@@ -356,7 +356,7 @@ export function AdventureScene() {
           }}
         >
           <div
-            className={`note-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
+            className={`note-detail-card detail-content-card project-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -367,9 +367,13 @@ export function AdventureScene() {
             <button className="detail-close" onClick={closeNoteDialog} aria-label="Close project details">
               Close
             </button>
-            <img src={selectedNote.imageSrc} alt={`${selectedNote.title} post-it sketch`} />
+            <img src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} />
             <h2 id={noteTitleId}>{selectedNote.title}</h2>
             <p>{selectedNote.detail}</p>
+            <section className="detail-impact">
+              <h3>Why It Mattered</h3>
+              <p>{selectedNote.whyItMattered}</p>
+            </section>
           </div>
         </article>
       )}
@@ -389,7 +393,7 @@ export function AdventureScene() {
           }}
         >
           <div
-            className={`experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
+            className={`detail-content-card experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -400,6 +404,7 @@ export function AdventureScene() {
             <button className="detail-close" onClick={closeExperienceDialog} aria-label="Close experience details">
               Close
             </button>
+            <img src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
             <p className="experience-detail-meta">{selectedExperience.company}</p>
             <p className="experience-detail-meta">{selectedExperience.dateLocation}</p>
@@ -408,6 +413,10 @@ export function AdventureScene() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+            <section className="detail-impact">
+              <h3>Why It Mattered</h3>
+              <p>{selectedExperience.whyItMattered}</p>
+            </section>
           </div>
         </article>
       )}
