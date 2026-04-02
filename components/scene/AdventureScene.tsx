@@ -24,7 +24,6 @@ export function AdventureScene() {
   const timelineSignRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
-  const cabinRevealTimerRef = useRef<number | null>(null);
   const noteTitleId = useId();
   const experienceTitleId = useId();
 
@@ -211,7 +210,7 @@ export function AdventureScene() {
       if (!isOverviewState || isTransitioning) return;
 
       setInteractionState('transitioning');
-      setFocusTarget(target === 'cabin' ? 'cabinDoorway' : target);
+      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setIsCabinInteriorRevealed(false);
       setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
@@ -227,9 +226,6 @@ export function AdventureScene() {
   useEffect(
     () => () => {
       document.body.style.cursor = 'auto';
-      if (cabinRevealTimerRef.current !== null) {
-        window.clearTimeout(cabinRevealTimerRef.current);
-      }
     },
     []
   );
@@ -247,23 +243,8 @@ export function AdventureScene() {
             isTransitioning={isTransitioning}
             reducedMotion={reducedMotion}
             onTransitionEnd={(completedTarget) => {
-              if (completedTarget === 'cabinDoorway') {
-                if (reducedMotion) {
-                  setIsCabinInteriorRevealed(true);
-                } else {
-                  if (cabinRevealTimerRef.current !== null) {
-                    window.clearTimeout(cabinRevealTimerRef.current);
-                  }
-                  cabinRevealTimerRef.current = window.setTimeout(
-                    () => {
-                      setIsCabinInteriorRevealed(true);
-                      cabinRevealTimerRef.current = null;
-                    },
-                    MOTION_TIERS.macro.cameraDuration * 0.32 * 1000
-                  );
-                }
-                setFocusTarget('cabinInterior');
-                return;
+              if (completedTarget === 'cabinInterior') {
+                setIsCabinInteriorRevealed(true);
               }
               if (completedTarget === 'overview') {
                 setInteractionState('idleOverview');
