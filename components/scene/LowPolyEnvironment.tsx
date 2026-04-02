@@ -282,11 +282,11 @@ function TrailheadTimelineSign({
 
   return (
     <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
-      <mesh position={[-0.14, 0.14, 0]} castShadow>
+      <mesh position={[-0.14, 0.14, -0.045]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color={environmentPalette.signPost} flatShading />
       </mesh>
-      <mesh position={[0.14, 0.14, 0]} castShadow>
+      <mesh position={[0.14, 0.14, -0.045]} castShadow>
         <boxGeometry args={[0.04, 0.28, 0.04]} />
         <meshStandardMaterial color={environmentPalette.signPost} flatShading />
       </mesh>
