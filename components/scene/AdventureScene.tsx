@@ -37,6 +37,9 @@ export function AdventureScene() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
+  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
+  const [isCabinFadePending, setIsCabinFadePending] = useState(false);
+  const cabinFadeTimerRef = useRef<number | null>(null);
 
   const isTransitioning = interactionState === 'transitioning';
   const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null || isIntroductionDialogOpen;
@@ -218,13 +221,28 @@ export function AdventureScene() {
       setIsIntroductionDialogOpen(false);
       animateFocusNudge(target);
 
-      if (target === 'cabin' && reducedMotion) setIsCabinInteriorRevealed(true);
+      if (target === 'cabin') {
+        if (reducedMotion) {
+          setCabinTransitionFadeState('idle');
+          setIsCabinFadePending(false);
+          setIsCabinInteriorRevealed(true);
+        } else {
+          setCabinTransitionFadeState('idle');
+          setIsCabinFadePending(true);
+        }
+      } else {
+        setCabinTransitionFadeState('idle');
+        setIsCabinFadePending(false);
+      }
     },
     [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
   );
 
   useEffect(
     () => () => {
+      if (cabinFadeTimerRef.current !== null) {
+        window.clearTimeout(cabinFadeTimerRef.current);
+      }
       document.body.style.cursor = 'auto';
     },
     []
@@ -236,17 +254,39 @@ export function AdventureScene() {
   return (
     <main>
       <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
+        {cabinTransitionFadeState !== 'idle' && (
+          <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
+        )}
         <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
           <Suspense fallback={null}>
           <CameraRig
             targetKey={focusTarget}
             isTransitioning={isTransitioning}
             reducedMotion={reducedMotion}
+            onTransitionProgress={(target, progress) => {
+              if (reducedMotion) return;
+              if (target !== 'cabinInterior' || !isCabinFadePending) return;
+              if (progress < 0.84) return;
+              setCabinTransitionFadeState('fade-out');
+              setIsCabinFadePending(false);
+            }}
             onTransitionEnd={(completedTarget) => {
               if (completedTarget === 'cabinInterior') {
                 setIsCabinInteriorRevealed(true);
+                if (!reducedMotion) {
+                  setCabinTransitionFadeState('fade-in');
+                  if (cabinFadeTimerRef.current !== null) {
+                    window.clearTimeout(cabinFadeTimerRef.current);
+                  }
+                  cabinFadeTimerRef.current = window.setTimeout(() => {
+                    setCabinTransitionFadeState('idle');
+                    cabinFadeTimerRef.current = null;
+                  }, 320);
+                }
               }
               if (completedTarget === 'overview') {
+                setCabinTransitionFadeState('idle');
+                setIsCabinFadePending(false);
                 setInteractionState('idleOverview');
                 return;
               }
