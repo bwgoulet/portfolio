@@ -15,6 +15,7 @@ const setInteractiveCursor = (isPointer: boolean) => {
 
 type IntroductionLandmarkProps = {
   interactiveEnabled: boolean;
+  hoverEnabled?: boolean;
   hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
@@ -27,6 +28,7 @@ type IntroductionLandmarkProps = {
 
 export const IntroductionLandmark = memo(function IntroductionLandmark({
   interactiveEnabled,
+  hoverEnabled = interactiveEnabled,
   hovered,
   onHoverChange,
   onClick,
@@ -73,13 +75,13 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         position={[0, 0.12, 0]}
         onPointerEnter={(event) => {
           event.stopPropagation();
-          if (!interactiveEnabled) return;
+          if (!hoverEnabled) return;
           onHoverChange(true);
           setInteractiveCursor(true);
         }}
         onPointerMove={(event) => {
           event.stopPropagation();
-          if (!interactiveEnabled) return;
+          if (!hoverEnabled) return;
           onHoverChange(true);
           setInteractiveCursor(true);
         }}
@@ -90,6 +92,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         }}
         onClick={(event) => {
           event.stopPropagation();
+          setInteractiveCursor(false);
           if (interactiveEnabled) onClick('introduction');
         }}
       >
@@ -147,6 +150,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           <meshStandardMaterial color={hovered ? '#909aa3' : '#7b858f'} flatShading />
         </mesh>
         <Text
+          position={[0, 0, 0.039]}
           fontSize={hovered ? 0.097 : 0.09}
           maxWidth={0.64}
           lineHeight={0.9}
