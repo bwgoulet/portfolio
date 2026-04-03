@@ -64,6 +64,12 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         child.receiveShadow = true;
       }
     });
+    tableScene.updateMatrixWorld(true);
+    const tableBounds = new THREE.Box3().setFromObject(tableScene);
+    const tableCenter = tableBounds.getCenter(new THREE.Vector3());
+    tableScene.position.x -= tableCenter.x;
+    tableScene.position.z -= tableCenter.z;
+    tableScene.position.y -= tableBounds.min.y;
     return tableScene;
   }, [tableGltf.scene]);
   const galleryTextureSources = useMemo(
@@ -189,7 +195,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       ))}
 
-      <primitive object={tableModel} position={[-0.67, 0.03, -0.12]} scale={0.05} />
+      <primitive object={tableModel} position={[-0.67, 0.03, -0.12]} scale={0.015} />
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
