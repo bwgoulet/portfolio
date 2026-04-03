@@ -38,7 +38,7 @@ export function AdventureScene() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
-  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
+  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
 
@@ -268,6 +268,28 @@ export function AdventureScene() {
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
+  const handleReturnToOverview = useCallback(() => {
+    const exitingCabin = focusTarget === 'cabinInterior';
+    if (exitingCabin && !reducedMotion) {
+      setCabinTransitionFadeState('black');
+    } else {
+      setCabinTransitionFadeState('idle');
+    }
+    setIsCabinDoorOpen(false);
+    setIsCabinInteriorRevealed(false);
+    setFocusTarget('overview');
+    setInteractionState('transitioning');
+    setSelectedNoteId(null);
+    setSelectedExperienceId(null);
+    setIsIntroductionDialogOpen(false);
+  }, [focusTarget, reducedMotion]);
+
+  const handleBackButtonPointerDown = useCallback(() => {
+    if (focusTarget === 'cabinInterior' && !reducedMotion) {
+      setCabinTransitionFadeState('black');
+    }
+  }, [focusTarget, reducedMotion]);
+
   return (
     <main>
       <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
@@ -296,7 +318,7 @@ export function AdventureScene() {
                 }
               }
               if (completedTarget === 'overview') {
-                if (!reducedMotion && cabinTransitionFadeState === 'fade-out') {
+                if (!reducedMotion && (cabinTransitionFadeState === 'fade-out' || cabinTransitionFadeState === 'black')) {
                   setCabinTransitionFadeState('fade-in');
                   scheduleCabinFadeReset(320);
                 } else {
@@ -527,21 +549,8 @@ export function AdventureScene() {
         <button
           className="scene-back"
           aria-label="Return to overview"
-          onClick={() => {
-            const exitingCabin = focusTarget === 'cabinInterior';
-            if (exitingCabin && !reducedMotion) {
-              setCabinTransitionFadeState('fade-out');
-            } else {
-              setCabinTransitionFadeState('idle');
-            }
-            setIsCabinDoorOpen(false);
-            setIsCabinInteriorRevealed(false);
-            setFocusTarget('overview');
-            setInteractionState('transitioning');
-            setSelectedNoteId(null);
-            setSelectedExperienceId(null);
-            setIsIntroductionDialogOpen(false);
-          }}
+          onPointerDown={handleBackButtonPointerDown}
+          onClick={handleReturnToOverview}
         >
           ←
         </button>
