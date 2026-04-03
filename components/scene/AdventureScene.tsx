@@ -10,7 +10,7 @@ import { CameraRig } from './CameraRig';
 import { LightingAtmosphere } from './LightingAtmosphere';
 import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
-import { CabinInterior } from './CabinInterior';
+import { CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
@@ -32,6 +32,7 @@ export function AdventureScene() {
   const [focusTarget, setFocusTarget] = useState<FocusTarget>('overview');
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
+  const [selectedGalleryPhotoId, setSelectedGalleryPhotoId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
@@ -56,7 +57,8 @@ export function AdventureScene() {
   }, []);
 
   const isTransitioning = interactionState === 'transitioning';
-  const isDetailDialogOpen = selectedNoteId !== null || selectedExperienceId !== null || isIntroductionDialogOpen;
+  const isDetailDialogOpen =
+    selectedNoteId !== null || selectedExperienceId !== null || selectedGalleryPhotoId !== null || isIntroductionDialogOpen;
   const isOverviewState =
     interactionState === 'idleOverview' ||
     interactionState === 'hoverBillboard' ||
@@ -69,6 +71,9 @@ export function AdventureScene() {
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
   const selectedNote = activeNoteId ? PROJECT_NOTE_RECORD[activeNoteId] : null;
   const selectedExperience = activeExperienceId ? EXPERIENCE_RECORD[activeExperienceId] : null;
+  const selectedGalleryPhoto = selectedGalleryPhotoId
+    ? GALLERY_PHOTOS.find((photo) => photo.id === selectedGalleryPhotoId) ?? null
+    : null;
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -104,6 +109,10 @@ export function AdventureScene() {
 
   const closeIntroductionDialog = useCallback(() => {
     setIsIntroductionDialogOpen(false);
+  }, []);
+
+  const closeGalleryDetail = useCallback(() => {
+    setSelectedGalleryPhotoId(null);
   }, []);
 
   useEffect(() => {
@@ -235,6 +244,7 @@ export function AdventureScene() {
       setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
+      setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
       animateFocusNudge(target);
 
@@ -284,6 +294,7 @@ export function AdventureScene() {
     setInteractionState('transitioning');
     setSelectedNoteId(null);
     setSelectedExperienceId(null);
+    setSelectedGalleryPhotoId(null);
     setIsIntroductionDialogOpen(false);
   }, []);
 
@@ -419,7 +430,10 @@ export function AdventureScene() {
             />
           )}
           {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
-            <CabinInterior />
+            <CabinInterior
+              photosInteractive={interactionState === 'cabinCloseup'}
+              onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
+            />
           )}
           </Suspense>
         </Canvas>
@@ -560,6 +574,36 @@ export function AdventureScene() {
                 <p>Explore the island to view projects, experience, and more about me.</p>
               </section>
             </div>
+          </div>
+        </article>
+      )}
+
+      {interactionState === 'cabinCloseup' && selectedGalleryPhoto && (
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
+          aria-live="polite"
+          onClick={closeGalleryDetail}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              closeGalleryDetail();
+            }
+          }}
+        >
+          <div
+            className={`detail-content-card gallery-detail-card ${detailCardStateClass(false)}`}
+            ref={modalRef}
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gallery-title"
+            tabIndex={-1}
+          >
+            <Image src={selectedGalleryPhoto.imageSrc} alt={selectedGalleryPhoto.title} width={720} height={480} />
+            <h2 id="gallery-title">{selectedGalleryPhoto.title}</h2>
+            <p>{selectedGalleryPhoto.description}</p>
           </div>
         </article>
       )}

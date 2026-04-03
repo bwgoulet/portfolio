@@ -1,29 +1,52 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import gsap from 'gsap';
+import { memo, useMemo, useRef } from 'react';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
-const PHOTO_GALLERY = [
-  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: null },
-  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: null },
-  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: null },
-  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-09', position: [.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: null },
-  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/hacknc_jump.jpeg' },
-  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg' }
-] as const;
+export type GalleryPhoto = {
+  id: string;
+  position: [number, number, number];
+  size: [number, number];
+  rotation: number;
+  pinOffsetX: number;
+  imageSrc: string;
+  title: string;
+  description: string;
+};
+
+export const GALLERY_PHOTOS: GalleryPhoto[] = [
+  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'HackNC Jump', description: 'A favorite memory from HackNC — great teammates, quick iteration, and a lot of energy.' },
+  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Late-Night Build', description: 'One of those late-night coding moments where the whole idea starts to click.' },
+  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Team Snapshot', description: 'A reminder that the best projects are almost always collaborative.' },
+  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Focused Work', description: 'A quiet scene that captures the deep-focus side of building software.' },
+  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Community', description: 'This photo represents the people and communities that have shaped my growth.' },
+  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Behind the Scenes', description: 'A look behind the scenes at the process, not just the polished output.' },
+  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Momentum', description: 'A snapshot from a stretch where momentum and confidence were both high.' },
+  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Shared Wins', description: 'A moment that reflects shared wins and the value of supportive teams.' },
+  { id: 'photo-09', position: [0.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'On the Move', description: 'A memory from a busy season of learning quickly and shipping often.' },
+  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Big Picture', description: 'This one reminds me to keep the big picture in mind while building details.' },
+  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Gratitude', description: 'A final snapshot that represents gratitude for all the people in the journey.' }
+];
+
+const setInteractiveCursor = (isPointer: boolean) => {
+  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+};
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
-export const CabinInterior = memo(function CabinInterior() {
+type CabinInteriorProps = {
+  photosInteractive: boolean;
+  onPhotoSelect: (photoId: string) => void;
+};
+
+export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const horizontalPhotoTexture = useTexture('/gallery/hacknc_jump.jpeg');
+  const photoRefs = useRef<Record<string, THREE.Group | null>>({});
+  const hoveredPhotoIdRef = useRef<string | null>(null);
 
   horizontalPhotoTexture.colorSpace = THREE.SRGBColorSpace;
   horizontalPhotoTexture.anisotropy = 4;
@@ -63,6 +86,30 @@ export const CabinInterior = memo(function CabinInterior() {
     texture.anisotropy = 4;
     return texture;
   }, [cabinInterior.floorPlankA, cabinInterior.floorPlankB, cabinInterior.floorPlankSeam]);
+
+  const startPhotoHover = (photo: GalleryPhoto) => {
+    if (!photosInteractive || hoveredPhotoIdRef.current === photo.id) return;
+    hoveredPhotoIdRef.current = photo.id;
+    const group = photoRefs.current[photo.id];
+    if (!group) return;
+    setInteractiveCursor(true);
+    gsap.killTweensOf(group.scale);
+    gsap.killTweensOf(group.position);
+    gsap.to(group.scale, { x: 1.07, y: 1.07, z: 1.07, duration: 0.18, ease: 'power2.out' });
+    gsap.to(group.position, { z: photo.position[2] + 0.018, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const endPhotoHover = (photo: GalleryPhoto) => {
+    if (hoveredPhotoIdRef.current !== photo.id) return;
+    hoveredPhotoIdRef.current = null;
+    const group = photoRefs.current[photo.id];
+    if (!group) return;
+    setInteractiveCursor(false);
+    gsap.killTweensOf(group.scale);
+    gsap.killTweensOf(group.position);
+    gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
+    gsap.to(group.position, { z: photo.position[2], duration: 0.18, ease: 'power2.out' });
+  };
 
   return (
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
@@ -237,8 +284,15 @@ export const CabinInterior = memo(function CabinInterior() {
         </mesh>
       </group>
 
-      {PHOTO_GALLERY.map((photo, index) => (
-        <group key={photo.id} position={photo.position} rotation={[0, 0, photo.rotation]}>
+      {GALLERY_PHOTOS.map((photo, index) => (
+        <group
+          key={photo.id}
+          position={photo.position}
+          rotation={[0, 0, photo.rotation]}
+          ref={(group) => {
+            photoRefs.current[photo.id] = group;
+          }}
+        >
           <mesh>
             <planeGeometry args={photo.size} />
             <meshBasicMaterial color={PHOTO_COLORS[index % PHOTO_COLORS.length]} />
@@ -246,8 +300,8 @@ export const CabinInterior = memo(function CabinInterior() {
           <mesh name={`gallery-photo-${photo.id}`} position={[0, 0, 0.001]}>
             <planeGeometry args={[photo.size[0] * 0.88, photo.size[1] * 0.84]} />
             <meshStandardMaterial
-              color={photo.imageSrc ? '#ffffff' : '#fbf7ef'}
-              map={photo.imageSrc ? horizontalPhotoTexture : null}
+              color={'#ffffff'}
+              map={horizontalPhotoTexture}
               roughness={0.85}
               metalness={0.03}
             />
@@ -259,6 +313,32 @@ export const CabinInterior = memo(function CabinInterior() {
           <mesh position={[photo.pinOffsetX, photo.size[1] * 0.5 + 0.012, 0.004]} castShadow>
             <cylinderGeometry args={[0.007, 0.007, 0.012, 10]} />
             <meshStandardMaterial color={cabinInterior.lampMetal} roughness={0.45} metalness={0.5} />
+          </mesh>
+          <mesh
+            position={[0, 0, 0.012]}
+            onPointerEnter={(event) => {
+              if (!photosInteractive) return;
+              event.stopPropagation();
+              startPhotoHover(photo);
+            }}
+            onPointerMove={(event) => {
+              if (!photosInteractive) return;
+              event.stopPropagation();
+              startPhotoHover(photo);
+            }}
+            onPointerLeave={(event) => {
+              if (!photosInteractive) return;
+              event.stopPropagation();
+              endPhotoHover(photo);
+            }}
+            onClick={(event) => {
+              if (!photosInteractive) return;
+              event.stopPropagation();
+              onPhotoSelect(photo.id);
+            }}
+          >
+            <boxGeometry args={[photo.size[0] + 0.08, photo.size[1] + 0.08, 0.1]} />
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
         </group>
       ))}

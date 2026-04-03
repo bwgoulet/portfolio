@@ -375,6 +375,32 @@ main {
   color: #e7eff7;
 }
 
+.gallery-detail-card {
+  background: #11151b;
+  border: 1px solid rgba(214, 226, 238, 0.26);
+  color: #e7eff7;
+}
+
+.gallery-detail-card img {
+  width: min(100%, 720px);
+  max-height: min(62vh, 640px);
+  margin: 0 auto 1rem;
+  border: 1px solid rgba(214, 226, 238, 0.3);
+  object-fit: contain;
+  background: #070a0f;
+}
+
+.gallery-detail-card h2,
+.gallery-detail-card p {
+  width: min(100%, 720px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gallery-detail-card p {
+  color: #c7d7e7;
+}
+
 .detail-impact {
   margin-top: 0.95rem;
 }
@@ -499,6 +525,7 @@ main {
 
 .anim-enter.note-detail-card,
 .anim-enter.experience-detail-card,
+.anim-enter.gallery-detail-card,
 .anim-enter.introduction-detail-card,
 .anim-enter.introduction-detail-layout {
   animation-name: detail-card-enter;
@@ -507,6 +534,7 @@ main {
 
 .anim-exit.note-detail-card,
 .anim-exit.experience-detail-card,
+.anim-exit.gallery-detail-card,
 .anim-exit.introduction-detail-card,
 .anim-exit.introduction-detail-layout {
   animation-name: detail-card-exit;
