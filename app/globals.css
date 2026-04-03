@@ -41,6 +41,10 @@ main {
   animation: cabin-fade-out 240ms ease-out both;
 }
 
+.cabin-transition-fade--black {
+  opacity: 1;
+}
+
 .cabin-transition-fade--fade-in {
   animation: cabin-fade-in 320ms ease-in both;
 }
