@@ -1,8 +1,0 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 140'>
-  <rect width='240' height='140' fill='#fffdf7'/>
-  <rect x='36' y='22' width='168' height='96' rx='12' fill='#eaf1df' stroke='#6e8a4f' stroke-width='4'/>
-  <path d='M62 50l16 16 24-30' fill='none' stroke='#5d9d56' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/>
-  <path d='M62 84l16 16 24-30' fill='none' stroke='#5d9d56' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/>
-  <line x1='122' y1='58' x2='182' y2='58' stroke='#7f8c80' stroke-width='6' stroke-linecap='round'/>
-  <line x1='122' y1='92' x2='182' y2='92' stroke='#7f8c80' stroke-width='6' stroke-linecap='round'/>
-</svg>

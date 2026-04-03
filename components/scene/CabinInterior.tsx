@@ -19,17 +19,17 @@ export type GalleryPhoto = {
 };
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
-  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'HackNC Jump', description: 'A favorite memory from HackNC — great teammates, quick iteration, and a lot of energy.' },
-  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/hellopio.jpg', title: 'Late-Night Build', description: 'One of those late-night coding moments where the whole idea starts to click.' },
-  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Team Snapshot', description: 'A reminder that the best projects are almost always collaborative.' },
-  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Focused Work', description: 'A quiet scene that captures the deep-focus side of building software.' },
-  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Community', description: 'This photo represents the people and communities that have shaped my growth.' },
-  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Behind the Scenes', description: 'A look behind the scenes at the process, not just the polished output.' },
-  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Momentum', description: 'A snapshot from a stretch where momentum and confidence were both high.' },
-  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Shared Wins', description: 'A moment that reflects shared wins and the value of supportive teams.' },
-  { id: 'photo-09', position: [0.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'On the Move', description: 'A memory from a busy season of learning quickly and shipping often.' },
-  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Big Picture', description: 'This one reminds me to keep the big picture in mind while building details.' },
-  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Gratitude', description: 'A final snapshot that represents gratitude for all the people in the journey.' }
+  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'HackNC 2023', description: 'A picture of the team and I from HackNC 2023' },
+  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/hellopio.jpg', title: 'Late-Night Build', description: '' },
+  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Team Snapshot', description: '' },
+  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Focused Work', description: '' },
+  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Community', description: '' },
+  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Behind the Scenes', description: '' },
+  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Momentum', description: '' },
+  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Shared Wins', description: '' },
+  { id: 'photo-09', position: [0.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'On the Move', description: '' },
+  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Big Picture', description: '' },
+  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Gratitude', description: '' }
 ];
 
 const setInteractiveCursor = (isPointer: boolean) => {
