@@ -5,18 +5,18 @@ import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
-const PHOTO_LAYOUT = [
-  [-0.64, 1.42, -0.78],
-  [-0.38, 1.56, -0.78],
-  [-0.12, 1.44, -0.78],
-  [0.14, 1.58, -0.78],
-  [0.4, 1.45, -0.78],
-  [0.66, 1.56, -0.78],
-  [-0.5, 1.22, -0.78],
-  [-0.22, 1.1, -0.78],
-  [0.06, 1.24, -0.78],
-  [0.34, 1.1, -0.78],
-  [0.62, 1.25, -0.78]
+const PHOTO_GALLERY = [
+  { id: 'photo-01', position: [-0.66, 1.54, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02 },
+  { id: 'photo-02', position: [-0.39, 1.63, -0.759], size: [0.16, 0.12], rotation: 0.06, pinOffsetX: 0.018 },
+  { id: 'photo-03', position: [-0.13, 1.5, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015 },
+  { id: 'photo-04', position: [0.15, 1.62, -0.759], size: [0.16, 0.115], rotation: 0.08, pinOffsetX: 0.016 },
+  { id: 'photo-05', position: [0.42, 1.5, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018 },
+  { id: 'photo-06', position: [0.68, 1.62, -0.759], size: [0.16, 0.12], rotation: 0.04, pinOffsetX: 0.02 },
+  { id: 'photo-07', position: [-0.52, 1.31, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014 },
+  { id: 'photo-08', position: [-0.24, 1.18, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016 },
+  { id: 'photo-09', position: [0.04, 1.3, -0.759], size: [0.16, 0.11], rotation: 0.05, pinOffsetX: 0.016 },
+  { id: 'photo-10', position: [0.33, 1.19, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014 },
+  { id: 'photo-11', position: [0.62, 1.29, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015 }
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
@@ -230,15 +230,23 @@ export const CabinInterior = memo(function CabinInterior() {
         </mesh>
       </group>
 
-      {PHOTO_LAYOUT.map((position, index) => (
-        <group key={`${position[0]}-${position[1]}`} position={position} rotation={[0, 0, (index % 3 - 1) * 0.08]}>
+      {PHOTO_GALLERY.map((photo, index) => (
+        <group key={photo.id} position={photo.position} rotation={[0, 0, photo.rotation]}>
           <mesh>
-            <planeGeometry args={[0.16, 0.11]} />
+            <planeGeometry args={photo.size} />
             <meshBasicMaterial color={PHOTO_COLORS[index % PHOTO_COLORS.length]} />
           </mesh>
+          <mesh name={`gallery-photo-${photo.id}`} position={[0, 0, 0.001]}>
+            <planeGeometry args={[photo.size[0] * 0.88, photo.size[1] * 0.84]} />
+            <meshStandardMaterial color={'#fbf7ef'} roughness={0.85} metalness={0.03} />
+          </mesh>
           <mesh position={[0, 0, -0.002]}>
-            <planeGeometry args={[0.175, 0.125]} />
+            <planeGeometry args={[photo.size[0] + 0.016, photo.size[1] + 0.016]} />
             <meshStandardMaterial color={PALETTE.cabinWall} flatShading />
+          </mesh>
+          <mesh position={[photo.pinOffsetX, photo.size[1] * 0.5 + 0.012, 0.004]} castShadow>
+            <cylinderGeometry args={[0.007, 0.007, 0.012, 10]} />
+            <meshStandardMaterial color={cabinInterior.lampMetal} roughness={0.45} metalness={0.5} />
           </mesh>
         </group>
       ))}
