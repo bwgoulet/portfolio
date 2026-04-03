@@ -49,25 +49,27 @@ export const CabinInterior = memo(function CabinInterior() {
         <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
       </mesh>
 
-      <mesh position={[0.18, 0.42, -0.62]} castShadow receiveShadow>
-        <boxGeometry args={[0.86, 0.08, 0.3]} />
+      <mesh position={[-0.67, 0.42, -0.12]} castShadow receiveShadow>
+        <boxGeometry args={[0.3, 0.08, 0.86]} />
         <meshStandardMaterial color={cabinInterior.tableTop} flatShading />
       </mesh>
-      {[-0.16, 0.12, 0.52].map((x) => (
-        <mesh key={x} position={[x, 0.23, -0.66]} castShadow receiveShadow>
+      {[-0.44, -0.16, 0.12].map((z) => (
+        <mesh key={z} position={[-0.71, 0.23, z]} castShadow receiveShadow>
           <boxGeometry args={[0.06, 0.38, 0.06]} />
           <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
         </mesh>
       ))}
 
-      <mesh position={[0.22, 0.56, -0.62]} castShadow>
-        <boxGeometry args={[0.28, 0.2, 0.18]} />
-        <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
-      </mesh>
-      <mesh position={[0.22, 0.55, -0.525]}>
-        <planeGeometry args={[0.2, 0.12]} />
-        <meshBasicMaterial color={cabinInterior.monitorScreen} />
-      </mesh>
+      <group position={[-0.67, 0.56, -0.1]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.28, 0.2, 0.18]} />
+          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
+        </mesh>
+        <mesh position={[0, -0.01, 0.095]}>
+          <planeGeometry args={[0.2, 0.12]} />
+          <meshBasicMaterial color={cabinInterior.monitorScreen} />
+        </mesh>
+      </group>
 
       {PHOTO_LAYOUT.map((position, index) => (
         <group key={`${position[0]}-${position[1]}`} position={position} rotation={[0, 0, (index % 3 - 1) * 0.08]}>
