@@ -2,7 +2,7 @@
 
 import gsap from 'gsap';
 import { memo, useMemo, useRef } from 'react';
-import { useTexture } from '@react-three/drei';
+import { useGLTF, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
@@ -44,6 +44,17 @@ type CabinInteriorProps = {
 
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
+  const chairGltf = useGLTF('/models/Chair.glb');
+  const chairModel = useMemo(() => {
+    const chairScene = chairGltf.scene.clone(true);
+    chairScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    return chairScene;
+  }, [chairGltf.scene]);
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -186,6 +197,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
         </mesh>
       ))}
+      <primitive object={chairModel} position={[-0.66, 0.05, 0.42]} rotation={[0, Math.PI, 0]} scale={0.58} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh castShadow receiveShadow>
@@ -359,3 +371,5 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     </group>
   );
 });
+
+useGLTF.preload('/models/Chair.glb');
