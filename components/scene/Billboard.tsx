@@ -2,6 +2,7 @@
 
 import { Html, Text } from '@react-three/drei';
 import gsap from 'gsap';
+import Image from 'next/image';
 import { memo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { RefObject } from 'react';
@@ -189,7 +190,7 @@ export const Billboard = memo(function Billboard({
               style={{ opacity: hideThumbnails ? 0 : 1 }}
             >
               <div className="note-preview" aria-hidden>
-                <img src={note.imageSrc} alt="" />
+                <Image src={note.imageSrc} alt="" width={44} height={26} />
                 <div className="note-scribbles">
                   <span />
                   <span />
