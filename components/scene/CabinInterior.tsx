@@ -197,7 +197,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
         </mesh>
       ))}
-      <primitive object={chairModel} position={[-0.66, 0.05, 0.42]} rotation={[0, Math.PI, 0]} scale={0.58} />
+      <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
         <mesh castShadow receiveShadow>
