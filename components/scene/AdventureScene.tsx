@@ -331,8 +331,8 @@ export function AdventureScene() {
           <IntroductionLandmark
             landmarkRef={introductionRef}
             interactiveEnabled={isOverviewState || interactionState === 'introductionCloseup'}
-            hoverEnabled={isOverviewState}
-            hovered={interactionState === 'hoverIntroduction'}
+            hoverEnabled={isOverviewState || interactionState === 'introductionCloseup'}
+            hovered={interactionState === 'hoverIntroduction' || interactionState === 'introductionCloseup'}
             onHoverChange={(hovered) => {
               if (interactionState === 'introductionCloseup') return;
               updateHover('introduction', hovered);
