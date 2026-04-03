@@ -44,13 +44,27 @@ type CabinInteriorProps = {
 
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
-  const horizontalPhotoTexture = useTexture('/gallery/hacknc_jump.jpeg');
+  const galleryTextureSources = useMemo(
+    () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
+    []
+  );
+  const galleryTextures = useTexture(galleryTextureSources);
+  const galleryTextureBySrc = useMemo(
+    () =>
+      galleryTextureSources.reduce<Record<string, THREE.Texture>>((texturesBySrc, source, index) => {
+        const texture = galleryTextures[index];
+        if (texture) {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = 4;
+          texture.needsUpdate = true;
+          texturesBySrc[source] = texture;
+        }
+        return texturesBySrc;
+      }, {}),
+    [galleryTextureSources, galleryTextures]
+  );
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
-
-  horizontalPhotoTexture.colorSpace = THREE.SRGBColorSpace;
-  horizontalPhotoTexture.anisotropy = 4;
-  horizontalPhotoTexture.needsUpdate = true;
 
   const woodFloorTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
@@ -301,7 +315,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
             <planeGeometry args={[photo.size[0] * 0.88, photo.size[1] * 0.84]} />
             <meshStandardMaterial
               color={'#ffffff'}
-              map={horizontalPhotoTexture}
+              map={galleryTextureBySrc[photo.imageSrc]}
               roughness={0.85}
               metalness={0.03}
             />
