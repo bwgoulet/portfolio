@@ -40,7 +40,9 @@ export function AdventureScene() {
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
   const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
+  const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
+  const cabinExitTimerRef = useRef<number | null>(null);
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -254,6 +256,9 @@ export function AdventureScene() {
       if (cabinFadeTimerRef.current !== null) {
         window.clearTimeout(cabinFadeTimerRef.current);
       }
+      if (cabinExitTimerRef.current !== null) {
+        window.clearTimeout(cabinExitTimerRef.current);
+      }
       document.body.style.cursor = 'auto';
     },
     []
@@ -268,13 +273,7 @@ export function AdventureScene() {
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
-  const handleReturnToOverview = useCallback(() => {
-    const exitingCabin = focusTarget === 'cabinInterior';
-    if (exitingCabin && !reducedMotion) {
-      setCabinTransitionFadeState('black');
-    } else {
-      setCabinTransitionFadeState('idle');
-    }
+  const beginOverviewTransition = useCallback(() => {
     setIsCabinDoorOpen(false);
     setIsCabinInteriorRevealed(false);
     setFocusTarget('overview');
@@ -282,13 +281,28 @@ export function AdventureScene() {
     setSelectedNoteId(null);
     setSelectedExperienceId(null);
     setIsIntroductionDialogOpen(false);
-  }, [focusTarget, reducedMotion]);
+  }, []);
 
-  const handleBackButtonPointerDown = useCallback(() => {
-    if (focusTarget === 'cabinInterior' && !reducedMotion) {
-      setCabinTransitionFadeState('black');
+  const handleReturnToOverview = useCallback(() => {
+    const exitingCabin = focusTarget === 'cabinInterior';
+    if (exitingCabin && !reducedMotion) {
+      if (isCabinExitTransitionPending) return;
+      setIsCabinExitTransitionPending(true);
+      setCabinTransitionFadeState('fade-out');
+      if (cabinExitTimerRef.current !== null) {
+        window.clearTimeout(cabinExitTimerRef.current);
+      }
+      cabinExitTimerRef.current = window.setTimeout(() => {
+        setCabinTransitionFadeState('black');
+        setIsCabinExitTransitionPending(false);
+        beginOverviewTransition();
+        cabinExitTimerRef.current = null;
+      }, 240);
+      return;
     }
-  }, [focusTarget, reducedMotion]);
+    setCabinTransitionFadeState('idle');
+    beginOverviewTransition();
+  }, [beginOverviewTransition, focusTarget, isCabinExitTransitionPending, reducedMotion]);
 
   return (
     <main>
@@ -545,11 +559,10 @@ export function AdventureScene() {
         </article>
       )}
 
-      {!isOverviewState && !isTransitioning && (
+      {!isOverviewState && !isTransitioning && !isCabinExitTransitionPending && (
         <button
           className="scene-back"
           aria-label="Return to overview"
-          onPointerDown={handleBackButtonPointerDown}
           onClick={handleReturnToOverview}
         >
           ←
