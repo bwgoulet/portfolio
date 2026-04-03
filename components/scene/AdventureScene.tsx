@@ -148,27 +148,30 @@ export function AdventureScene() {
     lastTriggerRef.current?.focus();
   }, [isDetailDialogOpen]);
 
-  const updateHover = useCallback(
-    (target: InteractiveTarget, hovered: boolean) => {
-      if (!isOverviewState || isTransitioning) return;
-      if (!hovered) {
-        setInteractionState('idleOverview');
-        return;
-      }
-      setInteractionState(
-        target === 'billboard'
-          ? 'hoverBillboard'
-          : target === 'cabin'
-            ? 'hoverCabin'
-            : target === 'tablets'
-              ? 'hoverTablets'
-              : target === 'introduction'
-                ? 'hoverIntroduction'
-                : 'hoverTimeline'
-      );
-    },
-    [isOverviewState, isTransitioning]
-  );
+  const updateHover = useCallback((target: InteractiveTarget, hovered: boolean) => {
+    setInteractionState((currentState) => {
+      const isCurrentOverviewState =
+        currentState === 'idleOverview' ||
+        currentState === 'hoverBillboard' ||
+        currentState === 'hoverCabin' ||
+        currentState === 'hoverTablets' ||
+        currentState === 'hoverIntroduction' ||
+        currentState === 'hoverTimeline';
+
+      if (!isCurrentOverviewState) return currentState;
+      if (!hovered) return 'idleOverview';
+
+      return target === 'billboard'
+        ? 'hoverBillboard'
+        : target === 'cabin'
+          ? 'hoverCabin'
+          : target === 'tablets'
+            ? 'hoverTablets'
+            : target === 'introduction'
+              ? 'hoverIntroduction'
+              : 'hoverTimeline';
+    });
+  }, []);
 
   const animateFocusNudge = useCallback(
     (target: InteractiveTarget) => {
