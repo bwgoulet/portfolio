@@ -1,10 +1,10 @@
 'use client';
 
 import { Text, useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import { memo, useRef } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
+import { memo, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
-import { DoubleSide } from 'three';
+import { ClampToEdgeWrapping, DoubleSide, LinearMipmapLinearFilter, SRGBColorSpace } from 'three';
 import type { Group, MeshStandardMaterial } from 'three';
 import { SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { InteractiveTarget } from './types';
@@ -42,8 +42,19 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const engravingGroupRef = useRef<Group>(null);
   const sideLabelRef = useRef<Group>(null);
   const introTexture = useTexture('/introimage.png');
-  const imageWidth = 0.114;
+  const gl = useThree((state) => state.gl);
+  const imageWidth = 0.2;
   const imageHeight = imageWidth / (858 / 1356);
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    introTexture.colorSpace = SRGBColorSpace;
+    introTexture.minFilter = LinearMipmapLinearFilter;
+    introTexture.anisotropy = maxAnisotropy;
+    introTexture.wrapS = ClampToEdgeWrapping;
+    introTexture.wrapT = ClampToEdgeWrapping;
+    introTexture.needsUpdate = true;
+  }, [gl, introTexture]);
 
   useFrame(({ clock }) => {
     if (!topStoneRef.current) return;
@@ -114,11 +125,10 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
       <group ref={engravingGroupRef} position={[0, 0.498, 0]}>
         <mesh position={[-0.16, 0.004, 0.005]} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[imageWidth, imageHeight]} />
-          <meshStandardMaterial
+          <meshBasicMaterial
             map={introTexture}
-            roughness={0.9}
-            metalness={0.03}
             side={DoubleSide}
+            toneMapped={false}
             polygonOffset
             polygonOffsetFactor={-1}
           />
