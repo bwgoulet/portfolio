@@ -19,6 +19,7 @@ const PHOTO_LAYOUT = [
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
+const FLOOR_PLANK_X = [-0.73, -0.37, -0.01, 0.35, 0.71] as const;
 
 export const CabinInterior = memo(function CabinInterior() {
   const { cabinInterior } = VISUAL_TOKENS.scene;
@@ -28,6 +29,18 @@ export const CabinInterior = memo(function CabinInterior() {
         <boxGeometry args={[1.86, 0.04, 1.52]} />
         <meshStandardMaterial color={cabinInterior.floor} flatShading />
       </mesh>
+      {FLOOR_PLANK_X.map((x, index) => (
+        <mesh key={`floor-plank-${x}`} position={[x, 0.043, 0]} receiveShadow>
+          <boxGeometry args={[0.34, 0.008, 1.5]} />
+          <meshStandardMaterial color={index % 2 === 0 ? cabinInterior.floorPlankA : cabinInterior.floorPlankB} flatShading />
+        </mesh>
+      ))}
+      {[-0.55, -0.19, 0.17, 0.53].map((x) => (
+        <mesh key={`floor-seam-${x}`} position={[x, 0.044, 0]} receiveShadow>
+          <boxGeometry args={[0.014, 0.009, 1.5]} />
+          <meshStandardMaterial color={cabinInterior.floorPlankSeam} flatShading />
+        </mesh>
+      ))}
 
       <mesh position={[0, 0.94, -0.8]} receiveShadow>
         <boxGeometry args={[1.86, 1.8, 0.08]} />
