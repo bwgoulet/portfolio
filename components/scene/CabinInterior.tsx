@@ -20,7 +20,7 @@ export type GalleryPhoto = {
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'HackNC Jump', description: 'A favorite memory from HackNC — great teammates, quick iteration, and a lot of energy.' },
-  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Late-Night Build', description: 'One of those late-night coding moments where the whole idea starts to click.' },
+  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/hellopio.jpg', title: 'Late-Night Build', description: 'One of those late-night coding moments where the whole idea starts to click.' },
   { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Team Snapshot', description: 'A reminder that the best projects are almost always collaborative.' },
   { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Focused Work', description: 'A quiet scene that captures the deep-focus side of building software.' },
   { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Community', description: 'This photo represents the people and communities that have shaped my growth.' },
