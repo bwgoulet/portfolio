@@ -1,27 +1,34 @@
 'use client';
 
 import { memo, useMemo } from 'react';
+import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 const PHOTO_GALLERY = [
-  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02 },
-  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018 },
-  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015 },
-  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016 },
-  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018 },
-  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02 },
-  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014 },
-  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016 },
-  { id: 'photo-09', position: [.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016 },
-  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014 },
-  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015 }
+  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: null },
+  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: null },
+  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: null },
+  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-09', position: [.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: null },
+  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/hacknc_jump.jpeg' },
+  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg' }
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
 export const CabinInterior = memo(function CabinInterior() {
   const { cabinInterior } = VISUAL_TOKENS.scene;
+  const horizontalPhotoTexture = useTexture('/gallery/hacknc_jump.jpeg');
+
+  horizontalPhotoTexture.colorSpace = THREE.SRGBColorSpace;
+  horizontalPhotoTexture.anisotropy = 4;
+  horizontalPhotoTexture.needsUpdate = true;
+
   const woodFloorTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1024;
@@ -238,7 +245,12 @@ export const CabinInterior = memo(function CabinInterior() {
           </mesh>
           <mesh name={`gallery-photo-${photo.id}`} position={[0, 0, 0.001]}>
             <planeGeometry args={[photo.size[0] * 0.88, photo.size[1] * 0.84]} />
-            <meshStandardMaterial color={'#fbf7ef'} roughness={0.85} metalness={0.03} />
+            <meshStandardMaterial
+              color={photo.imageSrc ? '#ffffff' : '#fbf7ef'}
+              map={photo.imageSrc ? horizontalPhotoTexture : null}
+              roughness={0.85}
+              metalness={0.03}
+            />
           </mesh>
           <mesh position={[0, 0, -0.002]}>
             <planeGeometry args={[photo.size[0] + 0.016, photo.size[1] + 0.016]} />
