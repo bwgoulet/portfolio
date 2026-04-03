@@ -1,6 +1,7 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
+import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
@@ -22,11 +23,50 @@ const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
 
 export const CabinInterior = memo(function CabinInterior() {
   const { cabinInterior } = VISUAL_TOKENS.scene;
+  const woodFloorTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+
+    context.fillStyle = cabinInterior.floorPlankA;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    const plankWidth = canvas.width / 6;
+    for (let plank = 0; plank < 6; plank += 1) {
+      const startX = plank * plankWidth;
+      context.fillStyle = plank % 2 === 0 ? cabinInterior.floorPlankA : cabinInterior.floorPlankB;
+      context.fillRect(startX, 0, plankWidth, canvas.height);
+
+      context.fillStyle = cabinInterior.floorPlankSeam;
+      context.fillRect(startX, 0, 4, canvas.height);
+
+      for (let y = 0; y < canvas.height; y += 9) {
+        const wave = Math.sin((y + plank * 17) * 0.04) * 8;
+        context.fillStyle = `rgba(32, 18, 10, ${0.08 + ((plank + y) % 5) * 0.02})`;
+        context.fillRect(startX + plankWidth * 0.14 + wave, y, plankWidth * 0.74, 2);
+      }
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(1.1, 1.45);
+    texture.anisotropy = 4;
+    return texture;
+  }, [cabinInterior.floorPlankA, cabinInterior.floorPlankB, cabinInterior.floorPlankSeam]);
+
   return (
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[1.86, 0.04, 1.52]} />
         <meshStandardMaterial color={cabinInterior.floor} flatShading />
+      </mesh>
+      <mesh position={[0, 0.045, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[1.84, 1.5]} />
+        <meshStandardMaterial color={cabinInterior.floorPlankA} map={woodFloorTexture ?? undefined} roughness={0.92} metalness={0.02} />
       </mesh>
 
       <mesh position={[0, 0.94, -0.8]} receiveShadow>

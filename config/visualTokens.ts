@@ -117,6 +117,9 @@ export const VISUAL_TOKENS = {
     },
     cabinInterior: {
       floor: '#3d2f25',
+      floorPlankA: '#7a5234',
+      floorPlankB: '#6a452c',
+      floorPlankSeam: '#51331f',
       wallBack: '#4a382d',
       wallSide: '#433226',
       tableTop: '#5b4334',
