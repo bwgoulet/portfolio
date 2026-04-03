@@ -38,7 +38,7 @@ export function AdventureScene() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
-  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'fade-in'>('idle');
+  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
 
@@ -271,7 +271,7 @@ export function AdventureScene() {
   const handleReturnToOverview = useCallback(() => {
     const exitingCabin = focusTarget === 'cabinInterior';
     if (exitingCabin && !reducedMotion) {
-      setCabinTransitionFadeState('fade-out');
+      setCabinTransitionFadeState('black');
     } else {
       setCabinTransitionFadeState('idle');
     }
@@ -286,7 +286,7 @@ export function AdventureScene() {
 
   const handleBackButtonPointerDown = useCallback(() => {
     if (focusTarget === 'cabinInterior' && !reducedMotion) {
-      setCabinTransitionFadeState('fade-out');
+      setCabinTransitionFadeState('black');
     }
   }, [focusTarget, reducedMotion]);
 
@@ -318,7 +318,7 @@ export function AdventureScene() {
                 }
               }
               if (completedTarget === 'overview') {
-                if (!reducedMotion && cabinTransitionFadeState === 'fade-out') {
+                if (!reducedMotion && (cabinTransitionFadeState === 'fade-out' || cabinTransitionFadeState === 'black')) {
                   setCabinTransitionFadeState('fade-in');
                   scheduleCabinFadeReset(320);
                 } else {
