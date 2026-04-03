@@ -22,6 +22,7 @@ type BillboardProps = {
   onClick: () => void;
   onNoteClick: (noteId: string) => void;
   detailOpen: boolean;
+  hideThumbnails: boolean;
   billboardRef: RefObject<Group | null>;
   reducedMotion: boolean;
 };
@@ -34,6 +35,7 @@ export const Billboard = memo(function Billboard({
   onClick,
   onNoteClick,
   detailOpen,
+  hideThumbnails,
   billboardRef,
   reducedMotion
 }: BillboardProps) {
@@ -179,7 +181,13 @@ export const Billboard = memo(function Billboard({
               <sphereGeometry args={[0.017, 6, 6]} />
               <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
-            <Html transform position={[0, -0.01, 0.015]} distanceFactor={1.2} pointerEvents="none">
+            <Html
+              transform
+              position={[0, -0.01, 0.015]}
+              distanceFactor={1.2}
+              pointerEvents="none"
+              style={{ opacity: hideThumbnails ? 0 : 1 }}
+            >
               <div className="note-preview" aria-hidden>
                 <img src={note.imageSrc} alt="" />
                 <div className="note-scribbles">
