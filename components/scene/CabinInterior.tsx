@@ -6,17 +6,17 @@ import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 const PHOTO_GALLERY = [
-  { id: 'photo-01', position: [-0.66, 1.54, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02 },
-  { id: 'photo-02', position: [-0.39, 1.63, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018 },
-  { id: 'photo-03', position: [-0.13, 1.5, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015 },
-  { id: 'photo-04', position: [0.15, 1.62, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016 },
-  { id: 'photo-05', position: [0.42, 1.5, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018 },
-  { id: 'photo-06', position: [0.68, 1.62, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02 },
-  { id: 'photo-07', position: [-0.52, 1.31, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014 },
-  { id: 'photo-08', position: [-0.24, 1.18, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016 },
-  { id: 'photo-09', position: [0.04, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016 },
-  { id: 'photo-10', position: [0.33, 1.19, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014 },
-  { id: 'photo-11', position: [0.62, 1.29, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015 }
+  { id: 'photo-01', position: [-0.71, 1.57, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02 },
+  { id: 'photo-02', position: [-0.47, 1.68, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018 },
+  { id: 'photo-03', position: [-0.2, 1.57, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015 },
+  { id: 'photo-04', position: [0.08, 1.68, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016 },
+  { id: 'photo-05', position: [0.36, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018 },
+  { id: 'photo-06', position: [0.56, 1.67, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02 },
+  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014 },
+  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016 },
+  { id: 'photo-09', position: [-0.02, 1.14, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016 },
+  { id: 'photo-10', position: [0.27, 1.02, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014 },
+  { id: 'photo-11', position: [-0.47, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015 }
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
