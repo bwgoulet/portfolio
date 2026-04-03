@@ -63,7 +63,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
       'Awarded 2nd place overall at HackNC 2022.'
     ],
     imageSrc: '/projects/brevity.png',
-    detailImageSrc: '/projects/brevity-logo.svg',
+    detailImageSrc: '/projects/brevitydetails2.png',
     whyItMattered:
       'It grounded fast product decisions in real user pain, and showed how NLP + summarization can reduce inbox overload in practical ways.',
     position: [0.4, 1.91, 0.19],
