@@ -268,6 +268,28 @@ export function AdventureScene() {
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
+  const handleReturnToOverview = useCallback(() => {
+    const exitingCabin = focusTarget === 'cabinInterior';
+    if (exitingCabin && !reducedMotion) {
+      setCabinTransitionFadeState('fade-out');
+    } else {
+      setCabinTransitionFadeState('idle');
+    }
+    setIsCabinDoorOpen(false);
+    setIsCabinInteriorRevealed(false);
+    setFocusTarget('overview');
+    setInteractionState('transitioning');
+    setSelectedNoteId(null);
+    setSelectedExperienceId(null);
+    setIsIntroductionDialogOpen(false);
+  }, [focusTarget, reducedMotion]);
+
+  const handleBackButtonPointerDown = useCallback(() => {
+    if (focusTarget === 'cabinInterior' && !reducedMotion) {
+      setCabinTransitionFadeState('fade-out');
+    }
+  }, [focusTarget, reducedMotion]);
+
   return (
     <main>
       <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
@@ -527,21 +549,8 @@ export function AdventureScene() {
         <button
           className="scene-back"
           aria-label="Return to overview"
-          onClick={() => {
-            const exitingCabin = focusTarget === 'cabinInterior';
-            if (exitingCabin && !reducedMotion) {
-              setCabinTransitionFadeState('fade-out');
-            } else {
-              setCabinTransitionFadeState('idle');
-            }
-            setIsCabinDoorOpen(false);
-            setIsCabinInteriorRevealed(false);
-            setFocusTarget('overview');
-            setInteractionState('transitioning');
-            setSelectedNoteId(null);
-            setSelectedExperienceId(null);
-            setIsIntroductionDialogOpen(false);
-          }}
+          onPointerDown={handleBackButtonPointerDown}
+          onClick={handleReturnToOverview}
         >
           ←
         </button>
