@@ -272,27 +272,27 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           <boxGeometry args={[0.5, 0.045, 0.11]} />
           <meshStandardMaterial color={cabinInterior.shelfWood} flatShading />
         </mesh>
-        <mesh position={[-0.15, 0.08, 0]}>
+        <mesh position={[-0.15, 0.1025, 0]}>
           <boxGeometry args={[0.08, 0.16, 0.08]} />
           <meshStandardMaterial color={cabinInterior.decorBookA} flatShading />
         </mesh>
-        <mesh position={[-0.06, 0.07, 0]}>
+        <mesh position={[-0.06, 0.0925, 0]}>
           <boxGeometry args={[0.07, 0.14, 0.08]} />
           <meshStandardMaterial color={cabinInterior.decorBookB} flatShading />
         </mesh>
-        <mesh position={[0.12, 0.08, 0]}>
+        <mesh position={[0.12, 0.1025, 0]}>
           <cylinderGeometry args={[0.04, 0.05, 0.16, 10]} />
           <meshStandardMaterial color={cabinInterior.decorVase} flatShading />
         </mesh>
-        <mesh position={[0.12, 0.17, 0.03]}>
+        <mesh position={[0.12, 0.1925, 0.03]}>
           <sphereGeometry args={[0.05, 8, 8]} />
           <meshStandardMaterial color={'#628e5e'} flatShading />
         </mesh>
-        <mesh position={[-0.08, -0.23, 0]}>
+        <mesh position={[-0.08, -0.1975, 0]}>
           <boxGeometry args={[0.1, 0.2, 0.08]} />
           <meshStandardMaterial color={cabinInterior.decorBookB} flatShading />
         </mesh>
-        <mesh position={[0.04, -0.25, 0]}>
+        <mesh position={[0.04, -0.2175, 0]}>
           <boxGeometry args={[0.09, 0.24, 0.08]} />
           <meshStandardMaterial color={cabinInterior.decorBookA} flatShading />
         </mesh>
