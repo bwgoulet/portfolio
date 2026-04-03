@@ -38,11 +38,11 @@ main {
 }
 
 .cabin-transition-fade--fade-out {
-  animation: cabin-fade-out 160ms ease-out both;
+  animation: cabin-fade-out 240ms ease-out both;
 }
 
 .cabin-transition-fade--fade-in {
-  animation: cabin-fade-in 220ms ease-in both;
+  animation: cabin-fade-in 320ms ease-in both;
 }
 
 .scene-brand {

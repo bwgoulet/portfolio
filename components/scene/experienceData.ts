@@ -17,12 +17,12 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     dateLocation: 'August 2021 - August 2023 Durham, NC',
     bullets: [
       'Designed and implemented a library of 18 interactive social animations in Godot, collaborating with developers, artists, and psychologists.',
-      'Built a web-based reporting tool to display real-time statistics on user engagement, version history, and release notes.',
+      'Built a web-based reporting tool to display real-time statistics on company projects, user engagement, version history, release notes, and more.',
       'Tested applications in pre-production as part of the QA process, while closely communicating with developers and project leads.',
       'Utilized HTML5/CSS, JavaScript, React, PHP, Laravel, AWS, and Docker to support rapid deployment cycles.'
     ],
     placeholderImageSrc: '/experience/3cinstitute_logo.jpg',
-    detailImageSrc: '/experience/3cinstitute_logo.jpg',
+    detailImageSrc: '/experience/3cdetails.png',
     whyItMattered:
       'It grounded my engineering in mission-driven outcomes, where technical quality and interdisciplinary collaboration directly impacted real users.'
   },
