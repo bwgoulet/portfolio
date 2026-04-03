@@ -1,6 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
+import Image from 'next/image';
 import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Group } from 'three';
 import { Billboard } from './Billboard';
@@ -452,7 +453,7 @@ export function AdventureScene() {
             aria-labelledby={noteTitleId}
             tabIndex={-1}
           >
-            <img src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} />
+            <Image src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} width={720} height={380} />
             <h2 id={noteTitleId}>{selectedNote.title}</h2>
             <p className="detail-summary">{selectedNote.detail}</p>
             {selectedNote.resumeMeta && (
@@ -500,7 +501,7 @@ export function AdventureScene() {
             aria-labelledby={experienceTitleId}
             tabIndex={-1}
           >
-            <img src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} />
+            <Image src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} width={720} height={380} />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
             <p className="detail-meta">{selectedExperience.company}</p>
             <p className="detail-meta">{selectedExperience.dateLocation}</p>
@@ -545,7 +546,7 @@ export function AdventureScene() {
               Close
             </button>
             <div className="introduction-detail-layout">
-              <img src="/introimage.png" alt="Introduction thumbnail" />
+              <Image src="/introimage.png" alt="Introduction thumbnail" width={520} height={460} />
               <section className="introduction-detail-copy">
                 <h2 id="introduction-title">Introduction</h2>
                 <p>

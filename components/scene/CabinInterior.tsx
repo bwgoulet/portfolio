@@ -20,8 +20,6 @@ const PHOTO_LAYOUT = [
 ] as const;
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
-const FLOOR_PLANK_X = [-0.73, -0.37, -0.01, 0.35, 0.71] as const;
-
 export const CabinInterior = memo(function CabinInterior() {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const woodFloorTexture = useMemo(() => {
