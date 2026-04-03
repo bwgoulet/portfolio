@@ -46,6 +46,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
+  const crtGltf = useGLTF('/models/CRT.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     chairScene.traverse((child) => {
@@ -72,6 +73,28 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     tableScene.position.y -= tableBounds.min.y;
     return tableScene;
   }, [tableGltf.scene]);
+  const crtModel = useMemo(() => {
+    const crtScene = crtGltf.scene.clone(true);
+    crtScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    crtScene.updateMatrixWorld(true);
+    const crtBounds = new THREE.Box3().setFromObject(crtScene);
+    const crtSize = crtBounds.getSize(new THREE.Vector3());
+    const crtCenter = crtBounds.getCenter(new THREE.Vector3());
+    crtScene.position.x -= crtCenter.x;
+    crtScene.position.z -= crtCenter.z;
+    crtScene.position.y -= crtBounds.min.y;
+    return { scene: crtScene, size: crtSize };
+  }, [crtGltf.scene]);
+  const crtScale = useMemo(() => {
+    if (crtModel.size.y <= Number.EPSILON) return 1;
+    const desiredMonitorHeight = 0.28;
+    return desiredMonitorHeight / crtModel.size.y;
+  }, [crtModel.size.y]);
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -199,40 +222,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[0.34, 0.24, 0.24]} />
-          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
-        </mesh>
-        <mesh position={[0, -0.085, -0.02]} castShadow receiveShadow>
-          <boxGeometry args={[0.2, 0.05, 0.2]} />
-          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
-        </mesh>
-        <mesh position={[0, -0.11, 0.1]} castShadow receiveShadow>
-          <boxGeometry args={[0.1, 0.02, 0.08]} />
-          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
-        </mesh>
-        <mesh position={[0, 0.01, 0.115]}>
-          <boxGeometry args={[0.23, 0.15, 0.02]} />
-          <meshStandardMaterial color={'#2f3740'} flatShading />
-        </mesh>
-        <mesh position={[0, 0.02, 0.126]}>
-          <planeGeometry args={[0.19, 0.12]} />
-          <meshStandardMaterial
-            color={cabinInterior.monitorScreen}
-            emissive={cabinInterior.monitorScreen}
-            emissiveIntensity={0.3}
-          />
-        </mesh>
-        {[-0.065, -0.03, 0.005, 0.04].map((x) => (
-          <mesh key={x} position={[x, -0.09, 0.122]} castShadow>
-            <boxGeometry args={[0.015, 0.01, 0.015]} />
-            <meshStandardMaterial color={'#232a31'} flatShading />
-          </mesh>
-        ))}
-        <mesh position={[-0.11, -0.09, 0.122]} castShadow>
-          <cylinderGeometry args={[0.012, 0.012, 0.01, 12]} />
-          <meshStandardMaterial color={'#992f2f'} flatShading />
-        </mesh>
+        <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
       {[-0.44, 0.44].map((x) => (
@@ -372,3 +362,4 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 });
 
 useGLTF.preload('/models/Chair.glb');
+useGLTF.preload('/models/CRT.glb');
