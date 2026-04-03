@@ -45,6 +45,7 @@ type CabinInteriorProps = {
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
+  const tableGltf = useGLTF('/models/Table.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     chairScene.traverse((child) => {
@@ -55,6 +56,22 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     });
     return chairScene;
   }, [chairGltf.scene]);
+  const tableModel = useMemo(() => {
+    const tableScene = tableGltf.scene.clone(true);
+    tableScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    tableScene.updateMatrixWorld(true);
+    const tableBounds = new THREE.Box3().setFromObject(tableScene);
+    const tableCenter = tableBounds.getCenter(new THREE.Vector3());
+    tableScene.position.x -= tableCenter.x;
+    tableScene.position.z -= tableCenter.z;
+    tableScene.position.y -= tableBounds.min.y;
+    return tableScene;
+  }, [tableGltf.scene]);
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -178,25 +195,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       ))}
 
-      <mesh position={[-0.67, 0.42, -0.12]} castShadow receiveShadow>
-        <boxGeometry args={[0.36, 0.06, 0.86]} />
-        <meshStandardMaterial color={cabinInterior.tableTop} flatShading />
-      </mesh>
-      <mesh position={[-0.67, 0.37, -0.12]} castShadow receiveShadow>
-        <boxGeometry args={[0.32, 0.04, 0.8]} />
-        <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
-      </mesh>
-      {[
-        [-0.8, -0.49],
-        [-0.8, 0.25],
-        [-0.54, -0.49],
-        [-0.54, 0.25]
-      ].map(([x, z]) => (
-        <mesh key={`${x}-${z}`} position={[x, 0.21, z]} castShadow receiveShadow>
-          <boxGeometry args={[0.045, 0.36, 0.045]} />
-          <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
-        </mesh>
-      ))}
+      <primitive object={tableModel} position={[-0.67, 0.03, -0.12]} scale={0.015} />
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
