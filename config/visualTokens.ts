@@ -117,12 +117,23 @@ export const VISUAL_TOKENS = {
     },
     cabinInterior: {
       floor: '#3d2f25',
+      floorPlankA: '#7a5234',
+      floorPlankB: '#6a452c',
+      floorPlankSeam: '#51331f',
       wallBack: '#4a382d',
       wallSide: '#433226',
       tableTop: '#5b4334',
       tableLeg: '#3a2a1f',
       monitorBody: '#3e444f',
       monitorScreen: '#7cc8a8',
+      lampMetal: '#6d5f4a',
+      lampGlow: '#ffd18b',
+      shelfWood: '#5f4637',
+      decorBookA: '#9a6a4e',
+      decorBookB: '#7f8f65',
+      decorVase: '#8a7e70',
+      rug: '#4f3b2e',
+      rugStripe: '#a47650',
       photoPalette: ['#d6b383', '#caa17d', '#b98a68', '#dec89b', '#b57d5e'] as const
     }
   },
