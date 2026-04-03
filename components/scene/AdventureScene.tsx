@@ -34,6 +34,7 @@ export function AdventureScene() {
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
+  const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
@@ -258,6 +259,12 @@ export function AdventureScene() {
     []
   );
 
+  useEffect(() => {
+    if (interactionState !== 'introductionCloseup') {
+      setIsIntroductionCloseupHovered(false);
+    }
+  }, [interactionState]);
+
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
@@ -331,10 +338,13 @@ export function AdventureScene() {
           <IntroductionLandmark
             landmarkRef={introductionRef}
             interactiveEnabled={isOverviewState || interactionState === 'introductionCloseup'}
-            hoverEnabled={isOverviewState}
-            hovered={interactionState === 'hoverIntroduction'}
+            hoverEnabled={isOverviewState || interactionState === 'introductionCloseup'}
+            hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
             onHoverChange={(hovered) => {
-              if (interactionState === 'introductionCloseup') return;
+              if (interactionState === 'introductionCloseup') {
+                setIsIntroductionCloseupHovered(hovered);
+                return;
+              }
               updateHover('introduction', hovered);
             }}
             onClick={() => {
