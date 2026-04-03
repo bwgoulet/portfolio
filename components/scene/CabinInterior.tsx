@@ -50,24 +50,59 @@ export const CabinInterior = memo(function CabinInterior() {
       </mesh>
 
       <mesh position={[-0.67, 0.42, -0.12]} castShadow receiveShadow>
-        <boxGeometry args={[0.3, 0.08, 0.86]} />
+        <boxGeometry args={[0.36, 0.06, 0.86]} />
         <meshStandardMaterial color={cabinInterior.tableTop} flatShading />
       </mesh>
-      {[-0.44, -0.16, 0.12].map((z) => (
-        <mesh key={z} position={[-0.71, 0.23, z]} castShadow receiveShadow>
-          <boxGeometry args={[0.06, 0.38, 0.06]} />
+      <mesh position={[-0.67, 0.37, -0.12]} castShadow receiveShadow>
+        <boxGeometry args={[0.32, 0.04, 0.8]} />
+        <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
+      </mesh>
+      {[
+        [-0.8, -0.49],
+        [-0.8, 0.25],
+        [-0.54, -0.49],
+        [-0.54, 0.25]
+      ].map(([x, z]) => (
+        <mesh key={`${x}-${z}`} position={[x, 0.21, z]} castShadow receiveShadow>
+          <boxGeometry args={[0.045, 0.36, 0.045]} />
           <meshStandardMaterial color={cabinInterior.tableLeg} flatShading />
         </mesh>
       ))}
 
-      <group position={[-0.67, 0.56, -0.1]} rotation={[0, -Math.PI / 2, 0]}>
-        <mesh castShadow>
-          <boxGeometry args={[0.28, 0.2, 0.18]} />
+      <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[0.34, 0.24, 0.24]} />
           <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
         </mesh>
-        <mesh position={[0, -0.01, 0.095]}>
-          <planeGeometry args={[0.2, 0.12]} />
-          <meshBasicMaterial color={cabinInterior.monitorScreen} />
+        <mesh position={[0, -0.085, -0.02]} castShadow receiveShadow>
+          <boxGeometry args={[0.2, 0.05, 0.2]} />
+          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
+        </mesh>
+        <mesh position={[0, -0.11, 0.1]} castShadow receiveShadow>
+          <boxGeometry args={[0.1, 0.02, 0.08]} />
+          <meshStandardMaterial color={cabinInterior.monitorBody} flatShading />
+        </mesh>
+        <mesh position={[0, 0.01, 0.115]}>
+          <boxGeometry args={[0.23, 0.15, 0.02]} />
+          <meshStandardMaterial color={'#2f3740'} flatShading />
+        </mesh>
+        <mesh position={[0, 0.02, 0.126]}>
+          <planeGeometry args={[0.19, 0.12]} />
+          <meshStandardMaterial
+            color={cabinInterior.monitorScreen}
+            emissive={cabinInterior.monitorScreen}
+            emissiveIntensity={0.3}
+          />
+        </mesh>
+        {[-0.065, -0.03, 0.005, 0.04].map((x) => (
+          <mesh key={x} position={[x, -0.09, 0.122]} castShadow>
+            <boxGeometry args={[0.015, 0.01, 0.015]} />
+            <meshStandardMaterial color={'#232a31'} flatShading />
+          </mesh>
+        ))}
+        <mesh position={[-0.11, -0.09, 0.122]} castShadow>
+          <cylinderGeometry args={[0.012, 0.012, 0.01, 12]} />
+          <meshStandardMaterial color={'#992f2f'} flatShading />
         </mesh>
       </group>
 
