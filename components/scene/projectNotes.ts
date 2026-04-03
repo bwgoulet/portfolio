@@ -36,12 +36,11 @@ export const PROJECT_NOTES: ProjectNote[] = [
     id: 'fast-wallet',
     title: 'Fast Wallet',
     detail: 'Chapel Hill, NC',
-    resumeDate: 'November 2022',
+    resumeDate: 'January - March 2022',
     bullets: [
-      'Created an email prioritization system that assesses urgency sentiment via the GPT-3 API, complemented by succinct summaries to streamline inbox navigation',
-      'Addressed challenges such as the inadequacy of Google’s Sentiment Analysis API and the complexities of querying GPT-3 before ChatGPT, leading to a pivot to GPT-3 for improved accuracy in email urgency rating.',
-      'Led the integration of a diverse tech stack including React, Tailwind CSS, JavaScript, and the GPT-3 API, following a comprehensive design and development process from storyboarding to deployment',
-      'Awarded 2nd place overall at HackNC 2022.'
+      'Helped develop a client-side GUI for optimization of Fast Wallet, a CNFT transaction bot for the Cardano blockchain',
+      'Researched economic trends regarding the Cardano network',
+      'Led a team of 14 students to generate $80,000 in net income using the FastWallet software'
     ],
     imageSrc: '/projects/fast_wallet.png',
     detailImageSrc: '/projects/fast_wallet_gui.png',
