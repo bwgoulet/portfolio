@@ -195,7 +195,9 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       ))}
 
-      <primitive object={tableModel} position={[-0.67, 0.03, -0.12]} scale={0.015} />
+      <group position={[-0.67, 0.03, -0.12]} scale={0.015}>
+        <primitive object={tableModel} />
+      </group>
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.67, 0.58, -0.02]} rotation={[0, -Math.PI / 2, 0]}>
