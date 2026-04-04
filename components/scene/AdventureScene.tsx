@@ -556,9 +556,6 @@ export function AdventureScene() {
             aria-labelledby="introduction-title"
             tabIndex={-1}
           >
-            <button className="detail-close" onClick={closeIntroductionDialog} aria-label="Close introduction details">
-              Close
-            </button>
             <div className="introduction-detail-layout">
               <Image src="/introimage.png" alt="Introduction thumbnail" width={520} height={460} />
               <section className="introduction-detail-copy">
