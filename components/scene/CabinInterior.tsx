@@ -32,6 +32,29 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
   { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'Gratitude', description: '' }
 ];
 
+export const CABIN_PAINTING_PHOTOS: GalleryPhoto[] = [
+  {
+    id: 'painting-model-photo',
+    position: [0, 0, 0],
+    size: [0, 0],
+    rotation: 0,
+    pinOffsetX: 0,
+    imageSrc: '/gallery/prf25.png',
+    title: 'Cabin Painting',
+    description: ''
+  },
+  {
+    id: 'wall-painting-model-photo',
+    position: [0, 0, 0],
+    size: [0, 0],
+    rotation: 0,
+    pinOffsetX: 0,
+    imageSrc: '/gallery/prs25.jpg',
+    title: 'Wall Painting',
+    description: ''
+  }
+];
+
 const setInteractiveCursor = (isPointer: boolean) => {
   document.body.style.cursor = isPointer ? 'pointer' : 'auto';
 };
@@ -42,6 +65,11 @@ type CabinInteriorProps = {
   onPhotoSelect: (photoId: string) => void;
 };
 
+const PAINTING_PHOTO_IDS = {
+  paintingModel: 'painting-model-photo',
+  wallPaintingModel: 'wall-painting-model-photo'
+} as const;
+
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
@@ -49,6 +77,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const crtGltf = useGLTF('/models/CRT.glb');
   const paintingGltf = useGLTF('/models/Painting.glb');
   const wallPaintingGltf = useGLTF('/models/Wall painting.glb');
+  const [wallPaintingTexture, paintingTexture] = useTexture(['/gallery/prs25.jpg', '/gallery/prf25.png']);
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     chairScene.traverse((child) => {
@@ -98,22 +127,48 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((material) => {
+            const clonedMaterial = material.clone();
+            clonedMaterial.map = paintingTexture;
+            clonedMaterial.needsUpdate = true;
+            return clonedMaterial;
+          });
+        } else {
+          const clonedMaterial = child.material.clone();
+          clonedMaterial.map = paintingTexture;
+          clonedMaterial.needsUpdate = true;
+          child.material = clonedMaterial;
+        }
       }
     });
     paintingScene.updateMatrixWorld(true);
     return paintingScene;
-  }, [paintingGltf.scene]);
+  }, [paintingGltf.scene, paintingTexture]);
   const wallPaintingModel = useMemo(() => {
     const wallPaintingScene = wallPaintingGltf.scene.clone(true);
     wallPaintingScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((material) => {
+            const clonedMaterial = material.clone();
+            clonedMaterial.map = wallPaintingTexture;
+            clonedMaterial.needsUpdate = true;
+            return clonedMaterial;
+          });
+        } else {
+          const clonedMaterial = child.material.clone();
+          clonedMaterial.map = wallPaintingTexture;
+          clonedMaterial.needsUpdate = true;
+          child.material = clonedMaterial;
+        }
       }
     });
     wallPaintingScene.updateMatrixWorld(true);
     return wallPaintingScene;
-  }, [wallPaintingGltf.scene]);
+  }, [wallPaintingGltf.scene, wallPaintingTexture]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
     const desiredMonitorHeight = 0.22;
@@ -139,7 +194,18 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     [galleryTextureSources, galleryTextures]
   );
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
+  const paintingRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
+  const hoveredPaintingIdRef = useRef<string | null>(null);
+
+  useMemo(() => {
+    wallPaintingTexture.colorSpace = THREE.SRGBColorSpace;
+    wallPaintingTexture.anisotropy = 4;
+    wallPaintingTexture.needsUpdate = true;
+    paintingTexture.colorSpace = THREE.SRGBColorSpace;
+    paintingTexture.anisotropy = 4;
+    paintingTexture.needsUpdate = true;
+  }, [paintingTexture, wallPaintingTexture]);
 
   const woodFloorTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
@@ -200,6 +266,26 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     gsap.to(group.position, { z: photo.position[2], duration: 0.18, ease: 'power2.out' });
   };
 
+  const startPaintingHover = (paintingId: string) => {
+    if (!photosInteractive || hoveredPaintingIdRef.current === paintingId) return;
+    hoveredPaintingIdRef.current = paintingId;
+    const group = paintingRefs.current[paintingId];
+    if (!group) return;
+    setInteractiveCursor(true);
+    gsap.killTweensOf(group.scale);
+    gsap.to(group.scale, { x: 1.07, y: 1.07, z: 1.07, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const endPaintingHover = (paintingId: string) => {
+    if (hoveredPaintingIdRef.current !== paintingId) return;
+    hoveredPaintingIdRef.current = null;
+    const group = paintingRefs.current[paintingId];
+    if (!group) return;
+    setInteractiveCursor(false);
+    gsap.killTweensOf(group.scale);
+    gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
+  };
+
   return (
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
@@ -252,12 +338,78 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
+      <group
+        position={[-0.85, 1.21, -0.3]}
+        rotation={[0.05, -Math.PI / 15, 0]}
+        scale={0.4}
+        ref={(group) => {
+          paintingRefs.current[PAINTING_PHOTO_IDS.paintingModel] = group;
+        }}
+      >
         <primitive object={paintingModel} />
+        <mesh
+          position={[0, 0, 0.02]}
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startPaintingHover(PAINTING_PHOTO_IDS.paintingModel);
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startPaintingHover(PAINTING_PHOTO_IDS.paintingModel);
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endPaintingHover(PAINTING_PHOTO_IDS.paintingModel);
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onPhotoSelect(PAINTING_PHOTO_IDS.paintingModel);
+          }}
+        >
+          <boxGeometry args={[0.8, 0.7, 0.2]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
 
-      <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
+      <group
+        position={[-0.6, 1.1, 0.3]}
+        rotation={[0, Math.PI / 1.1, 1.6]}
+        scale={0.001}
+        ref={(group) => {
+          paintingRefs.current[PAINTING_PHOTO_IDS.wallPaintingModel] = group;
+        }}
+      >
         <primitive object={wallPaintingModel} />
+        <mesh
+          position={[0, 0, 80]}
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startPaintingHover(PAINTING_PHOTO_IDS.wallPaintingModel);
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startPaintingHover(PAINTING_PHOTO_IDS.wallPaintingModel);
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endPaintingHover(PAINTING_PHOTO_IDS.wallPaintingModel);
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onPhotoSelect(PAINTING_PHOTO_IDS.wallPaintingModel);
+          }}
+        >
+          <boxGeometry args={[650, 500, 220]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
 
       {[-0.44, 0.44].map((x) => (
