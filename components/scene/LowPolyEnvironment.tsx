@@ -2,10 +2,11 @@
 
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
-import { Text, useTexture } from '@react-three/drei';
+import { Text, useGLTF, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
 import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
@@ -17,16 +18,27 @@ const setInteractiveCursor = (isPointer: boolean) => {
 };
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
+  const pineGltf = useGLTF('/models/Pine.glb');
+  const pineModel = useMemo(() => {
+    const pineScene = pineGltf.scene.clone(true);
+    pineScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    pineScene.updateMatrixWorld(true);
+    const pineBounds = new THREE.Box3().setFromObject(pineScene);
+    const pineCenter = pineBounds.getCenter(new THREE.Vector3());
+    pineScene.position.x -= pineCenter.x;
+    pineScene.position.z -= pineCenter.z;
+    pineScene.position.y -= pineBounds.min.y;
+    return pineScene;
+  }, [pineGltf.scene]);
+
   return (
     <group position={position} scale={scale}>
-      <mesh position={[0, 0.38, 0]} castShadow>
-        <cylinderGeometry args={[0.06, 0.1, 0.82, 6]} />
-        <meshStandardMaterial color={PALETTE.trunk} flatShading />
-      </mesh>
-      <mesh position={[0, 1.05, 0]} castShadow>
-        <coneGeometry args={[0.38, 0.92, 7]} />
-        <meshStandardMaterial color={PALETTE.leaves} flatShading />
-      </mesh>
+      <primitive object={pineModel} />
     </group>
   );
 }
@@ -147,6 +159,8 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
     </group>
   );
 }
+
+useGLTF.preload('/models/Pine.glb');
 
 function MountainBackdrop() {
   return (
