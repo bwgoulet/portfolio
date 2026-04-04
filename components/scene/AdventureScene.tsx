@@ -10,7 +10,7 @@ import { CameraRig } from './CameraRig';
 import { LightingAtmosphere } from './LightingAtmosphere';
 import { LowPolyEnvironment } from './LowPolyEnvironment';
 import { InteractionState, InteractiveTarget } from './types';
-import { CABIN_PAINTING_PHOTOS, CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
+import { CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
@@ -72,7 +72,7 @@ export function AdventureScene() {
   const selectedNote = activeNoteId ? PROJECT_NOTE_RECORD[activeNoteId] : null;
   const selectedExperience = activeExperienceId ? EXPERIENCE_RECORD[activeExperienceId] : null;
   const selectedGalleryPhoto = selectedGalleryPhotoId
-    ? [...GALLERY_PHOTOS, ...CABIN_PAINTING_PHOTOS].find((photo) => photo.id === selectedGalleryPhotoId) ?? null
+    ? GALLERY_PHOTOS.find((photo) => photo.id === selectedGalleryPhotoId) ?? null
     : null;
 
   useEffect(() => {
