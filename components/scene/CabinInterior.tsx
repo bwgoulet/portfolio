@@ -47,6 +47,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
   const crtGltf = useGLTF('/models/CRT.glb');
+  const paintingGltf = useGLTF('/models/Painting.glb');
+  const wallPaintingGltf = useGLTF('/models/Wall painting.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     chairScene.traverse((child) => {
@@ -90,6 +92,28 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     crtScene.position.y -= crtBounds.min.y;
     return { scene: crtScene, size: crtSize };
   }, [crtGltf.scene]);
+  const paintingModel = useMemo(() => {
+    const paintingScene = paintingGltf.scene.clone(true);
+    paintingScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    paintingScene.updateMatrixWorld(true);
+    return paintingScene;
+  }, [paintingGltf.scene]);
+  const wallPaintingModel = useMemo(() => {
+    const wallPaintingScene = wallPaintingGltf.scene.clone(true);
+    wallPaintingScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    wallPaintingScene.updateMatrixWorld(true);
+    return wallPaintingScene;
+  }, [wallPaintingGltf.scene]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
     const desiredMonitorHeight = 0.22;
@@ -226,6 +250,14 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group position={[-0.85, 0.1, -0.1]} rotation={[0, -Math.PI/1.6, 0]}>
         <primitive object={crtModel.scene} scale={crtScale} />
+      </group>
+
+      <group position={[-0.84, 1.25, -0.48]} rotation={[0, Math.PI / 2, 0]} scale={0.17}>
+        <primitive object={paintingModel} />
+      </group>
+
+      <group position={[-0.84, 0.95, 0.36]} rotation={[0, Math.PI / 2, 0]} scale={0.16}>
+        <primitive object={wallPaintingModel} />
       </group>
 
       {[-0.44, 0.44].map((x) => (
@@ -366,3 +398,5 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
 useGLTF.preload('/models/Chair.glb');
 useGLTF.preload('/models/CRT.glb');
+useGLTF.preload('/models/Painting.glb');
+useGLTF.preload('/models/Wall painting.glb');
