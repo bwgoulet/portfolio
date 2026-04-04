@@ -252,11 +252,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[-0.84, 1.25, -0.48]} rotation={[0, Math.PI / 2, 0]} scale={0.17}>
+      <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
         <primitive object={paintingModel} />
       </group>
 
-      <group position={[-0.84, 0.95, 0.36]} rotation={[0, Math.PI / 2, 0]} scale={0.16}>
+      <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
         <primitive object={wallPaintingModel} />
       </group>
 
