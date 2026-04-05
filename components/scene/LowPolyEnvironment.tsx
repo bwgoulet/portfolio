@@ -7,7 +7,7 @@ import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
+import { ClampToEdgeWrapping, LinearMipmapLinearFilter, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -410,49 +410,76 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const grassTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    const size = 256;
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext('2d');
-    if (!context) return null;
-
-    context.fillStyle = '#4a7a56';
-    context.fillRect(0, 0, size, size);
-    for (let index = 0; index < 340; index += 1) {
-      const x = (index * 47) % size;
-      const y = (index * 89) % size;
-      const radius = 4 + (index % 5);
-      const shade = 30 + (index % 12);
-      context.fillStyle = `hsla(${112 + (index % 6)}, 42%, ${shade + 8}%, 0.35)`;
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2);
-      context.fill();
+  const terrainGeometry = useMemo(() => {
+    const geometry = new THREE.CylinderGeometry(6.95, 8.05, 0.36, 46, 1, false);
+    const position = geometry.attributes.position as THREE.BufferAttribute;
+    const topY = 0.18;
+    const temp = new THREE.Vector3();
+    for (let index = 0; index < position.count; index += 1) {
+      temp.fromBufferAttribute(position, index);
+      if (temp.y < topY - 0.02) continue;
+      const radial = Math.hypot(temp.x, temp.z);
+      const radialRatio = THREE.MathUtils.clamp(radial / 7.1, 0, 1);
+      const edgeDrop = -Math.pow(radialRatio, 2.1) * 0.12;
+      const mound = Math.exp(-((temp.x + 1.8) ** 2 + (temp.z + 3.1) ** 2) / 8.8) * 0.18;
+      const dip = -Math.exp(-((temp.x - 2.4) ** 2 + (temp.z - 0.9) ** 2) / 5.7) * 0.08;
+      const windNoise = (Math.sin(temp.x * 1.35) + Math.cos(temp.z * 1.2)) * 0.025;
+      temp.y = topY + edgeDrop + mound + dip + windNoise;
+      position.setXYZ(index, temp.x, temp.y, temp.z);
     }
-
-    const texture = new CanvasTexture(canvas);
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(4.8, 4.8);
-    texture.colorSpace = SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
+    position.needsUpdate = true;
+    geometry.computeVertexNormals();
+    return geometry;
   }, []);
 
   return (
     <>
-      <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.95, 8.05, 0.25, 20]} />
-        <meshStandardMaterial color={PALETTE.islandTop} map={grassTexture} roughness={0.98} metalness={0.03} />
+      <mesh geometry={terrainGeometry} position={[0, 1.03, 0]} rotation={[0, 0.2, 0]} receiveShadow>
+        <meshStandardMaterial color={PALETTE.islandTop} roughness={0.96} metalness={0.02} flatShading />
       </mesh>
-      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
-        <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
-        <meshStandardMaterial color="#4e7d5f" map={grassTexture} roughness={0.99} metalness={0.03} />
+
+      <mesh position={[-0.55, 1.18, -2.45]} rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[1.1, 1.35, 0.08, 18]} />
+        <meshStandardMaterial color="#6f5c3f" roughness={0.95} flatShading />
       </mesh>
-      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
-        <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
-        <meshStandardMaterial color="#4a7a5a" map={grassTexture} roughness={0.99} metalness={0.03} />
+      <mesh position={[0.9, 1.17, -0.9]} rotation={[0, 0.06, 0]} receiveShadow>
+        <cylinderGeometry args={[0.95, 1.25, 0.07, 16]} />
+        <meshStandardMaterial color="#85745b" roughness={0.94} flatShading />
+      </mesh>
+      <mesh position={[2.7, 1.13, 0.95]} rotation={[0, -0.22, 0]} receiveShadow>
+        <cylinderGeometry args={[0.85, 1.05, 0.07, 14]} />
+        <meshStandardMaterial color="#5e6f60" roughness={0.93} flatShading />
+      </mesh>
+
+      <mesh position={[-2.3, 1.14, -1.1]} rotation={[0, -0.3, 0]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[0.32, 0]} />
+        <meshStandardMaterial color="#5f6770" flatShading />
+      </mesh>
+      <mesh position={[-1.7, 1.15, -0.6]} rotation={[0.15, 0.4, 0.2]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[0.2, 0]} />
+        <meshStandardMaterial color="#717983" flatShading />
+      </mesh>
+
+      {[
+        [-3.9, 1.16, -2.15],
+        [-3.3, 1.18, -2.45],
+        [-2.8, 1.2, -2.75],
+        [2.75, 1.1, 2.4],
+        [3.05, 1.08, 2.15]
+      ].map((tuft, index) => (
+        <mesh key={index} position={tuft as [number, number, number]} castShadow receiveShadow>
+          <coneGeometry args={[0.11, 0.32, 5]} />
+          <meshStandardMaterial color={index > 2 ? '#879671' : '#64865b'} flatShading />
+        </mesh>
+      ))}
+
+      <mesh position={[2.3, 1.16, 1.9]} rotation={[0, 0.26, 0]} receiveShadow>
+        <boxGeometry args={[0.24, 0.05, 0.52]} />
+        <meshStandardMaterial color="#a9a198" roughness={0.88} flatShading />
+      </mesh>
+      <mesh position={[2.55, 1.15, 1.55]} rotation={[0, 0.16, 0]} receiveShadow>
+        <boxGeometry args={[0.21, 0.05, 0.42]} />
+        <meshStandardMaterial color="#9d9588" roughness={0.88} flatShading />
       </mesh>
     </>
   );
@@ -497,7 +524,7 @@ export function LowPolyEnvironment({
       </mesh>
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
+        <cylinderGeometry args={[6.8, 7.9, 2.2, 18]} />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
