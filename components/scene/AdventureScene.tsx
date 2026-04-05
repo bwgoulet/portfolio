@@ -37,6 +37,8 @@ export function AdventureScene() {
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
   const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] = useState(false);
+  const [isTimelineDialogOpen, setIsTimelineDialogOpen] = useState(false);
+  const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
@@ -58,7 +60,11 @@ export function AdventureScene() {
 
   const isTransitioning = interactionState === 'transitioning';
   const isDetailDialogOpen =
-    selectedNoteId !== null || selectedExperienceId !== null || selectedGalleryPhotoId !== null || isIntroductionDialogOpen;
+    selectedNoteId !== null ||
+    selectedExperienceId !== null ||
+    selectedGalleryPhotoId !== null ||
+    isIntroductionDialogOpen ||
+    isTimelineDialogOpen;
   const isOverviewState =
     interactionState === 'idleOverview' ||
     interactionState === 'hoverBillboard' ||
@@ -113,6 +119,10 @@ export function AdventureScene() {
 
   const closeGalleryDetail = useCallback(() => {
     setSelectedGalleryPhotoId(null);
+  }, []);
+
+  const closeTimelineDialog = useCallback(() => {
+    setIsTimelineDialogOpen(false);
   }, []);
 
   useEffect(() => {
@@ -246,6 +256,7 @@ export function AdventureScene() {
       setSelectedExperienceId(null);
       setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
+      setIsTimelineDialogOpen(false);
       animateFocusNudge(target);
 
       if (target === 'cabin') {
@@ -284,6 +295,12 @@ export function AdventureScene() {
     }
   }, [interactionState]);
 
+  useEffect(() => {
+    if (interactionState !== 'timelineCloseup') {
+      setIsTimelineCloseupHovered(false);
+    }
+  }, [interactionState]);
+
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
@@ -296,6 +313,7 @@ export function AdventureScene() {
     setSelectedExperienceId(null);
     setSelectedGalleryPhotoId(null);
     setIsIntroductionDialogOpen(false);
+    setIsTimelineDialogOpen(false);
   }, []);
 
   const handleReturnToOverview = useCallback(() => {
@@ -380,10 +398,22 @@ export function AdventureScene() {
             onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
             tabletsRef={tabletsRef}
             timelineSignRef={timelineSignRef}
-            timelineInteractiveEnabled={isOverviewState}
-            timelineHovered={interactionState === 'hoverTimeline'}
-            onTimelineHoverChange={(hovered) => updateHover('timeline', hovered)}
-            onTimelineClick={handleFocusClick}
+            timelineInteractiveEnabled={isOverviewState || interactionState === 'timelineCloseup'}
+            timelineHovered={interactionState === 'hoverTimeline' || isTimelineCloseupHovered}
+            onTimelineHoverChange={(hovered) => {
+              if (interactionState === 'timelineCloseup') {
+                setIsTimelineCloseupHovered(hovered);
+                return;
+              }
+              updateHover('timeline', hovered);
+            }}
+            onTimelineClick={(target) => {
+              if (interactionState === 'timelineCloseup') {
+                setIsTimelineDialogOpen(true);
+                return;
+              }
+              handleFocusClick(target);
+            }}
             reducedMotion={reducedMotion}
           />
           <IntroductionLandmark
@@ -569,6 +599,48 @@ export function AdventureScene() {
                   opportunities, and creating projects that blend technical depth with personality and design.
                 </p>
                 <p>Explore the island to view projects, experience, and more about me.</p>
+              </section>
+            </div>
+          </div>
+        </article>
+      )}
+
+      {interactionState === 'timelineCloseup' && isTimelineDialogOpen && (
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
+          aria-live="polite"
+          onClick={closeTimelineDialog}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.preventDefault();
+              closeTimelineDialog();
+            }
+          }}
+        >
+          <div
+            className={`detail-content-card introduction-detail-card ${detailCardStateClass(false)}`}
+            ref={modalRef}
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="timeline-title"
+            tabIndex={-1}
+          >
+            <div className="introduction-detail-layout">
+              <Image src="/projects/timeline.png" alt="Timeline thumbnail" width={520} height={460} />
+              <section className="introduction-detail-copy">
+                <h2 id="timeline-title">Timeline</h2>
+                <p>
+                  This trail marks key chapters of my journey as a builder, from early curiosity to internships,
+                  leadership roles, and personal projects.
+                </p>
+                <p>
+                  I designed this section to show how each experience built on the last one and shaped the way I
+                  approach engineering today.
+                </p>
+                <p>More timeline milestones and stories are coming soon.</p>
               </section>
             </div>
           </div>
