@@ -1,12 +1,11 @@
 'use client';
 
-import { Html, Text } from '@react-three/drei';
+import { Text, useFBX } from '@react-three/drei';
 import gsap from 'gsap';
-import Image from 'next/image';
-import { memo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { RefObject } from 'react';
-import { Group, MeshStandardMaterial } from 'three';
+import { Group, MeshStandardMaterial, Mesh } from 'three';
 import { MOTION_TIERS, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { PROJECT_NOTES } from './projectNotes';
@@ -23,7 +22,6 @@ type BillboardProps = {
   onClick: () => void;
   onNoteClick: (noteId: string) => void;
   detailOpen: boolean;
-  hideThumbnails: boolean;
   billboardRef: RefObject<Group | null>;
   reducedMotion: boolean;
 };
@@ -36,7 +34,6 @@ export const Billboard = memo(function Billboard({
   onClick,
   onNoteClick,
   detailOpen,
-  hideThumbnails,
   billboardRef,
   reducedMotion
 }: BillboardProps) {
@@ -45,6 +42,17 @@ export const Billboard = memo(function Billboard({
   const hoveredNoteIdRef = useRef<string | null>(null);
   const boardMaterialRef = useRef<MeshStandardMaterial>(null);
   const labelRef = useRef<Group>(null);
+  const corkboardSource = useFBX('/models/Wall_corkboard_with_post_it_notes.fbx');
+  const corkboard = useMemo(() => {
+    const clone = corkboardSource.clone();
+    clone.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    return clone;
+  }, [corkboardSource]);
 
   const startNoteHover = (noteId: string) => {
     if (!notesInteractive || hoveredNoteIdRef.current === noteId) return;
@@ -97,18 +105,22 @@ export const Billboard = memo(function Billboard({
         <meshStandardMaterial color={PALETTE.billboardFrame} flatShading />
       </mesh>
 
-      <mesh
-        position={[0, 1.72, 0.05]}
-        castShadow
-        receiveShadow
-      >
-        <boxGeometry args={[2.18, 1.46, 0.1]} />
+      <primitive
+        object={corkboard}
+        position={[-0.02, 1.72, 0.085]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={0.006}
+      />
+      <mesh position={[0, 1.72, -0.02]}>
+        <boxGeometry args={[2.2, 1.5, 0.02]} />
         <meshStandardMaterial
           ref={boardMaterialRef}
           color={hovered ? '#dcca9f' : PALETTE.billboardFace}
           emissive={hovered ? '#433318' : '#1f180f'}
-          emissiveIntensity={hovered ? 0.18 : 0.06}
+          emissiveIntensity={hovered ? 0.12 : 0.04}
           flatShading
+          transparent
+          opacity={0.18}
         />
       </mesh>
       <mesh
@@ -169,34 +181,6 @@ export const Billboard = memo(function Billboard({
               noteRefs.current[note.id] = group;
             }}
           >
-            <mesh>
-              <boxGeometry args={[0.38, 0.28, 0.024]} />
-              <meshStandardMaterial
-                color={note.color}
-                emissive={notesInteractive ? billboard.noteEmissiveActive : billboard.noteEmissiveIdle}
-                emissiveIntensity={notesInteractive ? 0.12 : 0.04}
-                flatShading
-              />
-            </mesh>
-            <mesh position={[0.005, 0.11, 0.013]}>
-              <sphereGeometry args={[0.017, 6, 6]} />
-              <meshStandardMaterial color={billboard.notePin} flatShading />
-            </mesh>
-            <Html
-              transform
-              position={[0, -0.01, 0.015]}
-              distanceFactor={1.2}
-              pointerEvents="none"
-              style={{ opacity: hideThumbnails ? 0 : 1 }}
-            >
-              <div className="note-preview" aria-hidden>
-                <Image src={note.imageSrc} alt="" width={44} height={26} />
-                <div className="note-scribbles">
-                  <span />
-                  <span />
-                </div>
-              </div>
-            </Html>
             <mesh
               position={[0, 0, 0.03]}
               onPointerEnter={(event) => {
@@ -229,3 +213,5 @@ export const Billboard = memo(function Billboard({
     </group>
   );
 });
+
+useFBX.preload('/models/Wall_corkboard_with_post_it_notes.fbx');
