@@ -458,43 +458,6 @@ function GrassGround() {
   );
 }
 
-function AtmosphericVoidGround() {
-  return (
-    <group>
-      <mesh position={[0, -0.34, -2]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-2}>
-        <circleGeometry args={[56, 48]} />
-        <meshBasicMaterial
-          color={environmentPalette.voidNear}
-          transparent
-          opacity={0.26}
-          depthWrite={false}
-          fog={false}
-        />
-      </mesh>
-      <mesh position={[0, -0.52, -6]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-3}>
-        <circleGeometry args={[84, 56]} />
-        <meshBasicMaterial
-          color={environmentPalette.voidMid}
-          transparent
-          opacity={0.18}
-          depthWrite={false}
-          fog={false}
-        />
-      </mesh>
-      <mesh position={[0, -0.9, -14]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-4}>
-        <circleGeometry args={[130, 72]} />
-        <meshBasicMaterial
-          color={environmentPalette.voidFar}
-          transparent
-          opacity={0.12}
-          depthWrite={false}
-          fog={false}
-        />
-      </mesh>
-    </group>
-  );
-}
-
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -528,7 +491,10 @@ export function LowPolyEnvironment({
 }: LowPolyEnvironmentProps) {
   return (
     <group>
-      <AtmosphericVoidGround />
+      <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <circleGeometry args={[60, 32]} />
+        <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
+      </mesh>
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
