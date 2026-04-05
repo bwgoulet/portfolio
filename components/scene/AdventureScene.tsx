@@ -1,6 +1,7 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import Image from 'next/image';
 import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Group } from 'three';
@@ -16,6 +17,69 @@ import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
 import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
+
+const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [number, number, number]; lookAt: [number, number, number] }> = {
+  overview: {
+    position: [-10.2, 9.2, 14.3],
+    lookAt: [0.25, 1.75, -2.9]
+  },
+  cabinInterior: {
+    position: [4.45, 2.95, -0.55],
+    lookAt: [4.5, 2.15, -1.4]
+  }
+};
+
+const FREE_MODE_CONTROLS: Record<
+  'overview' | 'cabinInterior',
+  {
+    target: [number, number, number];
+    minDistance: number;
+    maxDistance: number;
+    minPolarAngle: number;
+    maxPolarAngle: number;
+    enablePan: boolean;
+  }
+> = {
+  overview: {
+    target: [0.2, 0.9, 0.5],
+    minDistance: 1.4,
+    maxDistance: 42,
+    minPolarAngle: Math.PI * 0.14,
+    maxPolarAngle: Math.PI * 0.47,
+    enablePan: true
+  },
+  cabinInterior: {
+    target: [4.5, 2.15, -1.4],
+    minDistance: 0.75,
+    maxDistance: 2.05,
+    minPolarAngle: Math.PI * 0.2,
+    maxPolarAngle: Math.PI * 0.46,
+    enablePan: false
+  }
+};
+
+function FreeModeCameraPositioner({
+  enabled,
+  focusTarget
+}: {
+  enabled: boolean;
+  focusTarget: FocusTarget;
+}) {
+  const camera = useThree((state) => state.camera);
+  const wasEnabledRef = useRef(false);
+
+  useEffect(() => {
+    if (enabled && !wasEnabledRef.current && (focusTarget === 'overview' || focusTarget === 'cabinInterior')) {
+      const preset = FREE_MODE_VIEW_PRESETS[focusTarget];
+      camera.position.set(...preset.position);
+      camera.lookAt(...preset.lookAt);
+      camera.updateProjectionMatrix();
+    }
+    wasEnabledRef.current = enabled;
+  }, [camera, enabled, focusTarget]);
+
+  return null;
+}
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
@@ -45,6 +109,7 @@ export function AdventureScene() {
   const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
+  const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
 
@@ -72,6 +137,12 @@ export function AdventureScene() {
     interactionState === 'hoverTablets' ||
     interactionState === 'hoverIntroduction' ||
     interactionState === 'hoverTimeline';
+  const canToggleFreeMode =
+    !isDetailDialogOpen &&
+    !isTransitioning &&
+    !isCabinExitTransitionPending &&
+    (focusTarget === 'overview' || focusTarget === 'cabinInterior');
+  const freeModeControls = FREE_MODE_CONTROLS[focusTarget === 'cabinInterior' ? 'cabinInterior' : 'overview'];
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -248,6 +319,7 @@ export function AdventureScene() {
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
 
+      setIsFreeModeEnabled(false);
       setInteractionState('transitioning');
       setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setIsCabinInteriorRevealed(false);
@@ -305,6 +377,7 @@ export function AdventureScene() {
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
   const beginOverviewTransition = useCallback(() => {
+    setIsFreeModeEnabled(false);
     setIsCabinDoorOpen(false);
     setIsCabinInteriorRevealed(false);
     setFocusTarget('overview');
@@ -388,9 +461,25 @@ export function AdventureScene() {
               );
             }}
           />
+          <FreeModeCameraPositioner enabled={isFreeModeEnabled} focusTarget={focusTarget} />
+          {isFreeModeEnabled && (
+            <OrbitControls
+              enableDamping
+              dampingFactor={0.08}
+              minDistance={freeModeControls.minDistance}
+              maxDistance={freeModeControls.maxDistance}
+              enablePan={freeModeControls.enablePan}
+              panSpeed={0.9}
+              zoomSpeed={0.85}
+              screenSpacePanning={false}
+              maxPolarAngle={freeModeControls.maxPolarAngle}
+              minPolarAngle={freeModeControls.minPolarAngle}
+              target={freeModeControls.target}
+            />
+          )}
           <LightingAtmosphere />
           <LowPolyEnvironment
-            tabletsInteractiveEnabled={isOverviewState}
+            tabletsInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
             tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
             tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
             onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
@@ -398,7 +487,7 @@ export function AdventureScene() {
             onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
             tabletsRef={tabletsRef}
             timelineSignRef={timelineSignRef}
-            timelineInteractiveEnabled={isOverviewState || interactionState === 'timelineCloseup'}
+            timelineInteractiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'timelineCloseup')}
             timelineHovered={interactionState === 'hoverTimeline' || isTimelineCloseupHovered}
             onTimelineHoverChange={(hovered) => {
               if (interactionState === 'timelineCloseup') {
@@ -418,8 +507,8 @@ export function AdventureScene() {
           />
           <IntroductionLandmark
             landmarkRef={introductionRef}
-            interactiveEnabled={isOverviewState || interactionState === 'introductionCloseup'}
-            hoverEnabled={isOverviewState || interactionState === 'introductionCloseup'}
+            interactiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
+            hoverEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
             hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
             onHoverChange={(hovered) => {
               if (interactionState === 'introductionCloseup') {
@@ -439,7 +528,7 @@ export function AdventureScene() {
           />
           <Billboard
             billboardRef={billboardRef}
-            interactiveEnabled={isOverviewState}
+            interactiveEnabled={isOverviewState && !isFreeModeEnabled}
             notesInteractive={interactionState === 'billboardCloseup'}
             hovered={interactionState === 'hoverBillboard'}
             onHoverChange={(hovered) => updateHover('billboard', hovered)}
@@ -452,7 +541,7 @@ export function AdventureScene() {
           {!isCabinInteriorRevealed && (
             <Cabin
               cabinRef={cabinRef}
-              interactiveEnabled={isOverviewState}
+              interactiveEnabled={isOverviewState && !isFreeModeEnabled}
               hovered={interactionState === 'hoverCabin'}
               isDoorOpen={isCabinDoorOpen}
               onHoverChange={(hovered) => updateHover('cabin', hovered)}
@@ -461,7 +550,7 @@ export function AdventureScene() {
           )}
           {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
             <CabinInterior
-              photosInteractive={interactionState === 'cabinCloseup'}
+              photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
               onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
             />
           )}
@@ -684,6 +773,16 @@ export function AdventureScene() {
           onClick={handleReturnToOverview}
         >
           ←
+        </button>
+      )}
+      {canToggleFreeMode && (
+        <button
+          className={`scene-free-mode ${isFreeModeEnabled ? 'is-enabled' : ''}`}
+          type="button"
+          aria-pressed={isFreeModeEnabled}
+          onClick={() => setIsFreeModeEnabled((current) => !current)}
+        >
+          Free Mode: {isFreeModeEnabled ? 'On' : 'Off'}
         </button>
       )}
 
