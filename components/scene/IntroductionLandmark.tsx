@@ -6,12 +6,14 @@ import { memo, useEffect, useRef } from 'react';
 import type { RefObject } from 'react';
 import { ClampToEdgeWrapping, DoubleSide, LinearMipmapLinearFilter, SRGBColorSpace } from 'three';
 import type { Group, MeshStandardMaterial } from 'three';
-import { SCENE_ANCHORS } from '@/config/sceneConfig';
+import { ISLAND_GROUND_INTERACTION_MIN_Y, SCENE_ANCHORS } from '@/config/sceneConfig';
 import type { InteractiveTarget } from './types';
 
 const setInteractiveCursor = (isPointer: boolean) => {
   document.body.style.cursor = isPointer ? 'pointer' : 'auto';
 };
+
+const isAboveIslandGround = (worldY: number) => worldY >= ISLAND_GROUND_INTERACTION_MIN_Y;
 
 type IntroductionLandmarkProps = {
   interactiveEnabled: boolean;
@@ -86,12 +88,22 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         position={[0, 0.12, 0]}
         onPointerEnter={(event) => {
           event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) {
+            onHoverChange(false);
+            setInteractiveCursor(false);
+            return;
+          }
           if (!hoverEnabled) return;
           onHoverChange(true);
           setInteractiveCursor(true);
         }}
         onPointerMove={(event) => {
           event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) {
+            onHoverChange(false);
+            setInteractiveCursor(false);
+            return;
+          }
           if (!hoverEnabled) return;
           onHoverChange(true);
           setInteractiveCursor(true);
@@ -103,6 +115,10 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         }}
         onClick={(event) => {
           event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) {
+            setInteractiveCursor(false);
+            return;
+          }
           setInteractiveCursor(false);
           if (interactiveEnabled) onClick('introduction');
         }}

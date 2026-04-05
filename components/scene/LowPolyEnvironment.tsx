@@ -1,6 +1,6 @@
 'use client';
 
-import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
+import { ISLAND_GROUND_INTERACTION_MIN_Y, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useGLTF, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
@@ -16,6 +16,8 @@ const environmentPalette = VISUAL_TOKENS.scene.environment;
 const setInteractiveCursor = (isPointer: boolean) => {
   document.body.style.cursor = isPointer ? 'pointer' : 'auto';
 };
+
+const isAboveIslandGround = (worldY: number) => worldY >= ISLAND_GROUND_INTERACTION_MIN_Y;
 
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const pineGltf = useGLTF('/models/Pine.glb');
@@ -108,6 +110,26 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               receiveShadow
               onPointerEnter={(event) => {
                 event.stopPropagation();
+                if (!isAboveIslandGround(event.point.y)) {
+                  setHoveredTabletId((current) => (current === entry.id ? null : current));
+                  onHoverChange(false);
+                  setInteractiveCursor(false);
+                  return;
+                }
+                if (interactiveEnabled || detailInteractiveEnabled) {
+                  setHoveredTabletId(entry.id);
+                  onHoverChange(true);
+                  setInteractiveCursor(true);
+                }
+              }}
+              onPointerMove={(event) => {
+                event.stopPropagation();
+                if (!isAboveIslandGround(event.point.y)) {
+                  setHoveredTabletId((current) => (current === entry.id ? null : current));
+                  onHoverChange(false);
+                  setInteractiveCursor(false);
+                  return;
+                }
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -122,6 +144,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               }}
               onClick={(event) => {
                 event.stopPropagation();
+                if (!isAboveIslandGround(event.point.y)) return;
                 if (interactiveEnabled) onClick('tablets');
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
@@ -378,6 +401,21 @@ function TrailheadTimelineSign({
         position={hitAreaOffset}
         onPointerEnter={(event) => {
           event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) {
+            onHoverChange(false);
+            setInteractiveCursor(false);
+            return;
+          }
+          if (interactiveEnabled) onHoverChange(true);
+          setInteractiveCursor(interactiveEnabled);
+        }}
+        onPointerMove={(event) => {
+          event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) {
+            onHoverChange(false);
+            setInteractiveCursor(false);
+            return;
+          }
           if (interactiveEnabled) onHoverChange(true);
           setInteractiveCursor(interactiveEnabled);
         }}
@@ -388,6 +426,7 @@ function TrailheadTimelineSign({
         }}
         onClick={(event) => {
           event.stopPropagation();
+          if (!isAboveIslandGround(event.point.y)) return;
           if (interactiveEnabled) onClick('timeline');
         }}
       >

@@ -84,6 +84,8 @@ export const SCENE_ANCHORS = {
   trailEnd: [0.8, 1.03, -14.2] as Vector3Tuple
 };
 
+export const ISLAND_GROUND_INTERACTION_MIN_Y = 1.12;
+
 export const PALETTE: Record<string, ColorRepresentation> = {
   skyBottom: '#ffb27a',
   fog: '#d78a67',
