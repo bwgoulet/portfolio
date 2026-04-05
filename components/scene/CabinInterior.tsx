@@ -42,6 +42,21 @@ type CabinInteriorProps = {
   onPhotoSelect: (photoId: string) => void;
 };
 
+const PAINTING_OVERLAY_CONFIG = {
+  framed: {
+    widthScale: 0.9,
+    heightScale: 0.72,
+    depthOffset: 0.002,
+    rotation: [0, 0, 0] as [number, number, number]
+  },
+  wallMounted: {
+    widthScale: 0.84,
+    heightScale: 0.88,
+    depthOffset: 0.8,
+    rotation: [0, 0, 0] as [number, number, number]
+  }
+} as const;
+
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
@@ -101,7 +116,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }
     });
     paintingScene.updateMatrixWorld(true);
-    return paintingScene;
+    const bounds = new THREE.Box3().setFromObject(paintingScene);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    return { scene: paintingScene, bounds, size, center };
   }, [paintingGltf.scene]);
   const wallPaintingModel = useMemo(() => {
     const wallPaintingScene = wallPaintingGltf.scene.clone(true);
@@ -112,7 +130,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }
     });
     wallPaintingScene.updateMatrixWorld(true);
-    return wallPaintingScene;
+    const bounds = new THREE.Box3().setFromObject(wallPaintingScene);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    return { scene: wallPaintingScene, bounds, size, center };
   }, [wallPaintingGltf.scene]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
@@ -138,6 +159,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }, {}),
     [galleryTextureSources, galleryTextures]
   );
+  const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture(['/gallery/prs25.jpg', '/gallery/prf25.png']);
+  const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
+    const configureTexture = (texture: THREE.Texture | undefined) => {
+      if (!texture) return null;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      texture.needsUpdate = true;
+      return texture;
+    };
+    return [configureTexture(primaryPaintingTexture), configureTexture(secondaryPaintingTexture)];
+  }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
 
@@ -253,11 +285,53 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
-        <primitive object={paintingModel} />
+        <primitive object={paintingModel.scene} />
+        <mesh
+          position={[
+            paintingModel.center.x,
+            paintingModel.center.y,
+            paintingModel.bounds.max.z + PAINTING_OVERLAY_CONFIG.framed.depthOffset
+          ]}
+          rotation={PAINTING_OVERLAY_CONFIG.framed.rotation}
+        >
+          <planeGeometry
+            args={[
+              paintingModel.size.x * PAINTING_OVERLAY_CONFIG.framed.widthScale,
+              paintingModel.size.y * PAINTING_OVERLAY_CONFIG.framed.heightScale
+            ]}
+          />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={framedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
-        <primitive object={wallPaintingModel} />
+        <primitive object={wallPaintingModel.scene} />
+        <mesh
+          position={[
+            wallPaintingModel.center.x,
+            wallPaintingModel.center.y,
+            wallPaintingModel.bounds.max.z + PAINTING_OVERLAY_CONFIG.wallMounted.depthOffset
+          ]}
+          rotation={PAINTING_OVERLAY_CONFIG.wallMounted.rotation}
+        >
+          <planeGeometry
+            args={[
+              wallPaintingModel.size.x * PAINTING_OVERLAY_CONFIG.wallMounted.widthScale,
+              wallPaintingModel.size.y * PAINTING_OVERLAY_CONFIG.wallMounted.heightScale
+            ]}
+          />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={wallMountedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       {[-0.44, 0.44].map((x) => (
