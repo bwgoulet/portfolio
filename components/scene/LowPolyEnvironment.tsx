@@ -321,7 +321,7 @@ function TrailheadTimelineSign({
   signRef
 }: TrailheadTimelineSignProps) {
   const woodenSignGltf = useGLTF('/models/Wooden Sign.glb');
-  const woodenSignModel = useMemo(() => {
+  const { woodenSignModel, hitAreaSize, hitAreaOffset } = useMemo(() => {
     const signScene = woodenSignGltf.scene.clone(true);
     signScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
@@ -335,7 +335,15 @@ function TrailheadTimelineSign({
     signScene.position.x -= signCenter.x;
     signScene.position.z -= signCenter.z;
     signScene.position.y -= signBounds.min.y;
-    return signScene;
+    signScene.updateMatrixWorld(true);
+    const normalizedBounds = new THREE.Box3().setFromObject(signScene);
+    const boundsSize = normalizedBounds.getSize(new THREE.Vector3());
+    const boundsCenter = normalizedBounds.getCenter(new THREE.Vector3());
+    return {
+      woodenSignModel: signScene,
+      hitAreaSize: [boundsSize.x, boundsSize.y, boundsSize.z] as [number, number, number],
+      hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [number, number, number]
+    };
   }, [woodenSignGltf.scene]);
   const signScale = hovered ? 1.22 : 1.12;
 
@@ -352,7 +360,7 @@ function TrailheadTimelineSign({
         <primitive object={woodenSignModel} />
       </group>
       <mesh
-        position={[0, 0.36, 0.04]}
+        position={hitAreaOffset}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (interactiveEnabled) onHoverChange(true);
@@ -368,12 +376,14 @@ function TrailheadTimelineSign({
           if (interactiveEnabled) onClick('timeline');
         }}
       >
-        <boxGeometry args={[0.72, 0.48, 0.26]} />
+        <boxGeometry args={hitAreaSize} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       <Text
         position={[0.1, 0.9, 0]}
         fontSize={hovered ? 0.066 : 0.06}
+        font="https://fonts.gstatic.com/s/rye/v17/r05XGLJT86YDFg.ttf"
+        letterSpacing={0.035}
         anchorX="center"
         anchorY="middle"
         color={hovered ? '#f7ebd2' : environmentPalette.signText}
