@@ -75,7 +75,7 @@ export const ANIMATION_CONFIG = {
 };
 
 export const SCENE_ANCHORS = {
-  billboard: [-4.9, 1.42, 0.2] as Vector3Tuple,
+  billboard: [-4.9, 1.25, 0.2] as Vector3Tuple,
   cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
   tabletsStart: [1.8, 0.93, 2.9] as Vector3Tuple,
   introductionLandmark: [-2.2, 1.22, 2.2] as Vector3Tuple,
