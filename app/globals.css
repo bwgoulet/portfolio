@@ -115,6 +115,36 @@ main {
   outline: none;
 }
 
+.scene-free-mode {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 5;
+  border: 1px solid rgba(200, 220, 238, 0.68);
+  background: rgba(24, 35, 48, 0.88);
+  color: #f4f9ff;
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.scene-free-mode:hover,
+.scene-free-mode:focus-visible {
+  border-color: rgba(242, 248, 255, 0.98);
+  background: rgba(39, 55, 72, 0.96);
+  box-shadow: 0 0 0 3px rgba(184, 220, 255, 0.28);
+  outline: none;
+}
+
+.scene-free-mode.is-enabled {
+  border-color: rgba(180, 238, 255, 0.95);
+  background: rgba(42, 94, 114, 0.94);
+}
+
 .detail-close {
   border: 1px solid rgba(220, 234, 248, 0.48);
   background: rgba(10, 20, 30, 0.86);
