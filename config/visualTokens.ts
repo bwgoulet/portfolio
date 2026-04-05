@@ -90,6 +90,9 @@ export const VISUAL_TOKENS = {
       labelOutline: '#15100a'
     },
     environment: {
+      voidNear: '#d6a07f',
+      voidMid: '#c88669',
+      voidFar: '#8e5f63',
       tabletBase: '#5a615f',
       tabletHover: '#9da3a6',
       tabletEmissiveHover: '#49605a',

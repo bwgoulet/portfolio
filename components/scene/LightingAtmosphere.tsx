@@ -13,7 +13,7 @@ export function LightingAtmosphere() {
 
   useEffect(() => {
     scene.background = new Color(PALETTE.skyBottom);
-    scene.fog = new FogExp2(PALETTE.fog, 0.034);
+    scene.fog = new FogExp2(PALETTE.fog, 0.039);
 
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 1.08;
