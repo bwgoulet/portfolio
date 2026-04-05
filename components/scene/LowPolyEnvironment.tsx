@@ -179,7 +179,7 @@ function MountainRopeBridge() {
     const initialBounds = new THREE.Box3().setFromObject(bridgeScene);
     const initialSize = initialBounds.getSize(new THREE.Vector3());
     const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
-    const normalizedScale = 3.4 / dominantAxis;
+    const normalizedScale = 15 / dominantAxis;
     bridgeScene.scale.setScalar(normalizedScale);
     bridgeScene.updateMatrixWorld(true);
 
@@ -192,8 +192,10 @@ function MountainRopeBridge() {
   }, [bridgeGltf.scene]);
 
   return (
-    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2 + 0.06, 0]}>
-      <primitive object={bridgeModel} />
+    <group position={[1.02, 0.55, -13.5]} rotation={[0, Math.PI / 2, 0]}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <primitive object={bridgeModel} />
+      </group>
     </group>
   );
 }
@@ -358,7 +360,7 @@ function TrailheadTimelineSign({
       hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [number, number, number]
     };
   }, [woodenSignGltf.scene]);
-  const signScale = hovered ? 1.22 : 1.12;
+  const signScale = hovered ? 1.15 : 1.12;
 
   useFrame(({ clock }) => {
     if (reducedMotion || !signRef.current) return;
@@ -394,7 +396,7 @@ function TrailheadTimelineSign({
       </mesh>
       <Text
         position={[0.11, 0.76, 0]}
-        fontSize={hovered ? 0.066 : 0.06}
+        fontSize={hovered ? 0.06 : 0.06}
         font="https://fonts.gstatic.com/s/rye/v17/r05XGLJT86YDFg.ttf"
         letterSpacing={0.035}
         anchorX="center"
@@ -513,13 +515,13 @@ export function LowPolyEnvironment({
         onClick={onTimelineClick}
       />
 
-      <Tree position={[-3.5, 1.13, -3.5]} scale={1.2} />
+      <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1} />
-      <Tree position={[2.2, 1.08, -2.35]} scale={1} />
+      <Tree position={[2.2, 1.08, -2.35]} scale={0.8} />
       {/* <Tree position={[-4.2, 1.08, 1.8]} scale={0.4} /> */}
 
-      <mesh position={[2.7, 1.27, -1.65]} castShadow receiveShadow>
-        <dodecahedronGeometry args={[0.7, 0]} />
+      <mesh position={[2.75, 1.27, -1.65]} castShadow receiveShadow>
+        <dodecahedronGeometry args={[0.5, 0]} />
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
 
