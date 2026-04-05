@@ -1,6 +1,6 @@
 'use client';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Image from 'next/image';
 import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
@@ -17,6 +17,40 @@ import { EXPERIENCE_RECORD } from './experienceData';
 import { makeTimeline } from '@/lib/animation';
 import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
+
+const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [number, number, number]; lookAt: [number, number, number] }> = {
+  overview: {
+    position: [-10.2, 9.2, 14.3],
+    lookAt: [0.25, 1.75, -2.9]
+  },
+  cabinInterior: {
+    position: [4.9, 4.3, 2.4],
+    lookAt: [4.35, 2.2, -1.45]
+  }
+};
+
+function FreeModeCameraPositioner({
+  enabled,
+  focusTarget
+}: {
+  enabled: boolean;
+  focusTarget: FocusTarget;
+}) {
+  const camera = useThree((state) => state.camera);
+  const wasEnabledRef = useRef(false);
+
+  useEffect(() => {
+    if (enabled && !wasEnabledRef.current && (focusTarget === 'overview' || focusTarget === 'cabinInterior')) {
+      const preset = FREE_MODE_VIEW_PRESETS[focusTarget];
+      camera.position.set(...preset.position);
+      camera.lookAt(...preset.lookAt);
+      camera.updateProjectionMatrix();
+    }
+    wasEnabledRef.current = enabled;
+  }, [camera, enabled, focusTarget]);
+
+  return null;
+}
 
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
@@ -397,6 +431,7 @@ export function AdventureScene() {
               );
             }}
           />
+          <FreeModeCameraPositioner enabled={isFreeModeEnabled} focusTarget={focusTarget} />
           {isFreeModeEnabled && (
             <OrbitControls
               enableDamping
@@ -407,6 +442,8 @@ export function AdventureScene() {
               panSpeed={0.9}
               zoomSpeed={0.85}
               screenSpacePanning={false}
+              maxPolarAngle={Math.PI * 0.47}
+              minPolarAngle={Math.PI * 0.14}
               target={
                 focusTarget === 'cabinInterior'
                   ? [0.35, 1.15, -1.4]
