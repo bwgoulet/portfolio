@@ -192,8 +192,10 @@ function MountainRopeBridge() {
   }, [bridgeGltf.scene]);
 
   return (
-    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2 + 0.06, 0]}>
-      <primitive object={bridgeModel} />
+    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2, 0]}>
+      <group rotation={[0, 0, -Math.PI / 2]}>
+        <primitive object={bridgeModel} />
+      </group>
     </group>
   );
 }
@@ -513,9 +515,9 @@ export function LowPolyEnvironment({
         onClick={onTimelineClick}
       />
 
-      <Tree position={[-3.5, 1.13, -3.5]} scale={1.2} />
+      <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1} />
-      <Tree position={[2.2, 1.08, -2.35]} scale={1} />
+      <Tree position={[2.2, 1.08, -2.35]} scale={0.8} />
       {/* <Tree position={[-4.2, 1.08, 1.8]} scale={0.4} /> */}
 
       <mesh position={[2.7, 1.27, -1.65]} castShadow receiveShadow>
