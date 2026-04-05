@@ -7,7 +7,7 @@ import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { ClampToEdgeWrapping, LinearMipmapLinearFilter, SRGBColorSpace } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -163,41 +163,6 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 useGLTF.preload('/models/Pine.glb');
 useGLTF.preload('/models/Wooden Sign.glb');
 useGLTF.preload('/models/Mountain.glb');
-useGLTF.preload('/models/Medium Island.glb');
-
-function MainIsland() {
-  const islandGltf = useGLTF('/models/Medium Island.glb');
-  const islandModel = useMemo(() => {
-    const islandScene = islandGltf.scene.clone(true);
-    islandScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
-    islandScene.updateMatrixWorld(true);
-    const initialBounds = new THREE.Box3().setFromObject(islandScene);
-    const initialSize = initialBounds.getSize(new THREE.Vector3());
-    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
-    const normalizedScale = 16 / dominantAxis;
-    islandScene.scale.setScalar(normalizedScale);
-    islandScene.updateMatrixWorld(true);
-
-    const islandBounds = new THREE.Box3().setFromObject(islandScene);
-    const islandCenter = islandBounds.getCenter(new THREE.Vector3());
-    islandScene.position.x -= islandCenter.x;
-    islandScene.position.z -= islandCenter.z;
-    islandScene.position.y -= islandBounds.min.y;
-    return islandScene;
-  }, [islandGltf.scene]);
-
-  return (
-    <group position={[0, -0.06, 0]} rotation={[0, 0.2, 0]}>
-      <primitive object={islandModel} />
-    </group>
-  );
-}
 
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
@@ -444,6 +409,55 @@ function TrailheadTimelineSign({
   );
 }
 
+function GrassGround() {
+  const grassTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    const size = 256;
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+    if (!context) return null;
+
+    context.fillStyle = '#4a7a56';
+    context.fillRect(0, 0, size, size);
+    for (let index = 0; index < 340; index += 1) {
+      const x = (index * 47) % size;
+      const y = (index * 89) % size;
+      const radius = 4 + (index % 5);
+      const shade = 30 + (index % 12);
+      context.fillStyle = `hsla(${112 + (index % 6)}, 42%, ${shade + 8}%, 0.35)`;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    const texture = new CanvasTexture(canvas);
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(4.8, 4.8);
+    texture.colorSpace = SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
+  return (
+    <>
+      <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.95, 8.05, 0.25, 20]} />
+        <meshStandardMaterial color={PALETTE.islandTop} map={grassTexture} roughness={0.98} metalness={0.03} />
+      </mesh>
+      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
+        <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
+        <meshStandardMaterial color="#4e7d5f" map={grassTexture} roughness={0.99} metalness={0.03} />
+      </mesh>
+      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
+        <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
+        <meshStandardMaterial color="#4a7a5a" map={grassTexture} roughness={0.99} metalness={0.03} />
+      </mesh>
+    </>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -482,7 +496,12 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
       </mesh>
 
-      <MainIsland />
+      <mesh rotation={[0, 0.2, 0]} receiveShadow>
+        <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
+        <meshStandardMaterial color={PALETTE.islandSide} flatShading />
+      </mesh>
+
+      <GrassGround />
 
       <MountainRopeBridge />
 
