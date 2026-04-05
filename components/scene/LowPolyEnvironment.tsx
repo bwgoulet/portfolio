@@ -355,8 +355,8 @@ function TrailheadTimelineSign({
   });
 
   return (
-    <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
-      <group scale={0.62}>
+    <group ref={signRef} position={[-0.9, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
+      <group scale={0.55}>
         <primitive object={woodenSignModel} />
       </group>
       <mesh
@@ -380,7 +380,7 @@ function TrailheadTimelineSign({
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       <Text
-        position={[0.1, 0.9, 0]}
+        position={[0.11, 0.76, 0]}
         fontSize={hovered ? 0.066 : 0.06}
         font="https://fonts.gstatic.com/s/rye/v17/r05XGLJT86YDFg.ttf"
         letterSpacing={0.035}
