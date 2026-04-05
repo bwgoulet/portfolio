@@ -87,7 +87,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
         const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
         const width = 0.24;
         const height = 1.36;
-        const rotationY = -0.11 + index * 0.09;
+        const rotationY = index === 3 ? 0.1 : -0.11 + index * 0.09;
         const logoFrameHeight = 0.42;
         const logoAspectRatio = tabletImageDimensions[index].width / tabletImageDimensions[index].height;
         const logoFrameWidth = Math.min(0.28, logoFrameHeight * logoAspectRatio);
