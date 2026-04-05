@@ -179,7 +179,7 @@ function MountainRopeBridge() {
     const initialBounds = new THREE.Box3().setFromObject(bridgeScene);
     const initialSize = initialBounds.getSize(new THREE.Vector3());
     const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
-    const normalizedScale = 3.4 / dominantAxis;
+    const normalizedScale = 15 / dominantAxis;
     bridgeScene.scale.setScalar(normalizedScale);
     bridgeScene.updateMatrixWorld(true);
 
@@ -192,8 +192,8 @@ function MountainRopeBridge() {
   }, [bridgeGltf.scene]);
 
   return (
-    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2, 0]}>
-      <group rotation={[0, 0, -Math.PI / 2]}>
+    <group position={[1.02, 0.55, -13.5]} rotation={[0, Math.PI / 2, 0]}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
         <primitive object={bridgeModel} />
       </group>
     </group>
