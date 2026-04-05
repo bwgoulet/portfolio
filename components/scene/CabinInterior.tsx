@@ -44,13 +44,15 @@ type CabinInteriorProps = {
 
 const PAINTING_OVERLAY_CONFIG = {
   framed: {
-    position: [0, 0, 0.02] as [number, number, number],
-    size: [0.72, 0.48] as [number, number],
+    widthScale: 0.9,
+    heightScale: 0.72,
+    depthOffset: 0.002,
     rotation: [0, 0, 0] as [number, number, number]
   },
   wallMounted: {
-    position: [0, 0, 7] as [number, number, number],
-    size: [210, 255] as [number, number],
+    widthScale: 0.84,
+    heightScale: 0.88,
+    depthOffset: 0.8,
     rotation: [0, 0, 0] as [number, number, number]
   }
 } as const;
@@ -283,9 +285,21 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
-        <primitive object={paintingModel} />
-        <mesh position={PAINTING_OVERLAY_CONFIG.framed.position} rotation={PAINTING_OVERLAY_CONFIG.framed.rotation}>
-          <planeGeometry args={PAINTING_OVERLAY_CONFIG.framed.size} />
+        <primitive object={paintingModel.scene} />
+        <mesh
+          position={[
+            paintingModel.center.x,
+            paintingModel.center.y,
+            paintingModel.bounds.max.z + PAINTING_OVERLAY_CONFIG.framed.depthOffset
+          ]}
+          rotation={PAINTING_OVERLAY_CONFIG.framed.rotation}
+        >
+          <planeGeometry
+            args={[
+              paintingModel.size.x * PAINTING_OVERLAY_CONFIG.framed.widthScale,
+              paintingModel.size.y * PAINTING_OVERLAY_CONFIG.framed.heightScale
+            ]}
+          />
           <meshStandardMaterial
             color={'#ffffff'}
             map={framedPaintingTexture ?? undefined}
@@ -296,9 +310,21 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
-        <primitive object={wallPaintingModel} />
-        <mesh position={PAINTING_OVERLAY_CONFIG.wallMounted.position} rotation={PAINTING_OVERLAY_CONFIG.wallMounted.rotation}>
-          <planeGeometry args={PAINTING_OVERLAY_CONFIG.wallMounted.size} />
+        <primitive object={wallPaintingModel.scene} />
+        <mesh
+          position={[
+            wallPaintingModel.center.x,
+            wallPaintingModel.center.y,
+            wallPaintingModel.bounds.max.z + PAINTING_OVERLAY_CONFIG.wallMounted.depthOffset
+          ]}
+          rotation={PAINTING_OVERLAY_CONFIG.wallMounted.rotation}
+        >
+          <planeGeometry
+            args={[
+              wallPaintingModel.size.x * PAINTING_OVERLAY_CONFIG.wallMounted.widthScale,
+              wallPaintingModel.size.y * PAINTING_OVERLAY_CONFIG.wallMounted.heightScale
+            ]}
+          />
           <meshStandardMaterial
             color={'#ffffff'}
             map={wallMountedPaintingTexture ?? undefined}
