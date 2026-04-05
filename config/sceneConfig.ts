@@ -22,7 +22,7 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
   },
   billboard: {
     position: [-3.85, 3.08, 2.65],
-    lookAt: [-4.9, 3.12, 0.26],
+    lookAt: [-4.9, 3, 0.26],
     fov: 40
   },
   cabinInterior: {
@@ -79,7 +79,7 @@ export const SCENE_ANCHORS = {
   cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
   tabletsStart: [1.8, 0.93, 2.9] as Vector3Tuple,
   introductionLandmark: [-2.2, 1.22, 2.2] as Vector3Tuple,
-  mountain: [0.8, -.3, -24.5] as Vector3Tuple,
+  mountain: [0.8, -.3, -23] as Vector3Tuple,
   trailStart: [0.8, 1.03, 2.9] as Vector3Tuple,
   trailEnd: [0.8, 1.03, -14.2] as Vector3Tuple
 };
