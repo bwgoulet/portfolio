@@ -24,37 +24,8 @@ const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [
     lookAt: [0.25, 1.75, -2.9]
   },
   cabinInterior: {
-    position: [4.45, 2.95, -0.55],
-    lookAt: [4.5, 2.15, -1.4]
-  }
-};
-
-const FREE_MODE_CONTROLS: Record<
-  'overview' | 'cabinInterior',
-  {
-    target: [number, number, number];
-    minDistance: number;
-    maxDistance: number;
-    minPolarAngle: number;
-    maxPolarAngle: number;
-    enablePan: boolean;
-  }
-> = {
-  overview: {
-    target: [0.2, 0.9, 0.5],
-    minDistance: 1.4,
-    maxDistance: 42,
-    minPolarAngle: Math.PI * 0.14,
-    maxPolarAngle: Math.PI * 0.47,
-    enablePan: true
-  },
-  cabinInterior: {
-    target: [4.5, 2.15, -1.4],
-    minDistance: 0.75,
-    maxDistance: 2.05,
-    minPolarAngle: Math.PI * 0.2,
-    maxPolarAngle: Math.PI * 0.46,
-    enablePan: false
+    position: [4.9, 4.3, 2.4],
+    lookAt: [4.35, 2.2, -1.45]
   }
 };
 
@@ -142,7 +113,6 @@ export function AdventureScene() {
     !isTransitioning &&
     !isCabinExitTransitionPending &&
     (focusTarget === 'overview' || focusTarget === 'cabinInterior');
-  const freeModeControls = FREE_MODE_CONTROLS[focusTarget === 'cabinInterior' ? 'cabinInterior' : 'overview'];
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -466,15 +436,19 @@ export function AdventureScene() {
             <OrbitControls
               enableDamping
               dampingFactor={0.08}
-              minDistance={freeModeControls.minDistance}
-              maxDistance={freeModeControls.maxDistance}
-              enablePan={freeModeControls.enablePan}
+              minDistance={1.4}
+              maxDistance={42}
+              enablePan
               panSpeed={0.9}
               zoomSpeed={0.85}
               screenSpacePanning={false}
-              maxPolarAngle={freeModeControls.maxPolarAngle}
-              minPolarAngle={freeModeControls.minPolarAngle}
-              target={freeModeControls.target}
+              maxPolarAngle={Math.PI * 0.47}
+              minPolarAngle={Math.PI * 0.14}
+              target={
+                focusTarget === 'cabinInterior'
+                  ? [0.35, 1.15, -1.4]
+                  : [0.2, 0.9, 0.5]
+              }
             />
           )}
           <LightingAtmosphere />
