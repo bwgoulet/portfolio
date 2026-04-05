@@ -1,6 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 import Image from 'next/image';
 import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Group } from 'three';
@@ -45,6 +46,7 @@ export function AdventureScene() {
   const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
+  const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
 
@@ -72,6 +74,11 @@ export function AdventureScene() {
     interactionState === 'hoverTablets' ||
     interactionState === 'hoverIntroduction' ||
     interactionState === 'hoverTimeline';
+  const canToggleFreeMode =
+    !isDetailDialogOpen &&
+    !isTransitioning &&
+    !isCabinExitTransitionPending &&
+    (focusTarget === 'overview' || focusTarget === 'cabinInterior');
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -248,6 +255,7 @@ export function AdventureScene() {
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
 
+      setIsFreeModeEnabled(false);
       setInteractionState('transitioning');
       setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setIsCabinInteriorRevealed(false);
@@ -305,6 +313,7 @@ export function AdventureScene() {
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
 
   const beginOverviewTransition = useCallback(() => {
+    setIsFreeModeEnabled(false);
     setIsCabinDoorOpen(false);
     setIsCabinInteriorRevealed(false);
     setFocusTarget('overview');
@@ -388,9 +397,26 @@ export function AdventureScene() {
               );
             }}
           />
+          {isFreeModeEnabled && (
+            <OrbitControls
+              enableDamping
+              dampingFactor={0.08}
+              minDistance={1.4}
+              maxDistance={42}
+              enablePan
+              panSpeed={0.9}
+              zoomSpeed={0.85}
+              screenSpacePanning={false}
+              target={
+                focusTarget === 'cabinInterior'
+                  ? [0.35, 1.15, -1.4]
+                  : [0.2, 0.9, 0.5]
+              }
+            />
+          )}
           <LightingAtmosphere />
           <LowPolyEnvironment
-            tabletsInteractiveEnabled={isOverviewState}
+            tabletsInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
             tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
             tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
             onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
@@ -398,7 +424,7 @@ export function AdventureScene() {
             onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
             tabletsRef={tabletsRef}
             timelineSignRef={timelineSignRef}
-            timelineInteractiveEnabled={isOverviewState || interactionState === 'timelineCloseup'}
+            timelineInteractiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'timelineCloseup')}
             timelineHovered={interactionState === 'hoverTimeline' || isTimelineCloseupHovered}
             onTimelineHoverChange={(hovered) => {
               if (interactionState === 'timelineCloseup') {
@@ -418,8 +444,8 @@ export function AdventureScene() {
           />
           <IntroductionLandmark
             landmarkRef={introductionRef}
-            interactiveEnabled={isOverviewState || interactionState === 'introductionCloseup'}
-            hoverEnabled={isOverviewState || interactionState === 'introductionCloseup'}
+            interactiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
+            hoverEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
             hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
             onHoverChange={(hovered) => {
               if (interactionState === 'introductionCloseup') {
@@ -439,7 +465,7 @@ export function AdventureScene() {
           />
           <Billboard
             billboardRef={billboardRef}
-            interactiveEnabled={isOverviewState}
+            interactiveEnabled={isOverviewState && !isFreeModeEnabled}
             notesInteractive={interactionState === 'billboardCloseup'}
             hovered={interactionState === 'hoverBillboard'}
             onHoverChange={(hovered) => updateHover('billboard', hovered)}
@@ -452,7 +478,7 @@ export function AdventureScene() {
           {!isCabinInteriorRevealed && (
             <Cabin
               cabinRef={cabinRef}
-              interactiveEnabled={isOverviewState}
+              interactiveEnabled={isOverviewState && !isFreeModeEnabled}
               hovered={interactionState === 'hoverCabin'}
               isDoorOpen={isCabinDoorOpen}
               onHoverChange={(hovered) => updateHover('cabin', hovered)}
@@ -461,7 +487,7 @@ export function AdventureScene() {
           )}
           {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
             <CabinInterior
-              photosInteractive={interactionState === 'cabinCloseup'}
+              photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
               onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
             />
           )}
@@ -684,6 +710,16 @@ export function AdventureScene() {
           onClick={handleReturnToOverview}
         >
           ←
+        </button>
+      )}
+      {canToggleFreeMode && (
+        <button
+          className={`scene-free-mode ${isFreeModeEnabled ? 'is-enabled' : ''}`}
+          type="button"
+          aria-pressed={isFreeModeEnabled}
+          onClick={() => setIsFreeModeEnabled((current) => !current)}
+        >
+          Free Mode: {isFreeModeEnabled ? 'On' : 'Off'}
         </button>
       )}
 
