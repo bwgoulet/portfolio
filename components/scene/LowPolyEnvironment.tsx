@@ -360,7 +360,7 @@ function TrailheadTimelineSign({
       hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [number, number, number]
     };
   }, [woodenSignGltf.scene]);
-  const signScale = hovered ? 1.22 : 1.12;
+  const signScale = hovered ? 1.15 : 1.12;
 
   useFrame(({ clock }) => {
     if (reducedMotion || !signRef.current) return;
@@ -396,7 +396,7 @@ function TrailheadTimelineSign({
       </mesh>
       <Text
         position={[0.11, 0.76, 0]}
-        fontSize={hovered ? 0.066 : 0.06}
+        fontSize={hovered ? 0.06 : 0.06}
         font="https://fonts.gstatic.com/s/rye/v17/r05XGLJT86YDFg.ttf"
         letterSpacing={0.035}
         anchorX="center"
