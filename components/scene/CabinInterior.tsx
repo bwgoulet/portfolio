@@ -138,6 +138,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }, {}),
     [galleryTextureSources, galleryTextures]
   );
+  const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture(['/gallery/prs25.jpg', '/gallery/prf25.png']);
+  const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
+    const configureTexture = (texture: THREE.Texture | undefined) => {
+      if (!texture) return null;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      texture.needsUpdate = true;
+      return texture;
+    };
+    return [configureTexture(primaryPaintingTexture), configureTexture(secondaryPaintingTexture)];
+  }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
 
@@ -254,10 +265,28 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
         <primitive object={paintingModel} />
+        <mesh position={[0, 0, 0.015]}>
+          <planeGeometry args={[0.72, 0.48]} />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={framedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
         <primitive object={wallPaintingModel} />
+        <mesh position={[0, 0, 7]}>
+          <planeGeometry args={[210, 255]} />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={wallMountedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       {[-0.44, 0.44].map((x) => (
