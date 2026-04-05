@@ -114,7 +114,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }
     });
     paintingScene.updateMatrixWorld(true);
-    return paintingScene;
+    const bounds = new THREE.Box3().setFromObject(paintingScene);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    return { scene: paintingScene, bounds, size, center };
   }, [paintingGltf.scene]);
   const wallPaintingModel = useMemo(() => {
     const wallPaintingScene = wallPaintingGltf.scene.clone(true);
@@ -125,7 +128,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }
     });
     wallPaintingScene.updateMatrixWorld(true);
-    return wallPaintingScene;
+    const bounds = new THREE.Box3().setFromObject(wallPaintingScene);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    return { scene: wallPaintingScene, bounds, size, center };
   }, [wallPaintingGltf.scene]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
