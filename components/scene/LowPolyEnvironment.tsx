@@ -488,18 +488,6 @@ export function LowPolyEnvironment({
 
       <GrassGround />
 
-      <mesh position={[SCENE_ANCHORS.trailEnd[0], SCENE_ANCHORS.trailEnd[1], -9.1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[1.2, 23]} />
-        <meshStandardMaterial color={PALETTE.trail} flatShading polygonOffset polygonOffsetFactor={1} />
-      </mesh>
-      <mesh position={[0.25, 1.038, -5.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
-        <planeGeometry args={[0.7, 17]} />
-        <meshStandardMaterial color={environmentPalette.pathEdge} flatShading polygonOffset polygonOffsetFactor={-1} />
-      </mesh>
-      <mesh position={[1.38, 1.041, -5.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
-        <planeGeometry args={[0.62, 17]} />
-        <meshStandardMaterial color={environmentPalette.pathLow} flatShading polygonOffset polygonOffsetFactor={-1} />
-      </mesh>
       <MountainRopeBridge />
 
       <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
