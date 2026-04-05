@@ -42,6 +42,19 @@ type CabinInteriorProps = {
   onPhotoSelect: (photoId: string) => void;
 };
 
+const PAINTING_OVERLAY_CONFIG = {
+  framed: {
+    position: [0, 0, 0.02] as [number, number, number],
+    size: [0.72, 0.48] as [number, number],
+    rotation: [0, 0, 0] as [number, number, number]
+  },
+  wallMounted: {
+    position: [0, 0, 7] as [number, number, number],
+    size: [210, 255] as [number, number],
+    rotation: [0, 0, 0] as [number, number, number]
+  }
+} as const;
+
 export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
@@ -138,6 +151,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       }, {}),
     [galleryTextureSources, galleryTextures]
   );
+  const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture(['/gallery/prs25.jpg', '/gallery/prf25.png']);
+  const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
+    const configureTexture = (texture: THREE.Texture | undefined) => {
+      if (!texture) return null;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      texture.needsUpdate = true;
+      return texture;
+    };
+    return [configureTexture(primaryPaintingTexture), configureTexture(secondaryPaintingTexture)];
+  }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
 
@@ -254,10 +278,28 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
         <primitive object={paintingModel} />
+        <mesh position={PAINTING_OVERLAY_CONFIG.framed.position} rotation={PAINTING_OVERLAY_CONFIG.framed.rotation}>
+          <planeGeometry args={PAINTING_OVERLAY_CONFIG.framed.size} />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={framedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
         <primitive object={wallPaintingModel} />
+        <mesh position={PAINTING_OVERLAY_CONFIG.wallMounted.position} rotation={PAINTING_OVERLAY_CONFIG.wallMounted.rotation}>
+          <planeGeometry args={PAINTING_OVERLAY_CONFIG.wallMounted.size} />
+          <meshStandardMaterial
+            color={'#ffffff'}
+            map={wallMountedPaintingTexture ?? undefined}
+            roughness={0.82}
+            metalness={0.04}
+          />
+        </mesh>
       </group>
 
       {[-0.44, 0.44].map((x) => (
