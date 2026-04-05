@@ -163,67 +163,6 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 useGLTF.preload('/models/Pine.glb');
 useGLTF.preload('/models/Wooden Sign.glb');
 
-function RopeBridge() {
-  const bridgeGltf = useGLTF('/models/rope bridge.glb');
-  const bridgeModel = useMemo(() => {
-    const bridgeScene = bridgeGltf.scene.clone(true);
-    bridgeScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
-    bridgeScene.updateMatrixWorld(true);
-    const bridgeBounds = new THREE.Box3().setFromObject(bridgeScene);
-    const bridgeCenter = bridgeBounds.getCenter(new THREE.Vector3());
-    bridgeScene.position.x -= bridgeCenter.x;
-    bridgeScene.position.z -= bridgeCenter.z;
-    bridgeScene.position.y -= bridgeBounds.min.y;
-    return bridgeScene;
-  }, [bridgeGltf.scene]);
-
-  return (
-    <group position={[0.82, 1.03, -13.75]} rotation={[0, 0.04, 0]} scale={1.08}>
-      <primitive object={bridgeModel} />
-    </group>
-  );
-}
-
-function RopeBridge() {
-  const bridgeGltf = useGLTF('/models/rope bridge.glb');
-  const bridgeModel = useMemo(() => {
-    const bridgeScene = bridgeGltf.scene.clone(true);
-    bridgeScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
-    bridgeScene.updateMatrixWorld(true);
-    const initialBounds = new THREE.Box3().setFromObject(bridgeScene);
-    const initialSize = initialBounds.getSize(new THREE.Vector3());
-    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
-    const normalizedScale = 3.4 / dominantAxis;
-    bridgeScene.scale.setScalar(normalizedScale);
-    bridgeScene.updateMatrixWorld(true);
-
-    const bridgeBounds = new THREE.Box3().setFromObject(bridgeScene);
-    const bridgeCenter = bridgeBounds.getCenter(new THREE.Vector3());
-    bridgeScene.position.x -= bridgeCenter.x;
-    bridgeScene.position.z -= bridgeCenter.z;
-    bridgeScene.position.y -= bridgeBounds.min.y;
-    return bridgeScene;
-  }, [bridgeGltf.scene]);
-
-  return (
-    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2 + 0.06, 0]}>
-      <primitive object={bridgeModel} />
-    </group>
-  );
-}
-
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
   const bridgeModel = useMemo(() => {
