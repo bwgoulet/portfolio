@@ -162,6 +162,33 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 
 useGLTF.preload('/models/Pine.glb');
 
+function RopeBridge() {
+  const bridgeGltf = useGLTF('/models/rope bridge.glb');
+  const bridgeModel = useMemo(() => {
+    const bridgeScene = bridgeGltf.scene.clone(true);
+    bridgeScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    bridgeScene.updateMatrixWorld(true);
+    const bridgeBounds = new THREE.Box3().setFromObject(bridgeScene);
+    const bridgeCenter = bridgeBounds.getCenter(new THREE.Vector3());
+    bridgeScene.position.x -= bridgeCenter.x;
+    bridgeScene.position.z -= bridgeCenter.z;
+    bridgeScene.position.y -= bridgeBounds.min.y;
+    return bridgeScene;
+  }, [bridgeGltf.scene]);
+
+  return (
+    <group position={[0.82, 1.03, -13.75]} rotation={[0, 0.04, 0]} scale={1.08}>
+      <primitive object={bridgeModel} />
+    </group>
+  );
+}
+
 function MountainBackdrop() {
   return (
     <group position={SCENE_ANCHORS.mountain}>
@@ -468,6 +495,7 @@ export function LowPolyEnvironment({
         <planeGeometry args={[0.62, 22]} />
         <meshStandardMaterial color={environmentPalette.pathLow} flatShading polygonOffset polygonOffsetFactor={-1} />
       </mesh>
+      <RopeBridge />
 
       <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
       <TrailheadTimelineSign
@@ -504,3 +532,5 @@ export function LowPolyEnvironment({
     </group>
   );
 }
+
+useGLTF.preload('/models/rope bridge.glb');
