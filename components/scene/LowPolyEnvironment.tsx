@@ -161,6 +161,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 }
 
 useGLTF.preload('/models/Pine.glb');
+useGLTF.preload('/models/Wooden Sign.glb');
 
 function MountainBackdrop() {
   return (
@@ -285,6 +286,23 @@ function TrailheadTimelineSign({
   onClick,
   signRef
 }: TrailheadTimelineSignProps) {
+  const woodenSignGltf = useGLTF('/models/Wooden Sign.glb');
+  const woodenSignModel = useMemo(() => {
+    const signScene = woodenSignGltf.scene.clone(true);
+    signScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    signScene.updateMatrixWorld(true);
+    const signBounds = new THREE.Box3().setFromObject(signScene);
+    const signCenter = signBounds.getCenter(new THREE.Vector3());
+    signScene.position.x -= signCenter.x;
+    signScene.position.z -= signCenter.z;
+    signScene.position.y -= signBounds.min.y;
+    return signScene;
+  }, [woodenSignGltf.scene]);
   const signScale = hovered ? 1.22 : 1.12;
 
   useFrame(({ clock }) => {
@@ -296,41 +314,11 @@ function TrailheadTimelineSign({
 
   return (
     <group ref={signRef} position={[-0.5, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
-      <mesh position={[-0.14, 0.14, -0.045]} castShadow>
-        <boxGeometry args={[0.04, 0.28, 0.04]} />
-        <meshStandardMaterial color={environmentPalette.signPost} flatShading />
-      </mesh>
-      <mesh position={[0.14, 0.14, -0.045]} castShadow>
-        <boxGeometry args={[0.04, 0.28, 0.04]} />
-        <meshStandardMaterial color={environmentPalette.signPost} flatShading />
-      </mesh>
+      <group scale={0.62}>
+        <primitive object={woodenSignModel} />
+      </group>
       <mesh
-        position={[0, 0.32, 0]}
-        castShadow
-        receiveShadow
-        onPointerEnter={(event) => {
-          event.stopPropagation();
-          if (interactiveEnabled) onHoverChange(true);
-        }}
-        onPointerLeave={(event) => {
-          event.stopPropagation();
-          onHoverChange(false);
-        }}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (interactiveEnabled) onClick('timeline');
-        }}
-      >
-        <boxGeometry args={[0.36, 0.16, 0.04]} />
-        <meshStandardMaterial
-          color={hovered ? '#9b8564' : environmentPalette.signBoard}
-          emissive={hovered ? '#372912' : '#241a0d'}
-          emissiveIntensity={hovered ? 0.2 : 0.07}
-          flatShading
-        />
-      </mesh>
-      <mesh
-        position={[0, 0.32, 0.03]}
+        position={[0, 0.36, 0.04]}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (interactiveEnabled) onHoverChange(true);
@@ -346,11 +334,11 @@ function TrailheadTimelineSign({
           if (interactiveEnabled) onClick('timeline');
         }}
       >
-        <boxGeometry args={[0.62, 0.36, 0.16]} />
+        <boxGeometry args={[0.72, 0.48, 0.26]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       <Text
-        position={[0, 0.325, 0.026]}
+        position={[0, 0.43, 0.08]}
         fontSize={hovered ? 0.066 : 0.06}
         anchorX="center"
         anchorY="middle"
