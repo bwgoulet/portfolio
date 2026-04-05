@@ -338,7 +338,7 @@ function TrailheadTimelineSign({
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
       <Text
-        position={[0, 0.43, 0.08]}
+        position={[0.1, 0.9, 0]}
         fontSize={hovered ? 0.066 : 0.06}
         anchorX="center"
         anchorY="middle"
