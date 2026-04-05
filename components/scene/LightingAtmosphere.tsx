@@ -7,19 +7,23 @@ import { ACESFilmicToneMapping, Color, FogExp2, PCFSoftShadowMap } from 'three';
 import { PALETTE } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
-export function LightingAtmosphere() {
+export function LightingAtmosphere({
+  backgroundColor = PALETTE.skyBottom
+}: {
+  backgroundColor?: string;
+}) {
   const scene = useThree((state) => state.scene);
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
-    scene.background = new Color(PALETTE.skyBottom);
+    scene.background = new Color(backgroundColor);
     scene.fog = new FogExp2(PALETTE.fog, 0.034);
 
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 1.08;
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = PCFSoftShadowMap;
-  }, [gl, scene]);
+  }, [backgroundColor, gl, scene]);
 
   const lighting = VISUAL_TOKENS.lighting;
 

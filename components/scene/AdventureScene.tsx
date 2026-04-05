@@ -451,7 +451,7 @@ export function AdventureScene() {
               }
             />
           )}
-          <LightingAtmosphere />
+          <LightingAtmosphere backgroundColor={focusTarget === 'cabinInterior' && !isCabinInteriorRevealed ? '#060709' : undefined} />
           <LowPolyEnvironment
             tabletsInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
             tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
