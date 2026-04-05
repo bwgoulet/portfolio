@@ -4,13 +4,14 @@ import { Sky } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { useEffect } from 'react';
 import { ACESFilmicToneMapping, Color, FogExp2, PCFSoftShadowMap } from 'three';
+import type { ColorRepresentation } from 'three';
 import { PALETTE } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
 export function LightingAtmosphere({
   backgroundColor = PALETTE.skyBottom
 }: {
-  backgroundColor?: string;
+  backgroundColor?: ColorRepresentation;
 }) {
   const scene = useThree((state) => state.scene);
   const gl = useThree((state) => state.gl);
