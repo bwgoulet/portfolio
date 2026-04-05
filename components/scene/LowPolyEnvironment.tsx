@@ -162,6 +162,7 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 
 useGLTF.preload('/models/Pine.glb');
 useGLTF.preload('/models/Wooden Sign.glb');
+useGLTF.preload('/models/Mountain.glb');
 
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
@@ -198,24 +199,36 @@ function MountainRopeBridge() {
 }
 
 function MountainBackdrop() {
+  const mountainGltf = useGLTF('/models/Mountain.glb');
+  const mountainModel = useMemo(() => {
+    const mountainScene = mountainGltf.scene.clone(true);
+    mountainScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    mountainScene.updateMatrixWorld(true);
+    const initialBounds = new THREE.Box3().setFromObject(mountainScene);
+    const initialSize = initialBounds.getSize(new THREE.Vector3());
+    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
+    const normalizedScale = 14 / dominantAxis;
+    mountainScene.scale.setScalar(normalizedScale);
+    mountainScene.updateMatrixWorld(true);
+
+    const mountainBounds = new THREE.Box3().setFromObject(mountainScene);
+    const mountainCenter = mountainBounds.getCenter(new THREE.Vector3());
+    mountainScene.position.x -= mountainCenter.x;
+    mountainScene.position.z -= mountainCenter.z;
+    mountainScene.position.y -= mountainBounds.min.y;
+
+    return mountainScene;
+  }, [mountainGltf.scene]);
+
   return (
-    <group position={SCENE_ANCHORS.mountain}>
-      <mesh castShadow rotation={[0, 0.2, 0]}>
-        <coneGeometry args={[6.6, 8.9, 8]} />
-        <meshStandardMaterial color={PALETTE.mountain} flatShading />
-      </mesh>
-      <mesh position={[-2.2, -0.5, 1.6]} rotation={[0, 0.42, 0]} castShadow>
-        <coneGeometry args={[4.1, 5.1, 8]} />
-        <meshStandardMaterial color={environmentPalette.mountainMid} flatShading />
-      </mesh>
-      <mesh position={[2.8, -0.7, 2.1]} rotation={[0, -0.36, 0]} castShadow>
-        <coneGeometry args={[3.8, 4.4, 8]} />
-        <meshStandardMaterial color={environmentPalette.mountainFront} flatShading />
-      </mesh>
-      <mesh position={[0.4, 1.95, 0.2]} scale={[1.1, 0.5, 0.9]} castShadow>
-        <dodecahedronGeometry args={[1.05, 0]} />
-        <meshStandardMaterial color={environmentPalette.mountainSnow} flatShading />
-      </mesh>
+    <group position={SCENE_ANCHORS.mountain} rotation={[0, 0.16, 0]}>
+      <primitive object={mountainModel} />
     </group>
   );
 }
