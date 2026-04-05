@@ -162,6 +162,40 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 
 useGLTF.preload('/models/Pine.glb');
 
+function MountainRopeBridge() {
+  const bridgeGltf = useGLTF('/models/rope bridge.glb');
+  const bridgeModel = useMemo(() => {
+    const bridgeScene = bridgeGltf.scene.clone(true);
+    bridgeScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    bridgeScene.updateMatrixWorld(true);
+    const initialBounds = new THREE.Box3().setFromObject(bridgeScene);
+    const initialSize = initialBounds.getSize(new THREE.Vector3());
+    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
+    const normalizedScale = 3.4 / dominantAxis;
+    bridgeScene.scale.setScalar(normalizedScale);
+    bridgeScene.updateMatrixWorld(true);
+
+    const bridgeBounds = new THREE.Box3().setFromObject(bridgeScene);
+    const bridgeCenter = bridgeBounds.getCenter(new THREE.Vector3());
+    bridgeScene.position.x -= bridgeCenter.x;
+    bridgeScene.position.z -= bridgeCenter.z;
+    bridgeScene.position.y -= bridgeBounds.min.y;
+    return bridgeScene;
+  }, [bridgeGltf.scene]);
+
+  return (
+    <group position={[1.02, 1.045, -16.3]} rotation={[0, Math.PI / 2 + 0.06, 0]}>
+      <primitive object={bridgeModel} />
+    </group>
+  );
+}
+
 function MountainBackdrop() {
   return (
     <group position={SCENE_ANCHORS.mountain}>
@@ -456,18 +490,19 @@ export function LowPolyEnvironment({
 
       <GrassGround />
 
-      <mesh position={SCENE_ANCHORS.trailEnd} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[1.2, 34]} />
+      <mesh position={[SCENE_ANCHORS.trailEnd[0], SCENE_ANCHORS.trailEnd[1], -9.1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[1.2, 23]} />
         <meshStandardMaterial color={PALETTE.trail} flatShading polygonOffset polygonOffsetFactor={1} />
       </mesh>
-      <mesh position={[0.25, 1.038, -6.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
-        <planeGeometry args={[0.7, 22]} />
+      <mesh position={[0.25, 1.038, -5.2]} rotation={[-Math.PI / 2, 0.06, 0]} receiveShadow>
+        <planeGeometry args={[0.7, 17]} />
         <meshStandardMaterial color={environmentPalette.pathEdge} flatShading polygonOffset polygonOffsetFactor={-1} />
       </mesh>
-      <mesh position={[1.38, 1.041, -6.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
-        <planeGeometry args={[0.62, 22]} />
+      <mesh position={[1.38, 1.041, -5.5]} rotation={[-Math.PI / 2, -0.07, 0]} receiveShadow>
+        <planeGeometry args={[0.62, 17]} />
         <meshStandardMaterial color={environmentPalette.pathLow} flatShading polygonOffset polygonOffsetFactor={-1} />
       </mesh>
+      <MountainRopeBridge />
 
       <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
       <TrailheadTimelineSign
@@ -504,3 +539,5 @@ export function LowPolyEnvironment({
     </group>
   );
 }
+
+useGLTF.preload('/models/rope bridge.glb');
