@@ -226,12 +226,68 @@ function MountainRopeBridge() {
 
 function MountainBackdrop() {
   const mountainGltf = useGLTF('/models/Mountain.glb');
+  const [mountainGrassTexture, mountainRockTexture, mountainTopTexture] = useTexture([
+    '/textures/aerial_grass_rock_diff_4k.jpg',
+    '/textures/aerial_rocks_02_diff_4k.jpg',
+    '/textures/aerial_rocks_02_diff_4k.jpg'
+  ]);
+  const gl = useThree((state) => state.gl);
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    [mountainGrassTexture, mountainRockTexture, mountainTopTexture].forEach((texture) => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(2.2, 2.2);
+      texture.anisotropy = maxAnisotropy;
+      texture.minFilter = LinearMipmapLinearFilter;
+      texture.colorSpace = SRGBColorSpace;
+      texture.needsUpdate = true;
+    });
+  }, [gl, mountainGrassTexture, mountainRockTexture, mountainTopTexture]);
+
   const mountainModel = useMemo(() => {
+    const resolveTextureForMaterial = (material: THREE.Material): THREE.Texture | null => {
+      if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return null;
+      const tone = material.color;
+      const materialLooksLikeSnowCap = tone.r > 0.9 && tone.g > 0.9 && tone.b > 0.9;
+      const materialLooksLikeGrassBase = tone.g > tone.r && tone.g > tone.b;
+
+      if (materialLooksLikeSnowCap) return mountainTopTexture;
+      if (materialLooksLikeGrassBase) return mountainGrassTexture;
+      return mountainRockTexture;
+    };
+
     const mountainScene = mountainGltf.scene.clone(true);
     mountainScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((material) => {
+            if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+            const nextMaterial = material.clone();
+            nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+            if (nextMaterial instanceof THREE.MeshStandardMaterial) {
+              nextMaterial.roughness = 0.95;
+              nextMaterial.metalness = 0.02;
+            }
+            nextMaterial.needsUpdate = true;
+            return nextMaterial;
+          });
+          return;
+        }
+
+        if (child.material instanceof THREE.MeshStandardMaterial || child.material instanceof THREE.MeshLambertMaterial) {
+          const nextMaterial = child.material.clone();
+          nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+          if (nextMaterial instanceof THREE.MeshStandardMaterial) {
+            nextMaterial.roughness = 0.95;
+            nextMaterial.metalness = 0.02;
+          }
+          nextMaterial.needsUpdate = true;
+          child.material = nextMaterial;
+        }
       }
     });
 
@@ -250,7 +306,7 @@ function MountainBackdrop() {
     mountainScene.position.y -= mountainBounds.min.y;
 
     return mountainScene;
-  }, [mountainGltf.scene]);
+  }, [mountainGrassTexture, mountainGltf.scene, mountainRockTexture, mountainTopTexture]);
 
   return (
     <group position={SCENE_ANCHORS.mountain} rotation={[0, 0.16, 0]}>
