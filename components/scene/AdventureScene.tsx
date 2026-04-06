@@ -16,7 +16,7 @@ import { InteractionState, InteractiveTarget } from './types';
 import { CABIN_INTERIOR_ARTWORKS, CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
-import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
+import { CAMERA_PRESETS, FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
 
 const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [number, number, number]; lookAt: [number, number, number] }> = {
@@ -481,7 +481,15 @@ export function AdventureScene() {
             <p>Loading Scene…</p>
           </div>
         )}
-        <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
+        <Canvas
+          shadows
+          camera={{ position: CAMERA_PRESETS.overview.position, fov: CAMERA_PRESETS.overview.fov }}
+          dpr={[1, 1.7]}
+          gl={{ alpha: false }}
+          onCreated={({ camera }) => {
+            camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
+          }}
+        >
           <Suspense fallback={null}>
           <CameraRig
             targetKey={focusTarget}
