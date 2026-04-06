@@ -205,7 +205,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     const controllerCenter = controllerBounds.getCenter(new THREE.Vector3());
     controllerScene.position.x -= controllerCenter.x;
     controllerScene.position.z -= controllerCenter.z;
-    controllerScene.position.y -= controllerBounds.min.y;
+    controllerScene.position.y -= controllerCenter.y;
     return { scene: controllerScene, size: controllerSize };
   }, [gameCubeControllerGltf.scene]);
   const crtScale = useMemo(() => {
@@ -228,6 +228,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     const desiredControllerWidth = 0.18;
     return desiredControllerWidth / gameCubeControllerModel.size.x;
   }, [gameCubeControllerModel.size.x]);
+  const gameCubeControllerPosition = useMemo<[number, number, number]>(() => [-0.59, 0.2, 0.4], []);
+  const gameCubeControllerRotation = useMemo<[number, number, number]>(
+    () => [Math.PI / 2, 1.5, -Math.PI / 2],
+    []
+  );
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -458,8 +463,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={tableModel} />
       </group>
 
-      <group position={[-0.59, -2, 0.4]} rotation={[0, 0.5, 0]}>
-        <primitive object={gameCubeControllerModel.scene} scale={gameCubeControllerScale} />
+      <group position={gameCubeControllerPosition}>
+        <group rotation={gameCubeControllerRotation}>
+          <primitive object={gameCubeControllerModel.scene} scale={gameCubeControllerScale} />
+        </group>
       </group>
 
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
