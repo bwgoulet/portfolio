@@ -131,6 +131,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     engravingGroupRef.current.position.y = 1.2 + Math.sin(clock.getElapsedTime() * 0.66) * 0.008;
   });
 
+  const engravingText = 'Introduction';
+
   return (
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
       <group position={[0, 0, 0.22]} scale={1.24}>

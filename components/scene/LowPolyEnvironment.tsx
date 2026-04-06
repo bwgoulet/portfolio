@@ -632,7 +632,11 @@ export function LowPolyEnvironment({
       <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1} />
       <Tree position={[2.2, 1.08, -2.35]} scale={0.8} />
-      {/* <Tree position={[-4.2, 1.08, 1.8]} scale={0.4} /> */}
+      <Tree position={[-7.5, 1.08, 1.8]} scale={0.7} />
+      <Tree position={[-9.5, 1.08, -2]} scale={0.9} />
+      <Tree position={[-6, 1.08, -2]} scale={1.1} />
+      <Tree position={[9, 1.08, -2]} scale={1.1} />
+      <Tree position={[8, 1.08, 2]} scale={1.1} />
 
       <mesh position={[2.75, 1.27, -1.65]} castShadow receiveShadow>
         <dodecahedronGeometry args={[0.5, 0]} />
