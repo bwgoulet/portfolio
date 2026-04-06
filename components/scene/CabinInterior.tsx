@@ -62,6 +62,34 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   }
 ];
 
+export const CABIN_INTERIOR_MODEL_ASSETS = [
+  '/models/Chair.glb',
+  '/models/Table.glb',
+  '/models/CRT.glb',
+  '/models/Dartboard.glb',
+  '/models/Mirror Cube.glb',
+  '/models/Game Cube Controller.glb'
+] as const;
+
+export const CABIN_INTERIOR_TEXTURE_ASSETS = [
+  '/textures/wood_floor_worn_diff_4k.jpg',
+  '/textures/stained_pine_diff_4k.jpg',
+  '/textures/oak_veneer_01_diff_4k.jpg',
+  '/gallery/prs25.jpg',
+  '/gallery/prf25.png',
+  ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc)))
+] as const;
+
+const configureRepeatingTexture = (texture: THREE.Texture, repeatX: number, repeatY: number, maxAnisotropy: number) => {
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeatX, repeatY);
+  texture.anisotropy = maxAnisotropy;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+};
+
 const setInteractiveCursor = (isPointer: boolean) => {
   document.body.style.cursor = isPointer ? 'pointer' : 'auto';
 };
@@ -272,36 +300,15 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     '/textures/oak_veneer_01_diff_4k.jpg'
   ]);
   const gl = useThree((state) => state.gl);
+  const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
 
-  useEffect(() => {
-    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    const configureTexture = (texture: THREE.Texture, repeatX: number, repeatY: number) => {
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(repeatX, repeatY);
-      texture.anisotropy = maxAnisotropy;
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
-      texture.needsUpdate = true;
-    };
-
-    [woodFloorTexture].forEach((texture) => configureTexture(texture, 1.1, 1.45));
-    [wallTexture].forEach((texture) => {
-      configureTexture(texture, 2.2, 1.6);
-      texture.center.set(0.5, 0.5);
-      texture.rotation = Math.PI / 2;
-    });
-
-    configureTexture(tableTexture, 1.4, 1.4);
-
-    woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
-    wallTexture.colorSpace = THREE.SRGBColorSpace;
-    tableTexture.colorSpace = THREE.SRGBColorSpace;
-  }, [
-    gl,
-    tableTexture,
-    wallTexture,
-    woodFloorTexture
-  ]);
+  useMemo(() => {
+    configureRepeatingTexture(woodFloorTexture, 1.1, 1.45, maxAnisotropy);
+    configureRepeatingTexture(wallTexture, 2.2, 1.6, maxAnisotropy);
+    wallTexture.center.set(0.5, 0.5);
+    wallTexture.rotation = Math.PI / 2;
+    configureRepeatingTexture(tableTexture, 1.4, 1.4, maxAnisotropy);
+  }, [maxAnisotropy, tableTexture, wallTexture, woodFloorTexture]);
 
   useEffect(() => {
     tableModel.traverse((child) => {
@@ -805,8 +812,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   );
 });
 
-useGLTF.preload('/models/Chair.glb');
-useGLTF.preload('/models/CRT.glb');
-useGLTF.preload('/models/Dartboard.glb');
-useGLTF.preload('/models/Mirror Cube.glb');
-useGLTF.preload('/models/Game Cube Controller.glb');
+CABIN_INTERIOR_MODEL_ASSETS.forEach((assetPath) => {
+  useGLTF.preload(assetPath);
+});
+useTexture.preload([...CABIN_INTERIOR_TEXTURE_ASSETS]);
