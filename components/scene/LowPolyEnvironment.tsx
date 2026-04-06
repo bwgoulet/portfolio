@@ -491,7 +491,7 @@ function SceneFloor() {
   return (
     <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <circleGeometry args={[60, 32]} />
-      <meshStandardMaterial color={environmentPalette.grassBase} map={floorTexture} roughness={1} metalness={0} />
+      <meshBasicMaterial map={floorTexture} toneMapped={false} />
     </mesh>
   );
 }
