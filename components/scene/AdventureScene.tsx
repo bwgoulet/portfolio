@@ -463,8 +463,16 @@ export function AdventureScene() {
     setIsTimelineDialogOpen(false);
   }, []);
 
-  const handleReturnToOverview = useCallback(() => {
-    const exitingCabin = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
+  const handleBackNavigation = useCallback(() => {
+    if (focusTarget === 'cabinDartboard') {
+      setIsFreeModeEnabled(false);
+      setInteractionState('transitioning');
+      setFocusTarget('cabinInterior');
+      setSelectedGalleryPhotoId(null);
+      return;
+    }
+
+    const exitingCabin = focusTarget === 'cabinInterior';
     if (exitingCabin && !reducedMotion) {
       if (isCabinExitTransitionPending) return;
       setIsCabinExitTransitionPending(true);
@@ -866,7 +874,7 @@ export function AdventureScene() {
         <button
           className="scene-back"
           aria-label="Return to overview"
-          onClick={handleReturnToOverview}
+          onClick={handleBackNavigation}
         >
           ←
         </button>
