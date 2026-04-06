@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useProgress } from '@react-three/drei';
 import Image from 'next/image';
-import { Suspense, useCallback, useEffect, useId, useRef, useState, type RefObject } from 'react';
+import { Suspense, useCallback, useEffect, useId, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import type { Group } from 'three';
 import { Vector3 } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -16,7 +16,7 @@ import { InteractionState, InteractiveTarget } from './types';
 import { CABIN_INTERIOR_ARTWORKS, CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
-import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
+import { CAMERA_PRESETS, FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
 
 const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [number, number, number]; lookAt: [number, number, number] }> = {
@@ -180,13 +180,21 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
-  const { active: isSceneLoaderActive } = useProgress();
+  const initialRevealTimerRef = useRef<number | null>(null);
+  const { active: isSceneLoaderActive, total: sceneAssetsTotal } = useProgress();
   const isCabinInteriorTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
   const isCabinInteriorLoading =
     isCabinInteriorTarget &&
     !isCabinInteriorRevealed &&
     (isCabinFadePending || !isCabinCameraTransitionComplete || isSceneLoaderActive);
   const shouldShowCabinLoadingSpinner = isCabinInteriorLoading && cabinTransitionFadeState === 'black';
+
+  const [hasSceneLoadingStarted, setHasSceneLoadingStarted] = useState(false);
+  const [isInitialSceneReady, setIsInitialSceneReady] = useState(false);
+  const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady ? undefined : { opacity: 0, pointerEvents: 'none' };
+  const shouldShowInitialLoadingOverlay = !isInitialSceneReady;
+  const shouldShowLoadingOverlay = shouldShowInitialLoadingOverlay || shouldShowCabinLoadingSpinner;
+  const initialSceneRevealDelayMs = 220;
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -232,6 +240,36 @@ export function AdventureScene() {
     update();
     media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
+  }, []);
+
+
+  useEffect(() => {
+    if (hasSceneLoadingStarted) return;
+    if (isSceneLoaderActive || sceneAssetsTotal > 0) {
+      setHasSceneLoadingStarted(true);
+    }
+  }, [hasSceneLoadingStarted, isSceneLoaderActive, sceneAssetsTotal]);
+
+  useEffect(() => {
+    if (isInitialSceneReady || !hasSceneLoadingStarted || isSceneLoaderActive) return;
+    if (initialRevealTimerRef.current !== null) return;
+
+    initialRevealTimerRef.current = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsInitialSceneReady(true);
+          initialRevealTimerRef.current = null;
+        });
+      });
+    }, initialSceneRevealDelayMs);
+  }, [hasSceneLoadingStarted, initialSceneRevealDelayMs, isInitialSceneReady, isSceneLoaderActive]);
+
+  useEffect(() => {
+    return () => {
+      if (initialRevealTimerRef.current !== null) {
+        window.clearTimeout(initialRevealTimerRef.current);
+      }
+    };
   }, []);
 
   const closeNoteDetail = useCallback(() => {
@@ -475,13 +513,26 @@ export function AdventureScene() {
         {cabinTransitionFadeState !== 'idle' && (
           <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
         )}
-        {shouldShowCabinLoadingSpinner && (
-          <div className="scene-loading-overlay" role="status" aria-live="polite">
+        {shouldShowLoadingOverlay && (
+          <div
+            className={`scene-loading-overlay ${shouldShowInitialLoadingOverlay ? 'scene-loading-overlay--solid' : ''}`.trim()}
+            role="status"
+            aria-live="polite"
+          >
             <div className="scene-loading-spinner" aria-hidden="true" />
             <p>Loading Scene…</p>
           </div>
         )}
-        <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
+        <div className="scene-canvas-shell" style={canvasVisibilityStyle} aria-hidden={!isInitialSceneReady}>
+        <Canvas
+          shadows
+          camera={{ position: CAMERA_PRESETS.overview.position, fov: CAMERA_PRESETS.overview.fov }}
+          dpr={[1, 1.7]}
+          gl={{ alpha: false }}
+          onCreated={({ camera }) => {
+            camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
+          }}
+        >
           <Suspense fallback={null}>
           <CameraRig
             targetKey={focusTarget}
@@ -635,6 +686,7 @@ export function AdventureScene() {
           )}
           </Suspense>
         </Canvas>
+        </div>
       </div>
 
       <header className={`scene-brand ${reducedMotion ? 'motion-reduced' : 'anim-enter'}`} aria-label="Site title">
