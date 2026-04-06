@@ -590,30 +590,14 @@ function GrassGround() {
 }
 
 function SceneFloor() {
-  const floorTexture = useTexture('/textures/forest_leaves_02_diff_4k.jpg');
-  const gl = useThree((state) => state.gl);
-
-  useEffect(() => {
-    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    [floorTexture].forEach((texture) => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(18, 18);
-      texture.anisotropy = maxAnisotropy;
-      texture.minFilter = LinearMipmapLinearFilter;
-      texture.needsUpdate = true;
-    });
-    floorTexture.colorSpace = SRGBColorSpace;
-  }, [floorTexture, gl]);
-
   return (
     <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <circleGeometry args={[60, 256]} />
       <meshStandardMaterial
-        color="#ffffff"
-        map={floorTexture}
-        roughness={0.96}
+        color={environmentPalette.pathLow}
+        roughness={0.98}
         metalness={0}
+        flatShading
       />
     </mesh>
   );
