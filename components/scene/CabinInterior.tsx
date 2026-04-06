@@ -369,14 +369,14 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[0.84, 1.18, -0.12]} rotation={[0, -Math.PI / 2, 0]}>
+      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]}>
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
       </group>
 
-      <group position={[0.8, 1.22, 0.23]} rotation={[0.2, -Math.PI / 2.3, 0.06]}>
+      <group position={[0.96, 1.41, -0.45]} rotation={[0.07, -Math.PI / 2, 0.06]} scale={2}>
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale} />
       </group>
-      <group position={[0.8, 0.82, 0.25]} rotation={[-0.16, -Math.PI / 2.15, -0.08]}>
+      <group position={[0.95, 0.7, -0.45]} rotation={[0.07, -Math.PI / 2, 0.06]} scale={2}>
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale * 0.94} />
       </group>
 
