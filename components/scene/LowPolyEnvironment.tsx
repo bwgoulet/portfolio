@@ -19,10 +19,37 @@ const setInteractiveCursor = (isPointer: boolean) => {
 
 const isAboveIslandGround = (worldY: number) => worldY >= ISLAND_GROUND_INTERACTION_MIN_Y;
 
+const clearTextureSlot = (material: THREE.Material, slot: string) => {
+  if (!(slot in material)) return;
+  (material as THREE.Material & Record<string, unknown>)[slot] = null;
+};
+
+const stripMaterialToDiffuseMap = (material: THREE.Material) => {
+  if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+  const nextMaterial = material.clone();
+  ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
+    clearTextureSlot(nextMaterial, slot)
+  );
+  nextMaterial.needsUpdate = true;
+  return nextMaterial;
+};
+
+const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
+  scene.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    if (Array.isArray(child.material)) {
+      child.material = child.material.map(stripMaterialToDiffuseMap);
+      return;
+    }
+    child.material = stripMaterialToDiffuseMap(child.material);
+  });
+};
+
 function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   const pineGltf = useGLTF('/models/Pine.glb');
   const pineModel = useMemo(() => {
     const pineScene = pineGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(pineScene);
     pineScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -191,6 +218,7 @@ function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
   const bridgeModel = useMemo(() => {
     const bridgeScene = bridgeGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(bridgeScene);
     bridgeScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -267,6 +295,9 @@ function MountainBackdrop() {
             if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
             const nextMaterial = material.clone();
             nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+            ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
+              clearTextureSlot(nextMaterial, slot)
+            );
             if (nextMaterial instanceof THREE.MeshStandardMaterial) {
               nextMaterial.roughness = 0.95;
               nextMaterial.metalness = 0.02;
@@ -280,6 +311,9 @@ function MountainBackdrop() {
         if (child.material instanceof THREE.MeshStandardMaterial || child.material instanceof THREE.MeshLambertMaterial) {
           const nextMaterial = child.material.clone();
           nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+          ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
+            clearTextureSlot(nextMaterial, slot)
+          );
           if (nextMaterial instanceof THREE.MeshStandardMaterial) {
             nextMaterial.roughness = 0.95;
             nextMaterial.metalness = 0.02;
@@ -417,6 +451,7 @@ function TrailheadTimelineSign({
   const woodenSignGltf = useGLTF('/models/Wooden Sign.glb');
   const { woodenSignModel, hitAreaSize, hitAreaOffset } = useMemo(() => {
     const signScene = woodenSignGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(signScene);
     signScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
