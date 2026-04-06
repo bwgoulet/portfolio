@@ -16,7 +16,6 @@ import { InteractionState, InteractiveTarget } from './types';
 import { CABIN_INTERIOR_ARTWORKS, CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
 import { PROJECT_NOTE_RECORD } from './projectNotes';
 import { EXPERIENCE_RECORD } from './experienceData';
-import { makeTimeline } from '@/lib/animation';
 import { FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
 import { IntroductionLandmark } from './IntroductionLandmark';
 
@@ -331,57 +330,6 @@ export function AdventureScene() {
     });
   }, []);
 
-  const animateFocusNudge = useCallback(
-    (target: InteractiveTarget) => {
-      const group =
-        target === 'billboard'
-          ? billboardRef.current
-          : target === 'cabin'
-            ? cabinRef.current
-            : target === 'tablets'
-              ? tabletsRef.current
-              : target === 'introduction'
-                ? introductionRef.current
-                : timelineSignRef.current;
-      if (!group) return;
-      if (reducedMotion) return;
-
-      const startY = group.position.y;
-      const startRotationY = group.rotation.y;
-
-      makeTimeline()
-        .to(group.position, {
-          y: startY + 0.18,
-          duration: MOTION_TIERS.medium.landmarkNudgeDuration,
-          ease: MOTION_TIERS.medium.easeOut
-        })
-        .to(
-          group.rotation,
-          {
-            y: startRotationY + (target === 'billboard' ? -0.12 : target === 'cabin' ? 0.09 : 0.05),
-            duration: MOTION_TIERS.medium.landmarkNudgeDuration,
-            ease: MOTION_TIERS.medium.easeOut
-          },
-          '<'
-        )
-        .to(group.position, {
-          y: startY,
-          duration: MOTION_TIERS.medium.landmarkResetDuration,
-          ease: MOTION_TIERS.medium.easeInOut
-        })
-        .to(
-          group.rotation,
-          {
-            y: startRotationY,
-            duration: MOTION_TIERS.medium.landmarkResetDuration,
-            ease: MOTION_TIERS.medium.easeInOut
-          },
-          '<'
-        );
-    },
-    [reducedMotion]
-  );
-
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
@@ -396,7 +344,6 @@ export function AdventureScene() {
       setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
       setIsTimelineDialogOpen(false);
-      animateFocusNudge(target);
 
       if (target === 'cabin') {
         if (reducedMotion) {
@@ -412,7 +359,7 @@ export function AdventureScene() {
         setIsCabinFadePending(false);
       }
     },
-    [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
+    [isOverviewState, isTransitioning, reducedMotion]
   );
 
   const handleDartboardSelect = useCallback(() => {
