@@ -246,94 +246,48 @@ function MountainBackdrop() {
     });
   }, [gl, mountainGrassTexture, mountainRockTexture, mountainTopTexture]);
 
-  const mountainBlendMaterial = useMemo(() => {
-    const material = new THREE.MeshStandardMaterial({
-      color: '#ffffff',
-      roughness: 0.96,
-      metalness: 0.02
-    });
+  const mountainModel = useMemo(() => {
+    const resolveTextureForMaterial = (material: THREE.Material): THREE.Texture | null => {
+      if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return null;
+      const tone = material.color;
+      const materialLooksLikeSnowCap = tone.r > 0.9 && tone.g > 0.9 && tone.b > 0.9;
+      const materialLooksLikeGrassBase = tone.g > tone.r && tone.g > tone.b;
 
-    material.onBeforeCompile = (shader) => {
-      shader.uniforms.uMountainGrassTexture = { value: mountainGrassTexture };
-      shader.uniforms.uMountainRockTexture = { value: mountainRockTexture };
-      shader.uniforms.uMountainTopTexture = { value: mountainTopTexture };
-      shader.uniforms.uMountainLowerBlendHeight = { value: 0.21 };
-      shader.uniforms.uMountainUpperBlendHeight = { value: 0.76 };
-      shader.uniforms.uMountainBlendSoftness = { value: 0.12 };
-      shader.uniforms.uMountainTopTint = { value: new THREE.Color('#d7dce2') };
-      shader.uniforms.uMountainTextureScale = { value: 1.6 };
-      shader.uniforms.uMountainSlopeBoost = { value: 0.37 };
-
-      shader.vertexShader = shader.vertexShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-varying vec2 vMountainUv;
-varying float vMountainHeight;
-varying vec3 vMountainWorldNormal;`
-        )
-        .replace(
-          '#include <begin_vertex>',
-          `#include <begin_vertex>
-vMountainUv = uv;
-vMountainHeight = position.y;
-vMountainWorldNormal = normalize(mat3(modelMatrix) * objectNormal);`
-        );
-
-      shader.fragmentShader = shader.fragmentShader
-        .replace(
-          '#include <common>',
-          `#include <common>
-uniform sampler2D uMountainGrassTexture;
-uniform sampler2D uMountainRockTexture;
-uniform sampler2D uMountainTopTexture;
-uniform float uMountainLowerBlendHeight;
-uniform float uMountainUpperBlendHeight;
-uniform float uMountainBlendSoftness;
-uniform vec3 uMountainTopTint;
-uniform float uMountainTextureScale;
-uniform float uMountainSlopeBoost;
-varying vec2 vMountainUv;
-varying float vMountainHeight;
-varying vec3 vMountainWorldNormal;`
-        )
-        .replace(
-          '#include <map_fragment>',
-          `vec2 mountainUv = vMountainUv * uMountainTextureScale;
-vec3 mountainGrassColor = texture2D(uMountainGrassTexture, mountainUv).rgb;
-vec3 mountainRockColor = texture2D(uMountainRockTexture, mountainUv * 1.15).rgb;
-vec3 mountainTopColor = texture2D(uMountainTopTexture, mountainUv * 0.9).rgb * uMountainTopTint;
-
-float mountainLowerBlend = smoothstep(
-  uMountainLowerBlendHeight - uMountainBlendSoftness,
-  uMountainLowerBlendHeight + uMountainBlendSoftness,
-  vMountainHeight
-);
-float mountainUpperBlend = smoothstep(
-  uMountainUpperBlendHeight - uMountainBlendSoftness,
-  uMountainUpperBlendHeight + uMountainBlendSoftness,
-  vMountainHeight
-);
-
-float mountainSlope = clamp(1.0 - dot(normalize(vMountainWorldNormal), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);
-float mountainRockSlopeBlend = clamp(mountainSlope * uMountainSlopeBoost, 0.0, 0.35);
-vec3 mountainBaseColor = mix(mountainGrassColor, mountainRockColor, clamp(mountainLowerBlend + mountainRockSlopeBlend, 0.0, 1.0));
-vec3 mountainFinalColor = mix(mountainBaseColor, mountainTopColor, mountainUpperBlend);
-diffuseColor *= vec4(mountainFinalColor, 1.0);`
-        );
+      if (materialLooksLikeSnowCap) return mountainTopTexture;
+      if (materialLooksLikeGrassBase) return mountainGrassTexture;
+      return mountainRockTexture;
     };
 
-    material.needsUpdate = true;
-    return material;
-  }, [mountainGrassTexture, mountainRockTexture, mountainTopTexture]);
-
-  const mountainModel = useMemo(() => {
     const mountainScene = mountainGltf.scene.clone(true);
     mountainScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-        child.material = mountainBlendMaterial;
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((material) => {
+            if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+            const nextMaterial = material.clone();
+            nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+            if (nextMaterial instanceof THREE.MeshStandardMaterial) {
+              nextMaterial.roughness = 0.95;
+              nextMaterial.metalness = 0.02;
+            }
+            nextMaterial.needsUpdate = true;
+            return nextMaterial;
+          });
+          return;
+        }
+
+        if (child.material instanceof THREE.MeshStandardMaterial || child.material instanceof THREE.MeshLambertMaterial) {
+          const nextMaterial = child.material.clone();
+          nextMaterial.map = resolveTextureForMaterial(nextMaterial);
+          if (nextMaterial instanceof THREE.MeshStandardMaterial) {
+            nextMaterial.roughness = 0.95;
+            nextMaterial.metalness = 0.02;
+          }
+          nextMaterial.needsUpdate = true;
+          child.material = nextMaterial;
+        }
       }
     });
 
@@ -352,7 +306,7 @@ diffuseColor *= vec4(mountainFinalColor, 1.0);`
     mountainScene.position.y -= mountainBounds.min.y;
 
     return mountainScene;
-  }, [mountainBlendMaterial, mountainGltf.scene]);
+  }, [mountainGrassTexture, mountainGltf.scene, mountainRockTexture, mountainTopTexture]);
 
   return (
     <group position={SCENE_ANCHORS.mountain} rotation={[0, 0.16, 0]}>
