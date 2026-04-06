@@ -241,10 +241,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[1.86, 0.04, 1.52]} />
-        <meshStandardMaterial color={cabinInterior.floor} flatShading />
-      </mesh>
-      <mesh position={[0, 0.045, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[1.84, 1.5, 140, 120]} />
         <meshStandardMaterial
           color="#ffffff"
           map={woodFloorTexture}
