@@ -409,57 +409,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={tableModel} />
       </group>
 
-      <group position={[-0.59, 0.31, -0.12]} rotation={[-0.08, -0.36, 0.18]} scale={0.72}>
-        <mesh castShadow receiveShadow position={[0, 0, 0]}>
-          <sphereGeometry args={[0.11, 22, 18]} />
-          <meshStandardMaterial color="#6b63a7" roughness={0.62} metalness={0.04} />
-        </mesh>
-        <mesh castShadow receiveShadow position={[-0.12, -0.01, 0]}>
-          <sphereGeometry args={[0.07, 18, 14]} />
-          <meshStandardMaterial color="#6b63a7" roughness={0.62} metalness={0.04} />
-        </mesh>
-        <mesh castShadow receiveShadow position={[0.12, -0.01, 0]}>
-          <sphereGeometry args={[0.07, 18, 14]} />
-          <meshStandardMaterial color="#6b63a7" roughness={0.62} metalness={0.04} />
-        </mesh>
-        <mesh castShadow position={[-0.05, 0.02, 0.08]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.024, 0.024, 0.01, 18]} />
-          <meshStandardMaterial color="#3f3f4b" roughness={0.45} metalness={0.1} />
-        </mesh>
-        <mesh castShadow position={[0.05, 0.02, 0.08]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.024, 0.024, 0.01, 18]} />
-          <meshStandardMaterial color="#3f3f4b" roughness={0.45} metalness={0.1} />
-        </mesh>
-        <mesh castShadow position={[0.084, 0.03, 0.082]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.019, 0.019, 0.01, 16]} />
-          <meshStandardMaterial color="#3ac7a5" roughness={0.4} metalness={0.08} />
-        </mesh>
-        <mesh castShadow position={[0.037, -0.005, 0.082]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.016, 0.016, 0.01, 16]} />
-          <meshStandardMaterial color="#ee6c51" roughness={0.4} metalness={0.08} />
-        </mesh>
-        <mesh castShadow position={[0.102, -0.016, 0.082]} rotation={[-Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.016, 0.016, 0.01, 16]} />
-          <meshStandardMaterial color="#f2c44d" roughness={0.4} metalness={0.08} />
-        </mesh>
-        <mesh castShadow position={[-0.112, 0.022, 0.084]} rotation={[-Math.PI / 2, 0, 0]}>
-          <boxGeometry args={[0.065, 0.022, 0.01]} />
-          <meshStandardMaterial color="#d8d8df" roughness={0.45} metalness={0.05} />
-        </mesh>
-        <mesh castShadow position={[-0.112, 0.022, 0.084]} rotation={[-Math.PI / 2, 0, 0]}>
-          <boxGeometry args={[0.022, 0.065, 0.01]} />
-          <meshStandardMaterial color="#d8d8df" roughness={0.45} metalness={0.05} />
-        </mesh>
-        <mesh castShadow position={[0, 0.09, 0]}>
-          <boxGeometry args={[0.06, 0.1, 0.04]} />
-          <meshStandardMaterial color="#7068b0" roughness={0.62} metalness={0.04} />
-        </mesh>
-        <mesh castShadow position={[0, 0.16, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, 0.14, 10]} />
-          <meshStandardMaterial color="#4b455f" roughness={0.35} metalness={0.35} />
-        </mesh>
-      </group>
-
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
 
       <group position={[-0.98, -.02, -0.5]} rotation={[0, -Math.PI/1.6, 0]}>
