@@ -238,6 +238,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const wallMountedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
+  const dartboardInteractiveRef = useRef<THREE.Group | null>(null);
   const mirrorCubeUpperInteractiveRef = useRef<THREE.Group | null>(null);
   const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
@@ -310,6 +311,23 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     setInteractiveCursor(false);
     gsap.killTweensOf(artworkGroup.scale);
     gsap.to(artworkGroup.scale, { x: baseScale, y: baseScale, z: baseScale, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const startDartboardHover = () => {
+    if (!photosInteractive) return;
+    const dartboardGroup = dartboardInteractiveRef.current;
+    if (!dartboardGroup) return;
+    setInteractiveCursor(true);
+    gsap.killTweensOf(dartboardGroup.scale);
+    gsap.to(dartboardGroup.scale, { x: 1.03, y: 1.03, z: 1.03, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const endDartboardHover = () => {
+    const dartboardGroup = dartboardInteractiveRef.current;
+    if (!dartboardGroup) return;
+    setInteractiveCursor(false);
+    gsap.killTweensOf(dartboardGroup.scale);
+    gsap.to(dartboardGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
   };
 
   const isMirrorCubeHoverAllowed = (event: ThreeEvent<PointerEvent>) => {
