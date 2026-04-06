@@ -418,6 +418,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]} ref={dartboardInteractiveRef}>
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
         <mesh
+          position={[0, 0.26, 0]}
+          rotation={[0, 0, Math.PI / 2]}
           onPointerEnter={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
@@ -439,7 +441,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
             onDartboardSelect();
           }}
         >
-          <cylinderGeometry args={[0.23, 0.23, 0.16, 36]} />
+          <cylinderGeometry args={[0.18, 0.18, 0.1, 36]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       </group>
