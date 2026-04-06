@@ -89,7 +89,7 @@ export const ISLAND_GROUND_INTERACTION_MIN_Y = 1.12;
 export const PALETTE: Record<string, ColorRepresentation> = {
   skyBottom: '#ffb27a',
   fog: '#d78a67',
-  islandTop: '#589467',
+  islandTop: '#46764f',
   islandSide: '#1f2926',
   rock: '#515d68',
   tablet: '#808486',
