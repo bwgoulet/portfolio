@@ -5,9 +5,10 @@ import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useGLTF, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
+import { EXRLoader } from 'three-stdlib';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -477,6 +478,45 @@ function GrassGround() {
   );
 }
 
+function SceneFloor() {
+  const [floorTexture, floorDisplacementTexture, floorRoughnessTexture] = useTexture([
+    '/textures/aerial_rocks_02_diff_4k.jpg',
+    '/textures/aerial_rocks_02_disp_4k.png',
+    '/textures/aerial_rocks_02_rough_4k.jpg'
+  ]);
+  const floorNormalTexture = useLoader(EXRLoader, '/textures/aerial_rocks_02_nor_gl_4k.exr');
+  const gl = useThree((state) => state.gl);
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    [floorTexture, floorDisplacementTexture, floorRoughnessTexture, floorNormalTexture].forEach((texture) => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(18, 18);
+      texture.anisotropy = maxAnisotropy;
+      texture.minFilter = LinearMipmapLinearFilter;
+      texture.needsUpdate = true;
+    });
+    floorTexture.colorSpace = SRGBColorSpace;
+  }, [floorDisplacementTexture, floorNormalTexture, floorRoughnessTexture, floorTexture, gl]);
+
+  return (
+    <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <circleGeometry args={[60, 256]} />
+      <meshStandardMaterial
+        color="#ffffff"
+        map={floorTexture}
+        normalMap={floorNormalTexture}
+        roughnessMap={floorRoughnessTexture}
+        displacementMap={floorDisplacementTexture}
+        displacementScale={0.14}
+        roughness={1}
+        metalness={0}
+      />
+    </mesh>
+  );
+}
+
 type LowPolyEnvironmentProps = {
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
@@ -510,10 +550,7 @@ export function LowPolyEnvironment({
 }: LowPolyEnvironmentProps) {
   return (
     <group>
-      <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[60, 32]} />
-        <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
-      </mesh>
+      <SceneFloor />
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
