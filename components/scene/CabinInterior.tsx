@@ -242,7 +242,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const mirrorCubeUpperInteractiveRef = useRef<THREE.Group | null>(null);
   const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
-  const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
+  const [woodFloorTexture, wallTexture, tableTexture] = useTexture([
+    '/textures/wood_floor_worn_diff_4k.jpg',
+    '/textures/stained_pine_diff_4k.jpg',
+    '/publix/textures/wood_table_diff_4k.jpg'
+  ]);
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
@@ -263,13 +267,34 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       texture.rotation = Math.PI / 2;
     });
 
+    configureTexture(tableTexture, 1.4, 1.4);
+
     woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
     wallTexture.colorSpace = THREE.SRGBColorSpace;
+    tableTexture.colorSpace = THREE.SRGBColorSpace;
   }, [
     gl,
+    tableTexture,
     wallTexture,
     woodFloorTexture
   ]);
+
+  useEffect(() => {
+    tableModel.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+      const applyTextureToMaterial = (material: THREE.Material) => {
+        if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return;
+        material.map = tableTexture;
+        material.color.set('#ffffff');
+        material.needsUpdate = true;
+      };
+      if (Array.isArray(child.material)) {
+        child.material.forEach(applyTextureToMaterial);
+        return;
+      }
+      applyTextureToMaterial(child.material);
+    });
+  }, [tableModel, tableTexture]);
 
   const startPhotoHover = (photo: GalleryPhoto) => {
     if (!photosInteractive || hoveredPhotoIdRef.current === photo.id) return;
