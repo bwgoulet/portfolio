@@ -149,25 +149,6 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             polygonOffsetFactor={-1}
           />
         </mesh>
-
-        <group position={[0.12, -0.005, -0.005]} rotation={[0, 0.08, 0]}>
-          <mesh position={[0, 0, -0.05]}>
-            <boxGeometry args={[0.2, 0.006, 0.014]} />
-            <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
-          </mesh>
-          <mesh position={[0.01, 0, -0.016]}>
-            <boxGeometry args={[0.17, 0.006, 0.014]} />
-            <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
-          </mesh>
-          <mesh position={[-0.004, 0, 0.018]}>
-            <boxGeometry args={[0.19, 0.006, 0.014]} />
-            <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
-          </mesh>
-          <mesh position={[0.015, 0, 0.05]}>
-            <boxGeometry args={[0.15, 0.006, 0.014]} />
-            <meshStandardMaterial color="#5a646f" roughness={1} metalness={0} />
-          </mesh>
-        </group>
       </group>
 
       <group ref={sideLabelRef} position={[0.03, 0.36, 0.56]} rotation={[-0.08, 0, 0]}>
