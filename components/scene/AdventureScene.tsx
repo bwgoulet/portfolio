@@ -180,6 +180,7 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
+  const initialRevealTimerRef = useRef<number | null>(null);
   const { active: isSceneLoaderActive, total: sceneAssetsTotal } = useProgress();
   const isCabinInteriorTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
   const isCabinInteriorLoading =
@@ -193,6 +194,7 @@ export function AdventureScene() {
   const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady ? undefined : { opacity: 0, pointerEvents: 'none' };
   const shouldShowInitialLoadingOverlay = !isInitialSceneReady;
   const shouldShowLoadingOverlay = shouldShowInitialLoadingOverlay || shouldShowCabinLoadingSpinner;
+  const initialSceneRevealDelayMs = 220;
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -250,8 +252,25 @@ export function AdventureScene() {
 
   useEffect(() => {
     if (isInitialSceneReady || !hasSceneLoadingStarted || isSceneLoaderActive) return;
-    setIsInitialSceneReady(true);
-  }, [hasSceneLoadingStarted, isInitialSceneReady, isSceneLoaderActive]);
+    if (initialRevealTimerRef.current !== null) return;
+
+    initialRevealTimerRef.current = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsInitialSceneReady(true);
+          initialRevealTimerRef.current = null;
+        });
+      });
+    }, initialSceneRevealDelayMs);
+  }, [hasSceneLoadingStarted, initialSceneRevealDelayMs, isInitialSceneReady, isSceneLoaderActive]);
+
+  useEffect(() => {
+    return () => {
+      if (initialRevealTimerRef.current !== null) {
+        window.clearTimeout(initialRevealTimerRef.current);
+      }
+    };
+  }, []);
 
   const closeNoteDetail = useCallback(() => {
     if (!selectedNoteId) return;
@@ -495,7 +514,11 @@ export function AdventureScene() {
           <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
         )}
         {shouldShowLoadingOverlay && (
-          <div className="scene-loading-overlay" role="status" aria-live="polite">
+          <div
+            className={`scene-loading-overlay ${shouldShowInitialLoadingOverlay ? 'scene-loading-overlay--solid' : ''}`.trim()}
+            role="status"
+            aria-live="polite"
+          >
             <div className="scene-loading-spinner" aria-hidden="true" />
             <p>Loading Scene…</p>
           </div>

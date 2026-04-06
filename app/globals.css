@@ -67,6 +67,10 @@ main {
   background: rgba(6, 7, 9, 0.66);
 }
 
+.scene-loading-overlay--solid {
+  background: #060709;
+}
+
 .scene-loading-overlay p {
   margin: 0;
   color: rgba(245, 250, 255, 0.94);
