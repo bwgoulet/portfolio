@@ -479,12 +479,26 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
+  const gl = useThree((state) => state.gl);
+  const mainIslandTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    mainIslandTexture.colorSpace = SRGBColorSpace;
+    mainIslandTexture.wrapS = RepeatWrapping;
+    mainIslandTexture.wrapT = RepeatWrapping;
+    mainIslandTexture.repeat.set(2.6, 2.6);
+    mainIslandTexture.anisotropy = maxAnisotropy;
+    mainIslandTexture.needsUpdate = true;
+  }, [gl, mainIslandTexture]);
+
   return (
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
         <meshStandardMaterial
-          color={PALETTE.islandTop}
+          map={mainIslandTexture}
+          color="#ffffff"
           roughness={1}
           metalness={0}
         />
