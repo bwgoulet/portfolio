@@ -481,6 +481,7 @@ function TrailheadTimelineSign({
 function GrassGround() {
   const gl = useThree((state) => state.gl);
   const mainIslandTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
+  const mainIslandHalfCircleCenterZ = 3.5;
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
@@ -494,8 +495,8 @@ function GrassGround() {
 
   return (
     <>
-      <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[7.25, 8.4, 0.25, 96, 8]} />
+      <mesh position={[0, 1.121, mainIslandHalfCircleCenterZ]} receiveShadow>
+        <cylinderGeometry args={[7.25, 8.4, 0.25, 96, 8, false, Math.PI, Math.PI]} />
         <meshStandardMaterial
           map={mainIslandTexture}
           color="#bfd19c"
@@ -598,8 +599,8 @@ export function LowPolyEnvironment({
     <group>
       <SceneFloor />
 
-      <mesh rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
+      <mesh position={[0, 0, 3.5]} receiveShadow>
+        <cylinderGeometry args={[6.8, 7.9, 2.2, 96, 1, false, Math.PI, Math.PI]} />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
