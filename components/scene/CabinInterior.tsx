@@ -230,21 +230,22 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     gsap.to(group.position, { z: photo.position[2], duration: 0.18, ease: 'power2.out' });
   };
 
-  const startArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>) => {
+  const startArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>, baseScale: number) => {
     if (!photosInteractive) return;
     const artworkGroup = artworkRef.current;
     if (!artworkGroup) return;
     setInteractiveCursor(true);
     gsap.killTweensOf(artworkGroup.scale);
-    gsap.to(artworkGroup.scale, { x: 1.045, y: 1.045, z: 1.045, duration: 0.18, ease: 'power2.out' });
+    const hoverScale = baseScale * 1.03;
+    gsap.to(artworkGroup.scale, { x: hoverScale, y: hoverScale, z: hoverScale, duration: 0.18, ease: 'power2.out' });
   };
 
-  const endArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>) => {
+  const endArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>, baseScale: number) => {
     const artworkGroup = artworkRef.current;
     if (!artworkGroup) return;
     setInteractiveCursor(false);
     gsap.killTweensOf(artworkGroup.scale);
-    gsap.to(artworkGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
+    gsap.to(artworkGroup.scale, { x: baseScale, y: baseScale, z: baseScale, duration: 0.18, ease: 'power2.out' });
   };
 
   return (
@@ -345,17 +346,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onPointerEnter={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            startArtworkHover(framedPaintingInteractiveRef);
+            startArtworkHover(framedPaintingInteractiveRef, 0.4);
           }}
           onPointerMove={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            startArtworkHover(framedPaintingInteractiveRef);
+            startArtworkHover(framedPaintingInteractiveRef, 0.4);
           }}
           onPointerLeave={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            endArtworkHover(framedPaintingInteractiveRef);
+            endArtworkHover(framedPaintingInteractiveRef, 0.4);
           }}
           onClick={(event) => {
             if (!photosInteractive) return;
@@ -391,17 +392,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onPointerEnter={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            startArtworkHover(wallMountedPaintingInteractiveRef);
+            startArtworkHover(wallMountedPaintingInteractiveRef, 0.0007);
           }}
           onPointerMove={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            startArtworkHover(wallMountedPaintingInteractiveRef);
+            startArtworkHover(wallMountedPaintingInteractiveRef, 0.0007);
           }}
           onPointerLeave={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            endArtworkHover(wallMountedPaintingInteractiveRef);
+            endArtworkHover(wallMountedPaintingInteractiveRef, 0.0007);
           }}
           onClick={(event) => {
             if (!photosInteractive) return;
