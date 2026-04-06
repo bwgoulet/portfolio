@@ -481,6 +481,7 @@ function TrailheadTimelineSign({
 function GrassGround() {
   const gl = useThree((state) => state.gl);
   const mainIslandTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
+  const mainIslandHalfCircleCenterZ = 3.5;
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
@@ -493,60 +494,15 @@ function GrassGround() {
   }, [gl, mainIslandTexture]);
 
   return (
-    <>
-      <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[7.25, 8.4, 0.25, 96, 8]} />
-        <meshStandardMaterial
-          map={mainIslandTexture}
-          color="#bfd19c"
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <mesh position={[0.05, 1.12, 3.25]} rotation={[0, 0.15, 0]} receiveShadow>
-        <cylinderGeometry args={[3.2, 3.95, 0.24, 96, 6]} />
-        <meshStandardMaterial
-          map={mainIslandTexture}
-          color="#b8ca93"
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <mesh position={[-2.9, 1.115, 2.95]} rotation={[0, 0.5, 0]} receiveShadow>
-        <cylinderGeometry args={[1.85, 2.25, 0.2, 96, 6]} />
-        <meshStandardMaterial
-          map={mainIslandTexture}
-          color="#b4c58e"
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <mesh position={[2.95, 1.115, 2.9]} rotation={[0, -0.35, 0]} receiveShadow>
-        <cylinderGeometry args={[1.9, 2.3, 0.2, 96, 6]} />
-        <meshStandardMaterial
-          map={mainIslandTexture}
-          color="#b3c58d"
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
-        <cylinderGeometry args={[2.4, 2.9, 0.21, 96, 8]} />
-        <meshStandardMaterial
-          color={environmentPalette.mossA}
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-      <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
-        <cylinderGeometry args={[1.8, 2.2, 0.18, 96, 8]} />
-        <meshStandardMaterial
-          color={environmentPalette.mossB}
-          roughness={1}
-          metalness={0}
-        />
-      </mesh>
-    </>
+    <mesh position={[0, 1.121, mainIslandHalfCircleCenterZ]} receiveShadow>
+      <cylinderGeometry args={[7.25, 8.4, 0.25, 96, 8, false, Math.PI, Math.PI]} />
+      <meshStandardMaterial
+        map={mainIslandTexture}
+        color="#bfd19c"
+        roughness={1}
+        metalness={0}
+      />
+    </mesh>
   );
 }
 
@@ -598,8 +554,8 @@ export function LowPolyEnvironment({
     <group>
       <SceneFloor />
 
-      <mesh rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
+      <mesh position={[0, 0, 3.5]} receiveShadow>
+        <cylinderGeometry args={[6.8, 7.9, 2.2, 96, 1, false, Math.PI, Math.PI]} />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
