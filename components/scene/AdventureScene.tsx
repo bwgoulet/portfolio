@@ -1,10 +1,12 @@
 'use client';
 
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Image from 'next/image';
-import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useId, useRef, useState, type RefObject } from 'react';
 import type { Group } from 'three';
+import { Vector3 } from 'three';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { Billboard } from './Billboard';
 import { Cabin } from './Cabin';
 import { CameraRig } from './CameraRig';
@@ -52,6 +54,100 @@ function FreeModeCameraPositioner({
   return null;
 }
 
+function FreeModeKeyboardPan({
+  enabled,
+  controlsRef
+}: {
+  enabled: boolean;
+  controlsRef: RefObject<OrbitControlsImpl | null>;
+}) {
+  const pressedKeysRef = useRef({
+    left: false,
+    right: false,
+    up: false,
+    down: false
+  });
+
+  useEffect(() => {
+    if (!enabled) {
+      pressedKeysRef.current = { left: false, right: false, up: false, down: false };
+      return;
+    }
+
+    const updateKeyState = (event: KeyboardEvent, isPressed: boolean) => {
+      const eventTarget = event.target;
+      if (
+        eventTarget instanceof HTMLElement &&
+        (eventTarget.tagName === 'INPUT' || eventTarget.tagName === 'TEXTAREA' || eventTarget.tagName === 'SELECT')
+      ) {
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        pressedKeysRef.current.left = isPressed;
+        event.preventDefault();
+      } else if (event.key === 'ArrowRight') {
+        pressedKeysRef.current.right = isPressed;
+        event.preventDefault();
+      } else if (event.key === 'ArrowUp') {
+        pressedKeysRef.current.up = isPressed;
+        event.preventDefault();
+      } else if (event.key === 'ArrowDown') {
+        pressedKeysRef.current.down = isPressed;
+        event.preventDefault();
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => updateKeyState(event, true);
+    const onKeyUp = (event: KeyboardEvent) => updateKeyState(event, false);
+    const clearKeys = () => {
+      pressedKeysRef.current = { left: false, right: false, up: false, down: false };
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', clearKeys);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', clearKeys);
+      clearKeys();
+    };
+  }, [enabled]);
+
+  useFrame((_, delta) => {
+    if (!enabled) return;
+    const controls = controlsRef.current;
+    if (!controls) return;
+    const { left, right, up, down } = pressedKeysRef.current;
+    if (!left && !right && !up && !down) return;
+
+    const camera = controls.object;
+    const moveSpeedPerSecond = 7;
+    const step = moveSpeedPerSecond * delta;
+    const moveDirection = new Vector3((right ? 1 : 0) - (left ? 1 : 0), 0, (up ? 1 : 0) - (down ? 1 : 0));
+    if (moveDirection.lengthSq() === 0) return;
+    moveDirection.normalize();
+
+    const forward = new Vector3();
+    camera.getWorldDirection(forward);
+    forward.y = 0;
+    if (forward.lengthSq() > 0) {
+      forward.normalize();
+    }
+
+    const rightVector = new Vector3().crossVectors(forward, camera.up).normalize();
+    const panOffset = rightVector.multiplyScalar(moveDirection.x).add(forward.multiplyScalar(moveDirection.z)).multiplyScalar(step);
+
+    camera.position.add(panOffset);
+    controls.target.add(panOffset);
+    controls.update();
+  });
+
+  return null;
+}
+
 export function AdventureScene() {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
@@ -81,6 +177,7 @@ export function AdventureScene() {
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
   const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
+  const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
 
@@ -432,8 +529,10 @@ export function AdventureScene() {
             }}
           />
           <FreeModeCameraPositioner enabled={isFreeModeEnabled} focusTarget={focusTarget} />
+          <FreeModeKeyboardPan enabled={isFreeModeEnabled} controlsRef={freeModeControlsRef} />
           {isFreeModeEnabled && (
             <OrbitControls
+              ref={freeModeControlsRef}
               enableDamping
               dampingFactor={0.08}
               minDistance={1.4}
