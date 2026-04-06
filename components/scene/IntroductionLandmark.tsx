@@ -189,7 +189,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           <primitive object={keyCardModel.clone(true)} />
         </group>
         <Text
-          position={[-.17, -0.4, 0.9]}
+          position={[-.17, -0.45, 0.9]}
           rotation={[0, 0, 0]}
           fontSize={0.078}
           anchorX="center"
@@ -203,7 +203,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         </Text>
       </group>
 
-      <group position={[0, 0.85, 0.49]} rotation={[0.06, 0, 0]}>
+      <group position={[-.35, 0.32, 1.4]} rotation={[0.06, 0, 0]} scale={0.5}>
         <mesh
           onPointerEnter={(event) => {
             event.stopPropagation();
