@@ -2,12 +2,12 @@
 
 import { ISLAND_GROUND_INTERACTION_MIN_Y, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
-import { Text, useGLTF, useTexture } from '@react-three/drei';
+import { Text, useGLTF } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace, TextureLoader } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -471,27 +471,72 @@ function GrassGround() {
     }
 
     const texture = new CanvasTexture(canvas);
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(4.8, 4.8);
     texture.colorSpace = SRGBColorSpace;
-    texture.needsUpdate = true;
     return texture;
   }, []);
+
+  const [groundTexture, setGroundTexture] = useState(grassTexture);
+
+  useEffect(() => {
+    const textureLoader = new TextureLoader();
+    const textureCandidates = [
+      '/textures/aerial_grass_rock_4k.jpg',
+      '/textures/aerial_grass_rock_4k.jpeg',
+      '/textures/aerial_grass_rock_4k.png',
+      '/textures/aerial_grass_rock_4k.webp'
+    ];
+    let isDisposed = false;
+    let candidateIndex = 0;
+
+    const tryLoadNextTexture = () => {
+      if (candidateIndex >= textureCandidates.length || isDisposed) return;
+      const texturePath = textureCandidates[candidateIndex];
+      candidateIndex += 1;
+      textureLoader.load(
+        texturePath,
+        (loadedTexture) => {
+          if (isDisposed) return;
+          setGroundTexture((previousTexture) => {
+            if (previousTexture && previousTexture !== grassTexture) previousTexture.dispose();
+            return loadedTexture;
+          });
+        },
+        undefined,
+        () => {
+          tryLoadNextTexture();
+        }
+      );
+    };
+
+    tryLoadNextTexture();
+
+    return () => {
+      isDisposed = true;
+    };
+  }, [grassTexture]);
+
+  useEffect(() => {
+    if (!groundTexture) return;
+    groundTexture.wrapS = RepeatWrapping;
+    groundTexture.wrapT = RepeatWrapping;
+    groundTexture.repeat.set(4.8, 4.8);
+    groundTexture.colorSpace = SRGBColorSpace;
+    groundTexture.needsUpdate = true;
+  }, [groundTexture]);
 
   return (
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.95, 8.05, 0.25, 20]} />
-        <meshStandardMaterial color={PALETTE.islandTop} map={grassTexture} roughness={0.98} metalness={0.03} />
+        <meshStandardMaterial color={PALETTE.islandTop} map={groundTexture ?? undefined} roughness={0.98} metalness={0.03} />
       </mesh>
       <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
         <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
-        <meshStandardMaterial color="#4e7d5f" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <meshStandardMaterial color="#4e7d5f" map={groundTexture ?? undefined} roughness={0.99} metalness={0.03} />
       </mesh>
       <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
         <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
-        <meshStandardMaterial color="#4a7a5a" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <meshStandardMaterial color="#4a7a5a" map={groundTexture ?? undefined} roughness={0.99} metalness={0.03} />
       </mesh>
     </>
   );
