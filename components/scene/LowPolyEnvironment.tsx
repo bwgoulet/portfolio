@@ -540,49 +540,30 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const grassTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
-  const gl = useThree((state) => state.gl);
-
-  useEffect(() => {
-    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    [grassTexture].forEach((texture) => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(4.8, 4.8);
-      texture.anisotropy = maxAnisotropy;
-      texture.minFilter = LinearMipmapLinearFilter;
-      texture.needsUpdate = true;
-    });
-    grassTexture.colorSpace = SRGBColorSpace;
-  }, [gl, grassTexture]);
-
   return (
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
         <meshStandardMaterial
-          color="#ffffff"
-          map={grassTexture}
-          roughness={0.98}
-          metalness={0.03}
+          color={PALETTE.islandTop}
+          roughness={1}
+          metalness={0}
         />
       </mesh>
       <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
         <cylinderGeometry args={[2.4, 2.9, 0.21, 96, 8]} />
         <meshStandardMaterial
-          color="#ffffff"
-          map={grassTexture}
-          roughness={0.98}
-          metalness={0.03}
+          color={environmentPalette.mossA}
+          roughness={1}
+          metalness={0}
         />
       </mesh>
       <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
         <cylinderGeometry args={[1.8, 2.2, 0.18, 96, 8]} />
         <meshStandardMaterial
-          color="#ffffff"
-          map={grassTexture}
-          roughness={0.98}
-          metalness={0.03}
+          color={environmentPalette.mossB}
+          roughness={1}
+          metalness={0}
         />
       </mesh>
     </>
@@ -590,29 +571,12 @@ function GrassGround() {
 }
 
 function SceneFloor() {
-  const floorTexture = useTexture('/textures/forest_leaves_02_diff_4k.jpg');
-  const gl = useThree((state) => state.gl);
-
-  useEffect(() => {
-    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    [floorTexture].forEach((texture) => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(18, 18);
-      texture.anisotropy = maxAnisotropy;
-      texture.minFilter = LinearMipmapLinearFilter;
-      texture.needsUpdate = true;
-    });
-    floorTexture.colorSpace = SRGBColorSpace;
-  }, [floorTexture, gl]);
-
   return (
     <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <circleGeometry args={[60, 256]} />
       <meshStandardMaterial
-        color="#ffffff"
-        map={floorTexture}
-        roughness={0.96}
+        color={PALETTE.islandTop}
+        roughness={1}
         metalness={0}
       />
     </mesh>
