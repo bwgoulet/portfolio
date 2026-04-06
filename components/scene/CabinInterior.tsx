@@ -199,7 +199,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     };
 
     [woodFloorTexture].forEach((texture) => configureTexture(texture, 1.1, 1.45));
-    [wallTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
+    [wallTexture].forEach((texture) => {
+      configureTexture(texture, 2.2, 1.6);
+      texture.center.set(0.5, 0.5);
+      texture.rotation = Math.PI / 2;
+    });
 
     woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
     wallTexture.colorSpace = THREE.SRGBColorSpace;
