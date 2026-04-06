@@ -574,11 +574,11 @@ function GrassGround() {
 
 function SceneFloor() {
   const [floorTexture, floorDisplacementTexture, floorRoughnessTexture] = useTexture([
-    '/textures/aerial_rocks_02_diff_4k.jpg',
-    '/textures/aerial_rocks_02_disp_4k.png',
-    '/textures/aerial_rocks_02_rough_4k.jpg'
+    '/textures/forest_leaves_02_diff_4k.jpg',
+    '/textures/forest_leaves_02_disp_4k.png',
+    '/textures/forest_leaves_02_rough_4k.jpg'
   ]);
-  const floorNormalTexture = useLoader(EXRLoader, '/textures/aerial_rocks_02_nor_gl_4k.exr');
+  const floorNormalTexture = useLoader(EXRLoader, '/textures/forest_leaves_02_nor_gl_4k.exr');
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
