@@ -285,7 +285,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       const applyTextureToMaterial = (material: THREE.Material) => {
         if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return;
         material.map = tableTexture;
-        material.color.set('#ffffff');
+        material.color.set('#c7956f');
         material.needsUpdate = true;
       };
       if (Array.isArray(child.material)) {
