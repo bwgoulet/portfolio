@@ -215,7 +215,7 @@ function MountainRopeBridge() {
   }, [bridgeGltf.scene]);
 
   return (
-    <group position={[1.02, 0.55, -13.5]} rotation={[0, Math.PI / 2, 0]}>
+    <group position={[1.02, 0.52, -14.2]} rotation={[0, Math.PI / 2, 0]}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <primitive object={bridgeModel} />
       </group>
