@@ -177,6 +177,8 @@ export function AdventureScene() {
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
   const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
   const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
+  const [isMainEnvironmentReady, setIsMainEnvironmentReady] = useState(false);
+  const [isCabinInteriorReady, setIsCabinInteriorReady] = useState(false);
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
@@ -210,6 +212,12 @@ export function AdventureScene() {
     !isTransitioning &&
     !isCabinExitTransitionPending &&
     (focusTarget === 'overview' || focusTarget === 'cabinInterior');
+  const isCabinFocusTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
+  const activeLoadingLabel = !isMainEnvironmentReady
+    ? 'Loading main environment...'
+    : isCabinFocusTarget && !isCabinInteriorReady
+      ? 'Loading cabin interior...'
+      : null;
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -399,10 +407,10 @@ export function AdventureScene() {
       animateFocusNudge(target);
 
       if (target === 'cabin') {
+        setIsCabinInteriorReady(false);
         if (reducedMotion) {
           setCabinTransitionFadeState('idle');
           setIsCabinFadePending(false);
-          setIsCabinInteriorRevealed(true);
         } else {
           setCabinTransitionFadeState('idle');
           setIsCabinFadePending(true);
@@ -446,6 +454,18 @@ export function AdventureScene() {
       setIsTimelineCloseupHovered(false);
     }
   }, [interactionState]);
+
+  useEffect(() => {
+    if (reducedMotion || !isCabinInteriorReady) return;
+    if (interactionState !== 'transitioning') return;
+    if (focusTarget !== 'cabinInterior') return;
+    if (cabinTransitionFadeState !== 'black') return;
+
+    setIsCabinInteriorRevealed(true);
+    setCabinTransitionFadeState('fade-in');
+    scheduleCabinFadeReset(320);
+    setInteractionState('cabinCloseup');
+  }, [cabinTransitionFadeState, focusTarget, interactionState, isCabinInteriorReady, reducedMotion, scheduleCabinFadeReset]);
 
   const detailCardStateClass = (isClosing: boolean) =>
     reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
@@ -498,6 +518,14 @@ export function AdventureScene() {
         {cabinTransitionFadeState !== 'idle' && (
           <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
         )}
+        {activeLoadingLabel && (
+          <section className="scene-loader" role="status" aria-live="polite">
+            <div className="scene-loader__card">
+              <span className="scene-loader__spinner" aria-hidden="true" />
+              <p>{activeLoadingLabel}</p>
+            </div>
+          </section>
+        )}
         <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
           <Suspense fallback={null}>
           <CameraRig
@@ -513,11 +541,20 @@ export function AdventureScene() {
             }}
             onTransitionEnd={(completedTarget) => {
               if (completedTarget === 'cabinInterior') {
-                setIsCabinInteriorRevealed(true);
-                if (!reducedMotion) {
-                  setCabinTransitionFadeState('fade-in');
-                  scheduleCabinFadeReset(320);
+                if (reducedMotion) {
+                  setIsCabinInteriorRevealed(true);
+                  setInteractionState('cabinCloseup');
+                  return;
                 }
+                if (!isCabinInteriorReady) {
+                  setCabinTransitionFadeState('black');
+                  return;
+                }
+                setIsCabinInteriorRevealed(true);
+                setCabinTransitionFadeState('fade-in');
+                scheduleCabinFadeReset(320);
+                setInteractionState('cabinCloseup');
+                return;
               }
               if (completedTarget === 'overview') {
                 if (!reducedMotion && (cabinTransitionFadeState === 'fade-out' || cabinTransitionFadeState === 'black')) {
@@ -533,9 +570,7 @@ export function AdventureScene() {
               setInteractionState(
                 completedTarget === 'billboard'
                   ? 'billboardCloseup'
-                  : completedTarget === 'cabinInterior'
-                    ? 'cabinCloseup'
-                    : completedTarget === 'cabinDartboard'
+                  : completedTarget === 'cabinDartboard'
                       ? 'dartboardCloseup'
                     : completedTarget === 'tablets'
                       ? 'tabletsCloseup'
@@ -598,6 +633,7 @@ export function AdventureScene() {
               handleFocusClick(target);
             }}
             reducedMotion={reducedMotion}
+            onReady={() => setIsMainEnvironmentReady(true)}
           />
           <IntroductionLandmark
             landmarkRef={introductionRef}
@@ -642,12 +678,15 @@ export function AdventureScene() {
               onClick={() => handleFocusClick('cabin')}
             />
           )}
-          {(focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && isCabinInteriorRevealed && (
-            <CabinInterior
-              photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
-              onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
-              onDartboardSelect={handleDartboardSelect}
-            />
+          {(focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && (
+            <group visible={isCabinInteriorRevealed}>
+              <CabinInterior
+                photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
+                onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
+                onDartboardSelect={handleDartboardSelect}
+                onReady={() => setIsCabinInteriorReady(true)}
+              />
+            </group>
           )}
           </Suspense>
         </Canvas>
