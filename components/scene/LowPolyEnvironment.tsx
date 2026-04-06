@@ -5,10 +5,9 @@ import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useGLTF, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useLoader, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
-import { EXRLoader } from 'three-stdlib';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -552,17 +551,12 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const [grassTexture, grassDisplacementTexture, grassRoughnessTexture] = useTexture([
-    '/textures/aerial_grass_rock_diff_4k.jpg',
-    '/textures/aerial_grass_rock_disp_4k.png',
-    '/textures/aerial_grass_rock_rough_4k.jpg'
-  ]);
-  const grassNormalTexture = useLoader(EXRLoader, '/textures/aerial_grass_rock_nor_gl_4k.exr');
+  const grassTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    [grassTexture, grassDisplacementTexture, grassRoughnessTexture, grassNormalTexture].forEach((texture) => {
+    [grassTexture].forEach((texture) => {
       texture.wrapS = RepeatWrapping;
       texture.wrapT = RepeatWrapping;
       texture.repeat.set(4.8, 4.8);
@@ -571,7 +565,7 @@ function GrassGround() {
       texture.needsUpdate = true;
     });
     grassTexture.colorSpace = SRGBColorSpace;
-  }, [gl, grassDisplacementTexture, grassNormalTexture, grassRoughnessTexture, grassTexture]);
+  }, [gl, grassTexture]);
 
   return (
     <>
@@ -580,11 +574,7 @@ function GrassGround() {
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
-          normalMap={grassNormalTexture}
-          roughnessMap={grassRoughnessTexture}
-          displacementMap={grassDisplacementTexture}
-          displacementScale={0.06}
-          roughness={1}
+          roughness={0.98}
           metalness={0.03}
         />
       </mesh>
@@ -593,11 +583,7 @@ function GrassGround() {
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
-          normalMap={grassNormalTexture}
-          roughnessMap={grassRoughnessTexture}
-          displacementMap={grassDisplacementTexture}
-          displacementScale={0.04}
-          roughness={1}
+          roughness={0.98}
           metalness={0.03}
         />
       </mesh>
@@ -606,11 +592,7 @@ function GrassGround() {
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
-          normalMap={grassNormalTexture}
-          roughnessMap={grassRoughnessTexture}
-          displacementMap={grassDisplacementTexture}
-          displacementScale={0.035}
-          roughness={1}
+          roughness={0.98}
           metalness={0.03}
         />
       </mesh>
@@ -619,17 +601,12 @@ function GrassGround() {
 }
 
 function SceneFloor() {
-  const [floorTexture, floorDisplacementTexture, floorRoughnessTexture] = useTexture([
-    '/textures/forest_leaves_02_diff_4k.jpg',
-    '/textures/forest_leaves_02_disp_4k.png',
-    '/textures/forest_leaves_02_rough_4k.jpg'
-  ]);
-  const floorNormalTexture = useLoader(EXRLoader, '/textures/forest_leaves_02_nor_gl_4k.exr');
+  const floorTexture = useTexture('/textures/forest_leaves_02_diff_4k.jpg');
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
-    [floorTexture, floorDisplacementTexture, floorRoughnessTexture, floorNormalTexture].forEach((texture) => {
+    [floorTexture].forEach((texture) => {
       texture.wrapS = RepeatWrapping;
       texture.wrapT = RepeatWrapping;
       texture.repeat.set(18, 18);
@@ -638,7 +615,7 @@ function SceneFloor() {
       texture.needsUpdate = true;
     });
     floorTexture.colorSpace = SRGBColorSpace;
-  }, [floorDisplacementTexture, floorNormalTexture, floorRoughnessTexture, floorTexture, gl]);
+  }, [floorTexture, gl]);
 
   return (
     <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
@@ -646,11 +623,7 @@ function SceneFloor() {
       <meshStandardMaterial
         color="#ffffff"
         map={floorTexture}
-        normalMap={floorNormalTexture}
-        roughnessMap={floorRoughnessTexture}
-        displacementMap={floorDisplacementTexture}
-        displacementScale={0.14}
-        roughness={1}
+        roughness={0.96}
         metalness={0}
       />
     </mesh>
