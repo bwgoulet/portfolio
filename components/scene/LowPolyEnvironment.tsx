@@ -514,10 +514,9 @@ function SceneFloor() {
     <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <circleGeometry args={[60, 256]} />
       <meshStandardMaterial
-        color={environmentPalette.pathLow}
-        roughness={0.98}
+        color={PALETTE.islandTop}
+        roughness={1}
         metalness={0}
-        flatShading
       />
     </mesh>
   );
