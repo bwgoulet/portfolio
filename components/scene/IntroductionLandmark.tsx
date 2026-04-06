@@ -135,7 +135,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
       <group position={[-.15, 0, 1]} scale={1}>
         <primitive object={backpackModel} />
-        <group position={[0.18, 0.7, 0.62]} rotation={[0.14, 0.18, -0.06]} scale={0.2}>
+        <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
           <primitive object={keyCardModel.clone(true)} />
         </group>
       </group>
