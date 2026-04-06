@@ -8,6 +8,7 @@ export type InteractionState =
   | 'transitioning'
   | 'billboardCloseup'
   | 'cabinCloseup'
+  | 'dartboardCloseup'
   | 'tabletsCloseup'
   | 'introductionCloseup'
   | 'timelineCloseup';

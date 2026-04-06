@@ -415,6 +415,13 @@ export function AdventureScene() {
     [animateFocusNudge, isOverviewState, isTransitioning, reducedMotion]
   );
 
+  const handleDartboardSelect = useCallback(() => {
+    if (interactionState !== 'cabinCloseup' || isTransitioning || isFreeModeEnabled) return;
+    setInteractionState('transitioning');
+    setFocusTarget('cabinDartboard');
+    setSelectedGalleryPhotoId(null);
+  }, [interactionState, isFreeModeEnabled, isTransitioning]);
+
   useEffect(
     () => () => {
       if (cabinFadeTimerRef.current !== null) {
@@ -457,7 +464,7 @@ export function AdventureScene() {
   }, []);
 
   const handleReturnToOverview = useCallback(() => {
-    const exitingCabin = focusTarget === 'cabinInterior';
+    const exitingCabin = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
     if (exitingCabin && !reducedMotion) {
       if (isCabinExitTransitionPending) return;
       setIsCabinExitTransitionPending(true);
@@ -520,6 +527,8 @@ export function AdventureScene() {
                   ? 'billboardCloseup'
                   : completedTarget === 'cabinInterior'
                     ? 'cabinCloseup'
+                    : completedTarget === 'cabinDartboard'
+                      ? 'dartboardCloseup'
                     : completedTarget === 'tablets'
                       ? 'tabletsCloseup'
                       : completedTarget === 'introduction'
@@ -550,7 +559,11 @@ export function AdventureScene() {
               }
             />
           )}
-          <LightingAtmosphere backgroundColor={focusTarget === 'cabinInterior' && !isCabinInteriorRevealed ? '#060709' : undefined} />
+          <LightingAtmosphere
+            backgroundColor={
+              (focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && !isCabinInteriorRevealed ? '#060709' : undefined
+            }
+          />
           <LowPolyEnvironment
             tabletsInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
             tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
@@ -621,10 +634,11 @@ export function AdventureScene() {
               onClick={() => handleFocusClick('cabin')}
             />
           )}
-          {focusTarget === 'cabinInterior' && isCabinInteriorRevealed && (
+          {(focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && isCabinInteriorRevealed && (
             <CabinInterior
               photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
               onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
+              onDartboardSelect={handleDartboardSelect}
             />
           )}
           </Suspense>
@@ -837,6 +851,15 @@ export function AdventureScene() {
             <p>{selectedGalleryPhoto.description}</p>
           </div>
         </article>
+      )}
+
+      {interactionState === 'dartboardCloseup' && (
+        <section className="scene-inline-prompt" aria-live="polite" role="status">
+          <div className="scene-inline-prompt__card">
+            <h2>Play Darts?</h2>
+            <p>The darts minigame is coming soon.</p>
+          </div>
+        </section>
       )}
 
       {!isOverviewState && !isTransitioning && !isCabinExitTransitionPending && (
