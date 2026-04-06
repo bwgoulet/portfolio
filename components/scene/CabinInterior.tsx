@@ -92,6 +92,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
   const crtGltf = useGLTF('/models/CRT.glb');
+  const dartboardGltf = useGLTF('/models/Dartboard.glb');
+  const mirrorCubeGltf = useGLTF('/models/Mirror Cube.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(chairScene);
@@ -138,11 +140,57 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     crtScene.position.y -= crtBounds.min.y;
     return { scene: crtScene, size: crtSize };
   }, [crtGltf.scene]);
+  const dartboardModel = useMemo(() => {
+    const dartboardScene = dartboardGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(dartboardScene);
+    dartboardScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    dartboardScene.updateMatrixWorld(true);
+    const dartboardBounds = new THREE.Box3().setFromObject(dartboardScene);
+    const dartboardSize = dartboardBounds.getSize(new THREE.Vector3());
+    const dartboardCenter = dartboardBounds.getCenter(new THREE.Vector3());
+    dartboardScene.position.x -= dartboardCenter.x;
+    dartboardScene.position.y -= dartboardCenter.y;
+    dartboardScene.position.z -= dartboardCenter.z;
+    return { scene: dartboardScene, size: dartboardSize };
+  }, [dartboardGltf.scene]);
+  const mirrorCubeModel = useMemo(() => {
+    const mirrorCubeScene = mirrorCubeGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(mirrorCubeScene);
+    mirrorCubeScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    mirrorCubeScene.updateMatrixWorld(true);
+    const mirrorCubeBounds = new THREE.Box3().setFromObject(mirrorCubeScene);
+    const mirrorCubeSize = mirrorCubeBounds.getSize(new THREE.Vector3());
+    const mirrorCubeCenter = mirrorCubeBounds.getCenter(new THREE.Vector3());
+    mirrorCubeScene.position.x -= mirrorCubeCenter.x;
+    mirrorCubeScene.position.y -= mirrorCubeCenter.y;
+    mirrorCubeScene.position.z -= mirrorCubeCenter.z;
+    return { scene: mirrorCubeScene, size: mirrorCubeSize };
+  }, [mirrorCubeGltf.scene]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
     const desiredMonitorHeight = 0.22;
     return desiredMonitorHeight / crtModel.size.y;
   }, [crtModel.size.y]);
+  const dartboardScale = useMemo(() => {
+    if (dartboardModel.size.y <= Number.EPSILON) return 1;
+    const desiredDartboardHeight = 0.38;
+    return desiredDartboardHeight / dartboardModel.size.y;
+  }, [dartboardModel.size.y]);
+  const mirrorCubeScale = useMemo(() => {
+    if (mirrorCubeModel.size.y <= Number.EPSILON) return 1;
+    const desiredCubeHeight = 0.17;
+    return desiredCubeHeight / mirrorCubeModel.size.y;
+  }, [mirrorCubeModel.size.y]);
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -319,6 +367,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group position={[-0.98, -.02, -0.5]} rotation={[0, -Math.PI/1.6, 0]}>
         <primitive object={crtModel.scene} scale={crtScale} />
+      </group>
+
+      <group position={[0.84, 1.18, -0.12]} rotation={[0, -Math.PI / 2, 0]}>
+        <primitive object={dartboardModel.scene} scale={dartboardScale} />
+      </group>
+
+      <group position={[0.8, 1.22, 0.23]} rotation={[0.2, -Math.PI / 2.3, 0.06]}>
+        <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale} />
+      </group>
+      <group position={[0.8, 0.82, 0.25]} rotation={[-0.16, -Math.PI / 2.15, -0.08]}>
+        <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale * 0.94} />
       </group>
 
       <group
@@ -553,3 +612,5 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
 useGLTF.preload('/models/Chair.glb');
 useGLTF.preload('/models/CRT.glb');
+useGLTF.preload('/models/Dartboard.glb');
+useGLTF.preload('/models/Mirror Cube.glb');
