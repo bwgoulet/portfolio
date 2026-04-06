@@ -239,8 +239,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
   return (
     <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
-      <mesh position={[0, 0.103, 0]} receiveShadow>
-        <boxGeometry args={[1.84, 0.028, 1.5]} />
+      <mesh position={[0, 0.02, 0]} receiveShadow>
+        <boxGeometry args={[1.86, 0.04, 1.52]} />
         <meshStandardMaterial
           color="#ffffff"
           map={woodFloorTexture}
@@ -310,11 +310,12 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[-0.85, 1.21, -0.3]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
+      <group position={[-0.85, 1.2, -0.4]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
         <primitive object={paintingModel} />
         <mesh
-          position={[0.7, -.1, 1]}
-          rotation={[0, 95.4, 0]} // [x, y, z] in radians
+          position={[0.25, 0.035, .97]}
+          rotation={[0, 96, -0.05]} // [x, y, z] in radians
+          scale={0.9}
         >
           <planeGeometry args={[0.72, 0.48]} />
           <meshStandardMaterial
@@ -326,9 +327,9 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       </group>
 
-      <group position={[-0.6, 1.1, 0.3]} rotation={[0, Math.PI/1.1, 1.6]} scale={0.001}>
+      <group position={[-0.84, 1.2, 0]} rotation={[0, Math.PI/1, 1.6]} scale={0.002}>
         <primitive object={wallPaintingModel} />
-        <mesh position={[0, 0, 7]}>
+        <mesh position={[0, 0, 7]} rotation={[0, 0, -Math.PI/2]}>
           <planeGeometry args={[210, 255]} />
           <meshStandardMaterial
             color={'#ffffff'}
