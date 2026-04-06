@@ -158,13 +158,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     '/textures/wood_floor_worn_disp_4k.png'
   ]);
   const woodFloorNormalTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_nor_gl_4k.exr');
-  const woodFloorRoughnessTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_rough_4k.exr');
   const [wallTexture, wallDisplacementTexture] = useTexture([
     '/textures/stained_pine_diff_4k.jpg',
     '/textures/stained_pine_disp_4k.png'
   ]);
   const wallNormalTexture = useLoader(EXRLoader, '/textures/stained_pine_nor_gl_4k.exr');
-  const wallRoughnessTexture = useLoader(EXRLoader, '/textures/stained_pine_rough_4k.exr');
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
@@ -178,10 +176,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       texture.needsUpdate = true;
     };
 
-    [woodFloorTexture, woodFloorDisplacementTexture, woodFloorRoughnessTexture, woodFloorNormalTexture].forEach((texture) =>
-      configureTexture(texture, 1.1, 1.45)
-    );
-    [wallTexture, wallDisplacementTexture, wallRoughnessTexture, wallNormalTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
+    [woodFloorTexture, woodFloorDisplacementTexture, woodFloorNormalTexture].forEach((texture) => configureTexture(texture, 1.1, 1.45));
+    [wallTexture, wallDisplacementTexture, wallNormalTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
 
     woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
     wallTexture.colorSpace = THREE.SRGBColorSpace;
@@ -189,11 +185,9 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     gl,
     wallDisplacementTexture,
     wallNormalTexture,
-    wallRoughnessTexture,
     wallTexture,
     woodFloorDisplacementTexture,
     woodFloorNormalTexture,
-    woodFloorRoughnessTexture,
     woodFloorTexture
   ]);
 
@@ -233,7 +227,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           color="#ffffff"
           map={woodFloorTexture}
           normalMap={woodFloorNormalTexture}
-          roughnessMap={woodFloorRoughnessTexture}
           displacementMap={woodFloorDisplacementTexture}
           displacementScale={0.01}
           roughness={1}
@@ -247,7 +240,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           color="#ffffff"
           map={wallTexture}
           normalMap={wallNormalTexture}
-          roughnessMap={wallRoughnessTexture}
           bumpMap={wallDisplacementTexture}
           bumpScale={0.035}
           roughness={1}
@@ -261,7 +253,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           color="#ffffff"
           map={wallTexture}
           normalMap={wallNormalTexture}
-          roughnessMap={wallRoughnessTexture}
           bumpMap={wallDisplacementTexture}
           bumpScale={0.035}
           roughness={1}
@@ -275,7 +266,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           color="#ffffff"
           map={wallTexture}
           normalMap={wallNormalTexture}
-          roughnessMap={wallRoughnessTexture}
           bumpMap={wallDisplacementTexture}
           bumpScale={0.035}
           roughness={1}
@@ -289,7 +279,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           color="#ffffff"
           map={wallTexture}
           normalMap={wallNormalTexture}
-          roughnessMap={wallRoughnessTexture}
           bumpMap={wallDisplacementTexture}
           bumpScale={0.03}
           roughness={1}
