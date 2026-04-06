@@ -4,6 +4,7 @@ export type FocusTarget =
   | 'overview'
   | 'billboard'
   | 'cabinInterior'
+  | 'cabinDartboard'
   | 'tablets'
   | 'introduction'
   | 'timeline';
@@ -29,6 +30,11 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     position: [3.56, 2.28, 0.62],
     lookAt: [4.5, 2.22, -1.3],
     fov: 80
+  },
+  cabinDartboard: {
+    position: [5.62, 2.04, -0.68],
+    lookAt: [5.24, 1.83, -0.74],
+    fov: 54
   },
   tablets: {
     position: [2.82, 1.74, 5.86],

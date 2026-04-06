@@ -145,6 +145,39 @@ main {
   background: rgba(42, 94, 114, 0.94);
 }
 
+.scene-inline-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.scene-inline-prompt__card {
+  min-width: 220px;
+  max-width: min(88vw, 340px);
+  border-radius: var(--vt-overlay-radius-md);
+  border: 1px solid rgba(214, 234, 255, 0.66);
+  background: rgba(12, 24, 34, 0.86);
+  color: #eef5ff;
+  text-align: center;
+  padding: 0.78rem 1rem 0.82rem;
+  box-shadow: 0 14px 30px rgba(7, 13, 19, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.scene-inline-prompt__card h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.scene-inline-prompt__card p {
+  margin: 0.3rem 0 0;
+  color: rgba(232, 243, 255, 0.88);
+  font-size: 0.88rem;
+}
+
 .detail-close {
   border: 1px solid rgba(220, 234, 248, 0.48);
   background: rgba(10, 20, 30, 0.86);

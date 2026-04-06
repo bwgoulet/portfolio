@@ -85,9 +85,10 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
 type CabinInteriorProps = {
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
+  onDartboardSelect: () => void;
 };
 
-export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
+export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect, onDartboardSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
@@ -224,6 +225,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const wallMountedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
+  const dartboardInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
   const gl = useThree((state) => state.gl);
@@ -294,6 +296,23 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     setInteractiveCursor(false);
     gsap.killTweensOf(artworkGroup.scale);
     gsap.to(artworkGroup.scale, { x: baseScale, y: baseScale, z: baseScale, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const startDartboardHover = () => {
+    if (!photosInteractive) return;
+    const dartboardGroup = dartboardInteractiveRef.current;
+    if (!dartboardGroup) return;
+    setInteractiveCursor(true);
+    gsap.killTweensOf(dartboardGroup.scale);
+    gsap.to(dartboardGroup.scale, { x: 1.05, y: 1.05, z: 1.05, duration: 0.18, ease: 'power2.out' });
+  };
+
+  const endDartboardHover = () => {
+    const dartboardGroup = dartboardInteractiveRef.current;
+    if (!dartboardGroup) return;
+    setInteractiveCursor(false);
+    gsap.killTweensOf(dartboardGroup.scale);
+    gsap.to(dartboardGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
   };
 
   return (
@@ -369,8 +388,33 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]}>
+      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]} ref={dartboardInteractiveRef}>
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
+        <mesh
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startDartboardHover();
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startDartboardHover();
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endDartboardHover();
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onDartboardSelect();
+          }}
+        >
+          <cylinderGeometry args={[0.23, 0.23, 0.16, 36]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
 
       <group position={[0.96, 1.41, -0.45]} rotation={[0.07, -Math.PI / 2, 0.06]} scale={2}>
