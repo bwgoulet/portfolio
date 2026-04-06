@@ -180,13 +180,13 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
-  const { active: isSceneLoaderActive, progress: sceneLoadProgress } = useProgress();
+  const { active: isSceneLoaderActive } = useProgress();
   const isCabinInteriorTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
-  const cabinLoadingProgress = Math.min(100, Math.max(0, Math.round(sceneLoadProgress)));
   const isCabinInteriorLoading =
     isCabinInteriorTarget &&
     !isCabinInteriorRevealed &&
     (isCabinFadePending || !isCabinCameraTransitionComplete || isSceneLoaderActive);
+  const shouldShowCabinLoadingSpinner = isCabinInteriorLoading && cabinTransitionFadeState === 'black';
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -462,7 +462,6 @@ export function AdventureScene() {
     }
   }, [
     isCabinCameraTransitionComplete,
-    isCabinInteriorLoading,
     isCabinInteriorRevealed,
     isCabinInteriorTarget,
     isSceneLoaderActive,
@@ -476,12 +475,10 @@ export function AdventureScene() {
         {cabinTransitionFadeState !== 'idle' && (
           <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
         )}
-        {isCabinInteriorLoading && (
+        {shouldShowCabinLoadingSpinner && (
           <div className="scene-loading-overlay" role="status" aria-live="polite">
-            <p>Loading Scene… {cabinLoadingProgress}%</p>
-            <div className="scene-loading-bar" aria-hidden="true">
-              <span style={{ width: `${cabinLoadingProgress}%` }} />
-            </div>
+            <div className="scene-loading-spinner" aria-hidden="true" />
+            <p>Loading Scene…</p>
           </div>
         )}
         <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
