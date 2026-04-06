@@ -475,7 +475,6 @@ function GrassGround() {
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
-        <meshStandardMaterial color="#6b553f" roughness={1} metalness={0.01} />
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
@@ -486,11 +485,9 @@ function GrassGround() {
           roughness={1}
           metalness={0.03}
         />
-        <meshStandardMaterial color="#5d4b39" roughness={1} metalness={0.01} />
       </mesh>
       <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
         <cylinderGeometry args={[2.4, 2.9, 0.21, 96, 8]} />
-        <meshStandardMaterial color="#6b553f" roughness={1} metalness={0.01} />
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
@@ -501,11 +498,9 @@ function GrassGround() {
           roughness={1}
           metalness={0.03}
         />
-        <meshStandardMaterial color="#5d4b39" roughness={1} metalness={0.01} />
       </mesh>
       <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
         <cylinderGeometry args={[1.8, 2.2, 0.18, 96, 8]} />
-        <meshStandardMaterial color="#6b553f" roughness={1} metalness={0.01} />
         <meshStandardMaterial
           color="#ffffff"
           map={grassTexture}
@@ -516,7 +511,6 @@ function GrassGround() {
           roughness={1}
           metalness={0.03}
         />
-        <meshStandardMaterial color="#5d4b39" roughness={1} metalness={0.01} />
       </mesh>
     </>
   );
