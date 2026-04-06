@@ -213,62 +213,6 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 useGLTF.preload('/models/Pine.glb');
 useGLTF.preload('/models/Wooden Sign.glb');
 useGLTF.preload('/models/Mountain.glb');
-useGLTF.preload('/models/Parchment.glb');
-
-function IntroductionParchment() {
-  const parchmentGltf = useGLTF('/models/Parchment.glb');
-  const parchmentModel = useMemo(() => {
-    const parchmentScene = parchmentGltf.scene.clone(true);
-    forceDiffuseOnlyOnSceneMaterials(parchmentScene);
-    parchmentScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        if (Array.isArray(child.material)) {
-          child.material = child.material.map((material) => {
-            const nextMaterial = material.clone();
-            if ('side' in nextMaterial) nextMaterial.side = THREE.DoubleSide;
-            nextMaterial.needsUpdate = true;
-            return nextMaterial;
-          });
-        } else {
-          child.material = child.material.clone();
-          if ('side' in child.material) child.material.side = THREE.DoubleSide;
-          child.material.needsUpdate = true;
-        }
-      }
-    });
-
-    parchmentScene.updateMatrixWorld(true);
-    const initialBounds = new THREE.Box3().setFromObject(parchmentScene);
-    const initialSize = initialBounds.getSize(new THREE.Vector3());
-    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
-    const normalizedScale = 0.72 / dominantAxis;
-
-    parchmentScene.scale.setScalar(normalizedScale);
-    parchmentScene.updateMatrixWorld(true);
-    const normalizedBounds = new THREE.Box3().setFromObject(parchmentScene);
-    const parchmentCenter = normalizedBounds.getCenter(new THREE.Vector3());
-    parchmentScene.position.x -= parchmentCenter.x;
-    parchmentScene.position.z -= parchmentCenter.z;
-    parchmentScene.position.y -= normalizedBounds.min.y;
-    parchmentScene.updateMatrixWorld(true);
-
-    return parchmentScene;
-  }, [parchmentGltf.scene]);
-
-  return (
-    <group
-      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.2, SCENE_ANCHORS.introductionLandmark[1] + 0.55, SCENE_ANCHORS.introductionLandmark[2] + 0.23]}
-      rotation={[0, 0, 0.03]}
-      scale={0.4}
-    >
-      <group rotation={[-Math.PI / 2, 0, 0]}>
-        <primitive object={parchmentModel} />
-      </group>
-    </group>
-  );
-}
 
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
@@ -642,8 +586,6 @@ export function LowPolyEnvironment({
         <dodecahedronGeometry args={[0.5, 0]} />
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
-
-      <IntroductionParchment />
 
       <group ref={tabletsRef}>
         <StoneTablets
