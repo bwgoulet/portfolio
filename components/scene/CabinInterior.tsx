@@ -153,18 +153,18 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
-  const [woodFloorTexture, woodFloorDisplacementTexture, woodFloorRoughnessTexture] = useTexture([
+  const [woodFloorTexture, woodFloorDisplacementTexture] = useTexture([
     '/textures/wood_floor_worn_diff_4k.jpg',
-    '/textures/wood_floor_worn_disp_4k.png',
-    '/textures/wood_floor_worn_rough_4k.jpg'
+    '/textures/wood_floor_worn_disp_4k.png'
   ]);
   const woodFloorNormalTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_nor_gl_4k.exr');
-  const [wallTexture, wallDisplacementTexture, wallRoughnessTexture] = useTexture([
+  const woodFloorRoughnessTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_rough_4k.exr');
+  const [wallTexture, wallDisplacementTexture] = useTexture([
     '/textures/stained_pine_diff_4k.jpg',
-    '/textures/stained_pine_disp_4k.png',
-    '/textures/stained_pine_rough_4k.jpg'
+    '/textures/stained_pine_disp_4k.png'
   ]);
   const wallNormalTexture = useLoader(EXRLoader, '/textures/stained_pine_nor_gl_4k.exr');
+  const wallRoughnessTexture = useLoader(EXRLoader, '/textures/stained_pine_rough_4k.exr');
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
