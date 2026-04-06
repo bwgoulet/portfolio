@@ -166,8 +166,8 @@ export function AdventureScene() {
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
-  const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] = useState(false);
   const [isTimelineDialogOpen, setIsTimelineDialogOpen] = useState(false);
+  const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] = useState(false);
   const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
@@ -551,7 +551,8 @@ export function AdventureScene() {
             interactiveEnabled={!isFreeModeEnabled && isOverviewState}
             detailInteractiveEnabled={!isFreeModeEnabled && interactionState === 'introductionCloseup'}
             hoverEnabled={!isFreeModeEnabled && isOverviewState}
-            hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
+            overviewHovered={interactionState === 'hoverIntroduction'}
+            detailHovered={isIntroductionCloseupHovered}
             onHoverChange={(hovered) => {
               if (interactionState === 'introductionCloseup') {
                 setIsIntroductionCloseupHovered(hovered);
