@@ -449,7 +449,7 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const grassTexture = useTexture('/textures/aerial_grass_rock_4k.jpg');
+  const grassTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
 
   useEffect(() => {
     grassTexture.wrapS = RepeatWrapping;
