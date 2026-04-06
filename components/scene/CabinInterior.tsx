@@ -47,6 +47,18 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     imageSrc: '/gallery/prf25.png',
     title: 'Wall Mounted Painting',
     description: 'A larger wall piece that opens in a focused detail view with context text below the image.'
+  },
+  {
+    id: 'artwork-mirror-cube-upper',
+    imageSrc: '/gallery/hgod.jpg',
+    title: 'Mirror Cube — Upper',
+    description: 'A closer look at one of the reflective mirror cubes suspended along the cabin wall.'
+  },
+  {
+    id: 'artwork-mirror-cube-lower',
+    imageSrc: '/gallery/hellopio.jpg',
+    title: 'Mirror Cube — Lower',
+    description: 'The second mirror cube detail view with supporting context shown beneath the enlarged image.'
   }
 ];
 
@@ -224,6 +236,8 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const wallMountedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
+  const mirrorCubeUpperInteractiveRef = useRef<THREE.Group | null>(null);
+  const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
   const gl = useThree((state) => state.gl);
@@ -373,11 +387,71 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
       </group>
 
-      <group position={[0.96, 1.41, -0.45]} rotation={[0.07, -Math.PI / 2, 0.06]} scale={2}>
+      <group
+        position={[0.96, 1.41, -0.45]}
+        rotation={[0.07, -Math.PI / 2, 0.06]}
+        scale={2}
+        ref={mirrorCubeUpperInteractiveRef}
+      >
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale} />
+        <mesh
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startArtworkHover(mirrorCubeUpperInteractiveRef, 2);
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startArtworkHover(mirrorCubeUpperInteractiveRef, 2);
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endArtworkHover(mirrorCubeUpperInteractiveRef, 2);
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onPhotoSelect('artwork-mirror-cube-upper');
+          }}
+        >
+          <boxGeometry args={[0.48, 0.48, 0.48]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
-      <group position={[0.95, 0.7, -0.45]} rotation={[0.07, -Math.PI / 2, 0.06]} scale={2}>
+      <group
+        position={[0.95, 0.7, -0.45]}
+        rotation={[0.07, -Math.PI / 2, 0.06]}
+        scale={2}
+        ref={mirrorCubeLowerInteractiveRef}
+      >
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale * 0.94} />
+        <mesh
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startArtworkHover(mirrorCubeLowerInteractiveRef, 2);
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startArtworkHover(mirrorCubeLowerInteractiveRef, 2);
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endArtworkHover(mirrorCubeLowerInteractiveRef, 2);
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onPhotoSelect('artwork-mirror-cube-lower');
+          }}
+        >
+          <boxGeometry args={[0.48, 0.48, 0.48]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
 
       <group
