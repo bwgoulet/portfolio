@@ -135,6 +135,9 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
       <group position={[-.15, 0, 1]} scale={1}>
         <primitive object={backpackModel} />
+        <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
+          <primitive object={keyCardModel.clone(true)} />
+        </group>
       </group>
 
       {!detailInteractiveEnabled && (
@@ -183,9 +186,6 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
       )}
 
       <group ref={engravingGroupRef} position={[0, 1.2, 0.5]} rotation={[0.04, 0, 0]}>
-        <group scale={0.28}>
-          <primitive object={keyCardModel.clone(true)} />
-        </group>
         <Text
           position={[-.17, -0.45, 0.9]}
           rotation={[0, 0, 0]}
