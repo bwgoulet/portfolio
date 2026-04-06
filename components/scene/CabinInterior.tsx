@@ -418,7 +418,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]} ref={dartboardInteractiveRef}>
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
         <mesh
-          position={[0, 0.26, 0]}
+          position={[0, 0.5, 0]}
           rotation={[0, 0, Math.PI / 2]}
           onPointerEnter={(event) => {
             if (!photosInteractive) return;
@@ -447,7 +447,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group
-        position={[0.82, 1.41, -0.45]}
+        position={[0.9, 1.41, -0.45]}
         rotation={[0.07, -Math.PI / 2, 0.06]}
         scale={2}
         ref={mirrorCubeUpperInteractiveRef}
@@ -483,7 +483,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       </group>
       <group
-        position={[0.82, 0.7, -0.45]}
+        position={[0.9, 0.7, -0.45]}
         rotation={[0.07, -Math.PI / 2, 0.06]}
         scale={2}
         ref={mirrorCubeLowerInteractiveRef}
