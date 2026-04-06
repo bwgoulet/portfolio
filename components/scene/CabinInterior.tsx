@@ -107,6 +107,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const crtGltf = useGLTF('/models/CRT.glb');
   const dartboardGltf = useGLTF('/models/Dartboard.glb');
   const mirrorCubeGltf = useGLTF('/models/Mirror Cube.glb');
+  const gameCubeControllerGltf = useGLTF('/models/Game Cube Controller.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(chairScene);
@@ -189,6 +190,24 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     mirrorCubeScene.position.z -= mirrorCubeCenter.z;
     return { scene: mirrorCubeScene, size: mirrorCubeSize };
   }, [mirrorCubeGltf.scene]);
+  const gameCubeControllerModel = useMemo(() => {
+    const controllerScene = gameCubeControllerGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(controllerScene);
+    controllerScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    controllerScene.updateMatrixWorld(true);
+    const controllerBounds = new THREE.Box3().setFromObject(controllerScene);
+    const controllerSize = controllerBounds.getSize(new THREE.Vector3());
+    const controllerCenter = controllerBounds.getCenter(new THREE.Vector3());
+    controllerScene.position.x -= controllerCenter.x;
+    controllerScene.position.z -= controllerCenter.z;
+    controllerScene.position.y -= controllerBounds.min.y;
+    return { scene: controllerScene, size: controllerSize };
+  }, [gameCubeControllerGltf.scene]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
     const desiredMonitorHeight = 0.22;
@@ -204,6 +223,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     const desiredCubeHeight = 0.17;
     return desiredCubeHeight / mirrorCubeModel.size.y;
   }, [mirrorCubeModel.size.y]);
+  const gameCubeControllerScale = useMemo(() => {
+    if (gameCubeControllerModel.size.x <= Number.EPSILON) return 1;
+    const desiredControllerWidth = 0.18;
+    return desiredControllerWidth / gameCubeControllerModel.size.x;
+  }, [gameCubeControllerModel.size.x]);
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
     []
@@ -432,6 +456,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group position={[-0.62, 0.13, -0.12]} scale={0.015} rotation={[0, Math.PI/2, 0]}>
         <primitive object={tableModel} />
+      </group>
+
+      <group position={[-0.59, 0.23, -0.1]} rotation={[0, -0.6, 0]}>
+        <primitive object={gameCubeControllerModel.scene} scale={gameCubeControllerScale} />
       </group>
 
       <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
@@ -778,3 +806,4 @@ useGLTF.preload('/models/Chair.glb');
 useGLTF.preload('/models/CRT.glb');
 useGLTF.preload('/models/Dartboard.glb');
 useGLTF.preload('/models/Mirror Cube.glb');
+useGLTF.preload('/models/Game Cube Controller.glb');
