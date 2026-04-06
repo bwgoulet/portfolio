@@ -172,7 +172,7 @@ export const Cabin = memo(function Cabin({
           outlineColor={hovered ? cabin.labelOutline : '#2d210f'}
           depthOffset={-1}
         >
-          About/Gallery
+          Gallery
         </Text>
         <Text
           position={[0.006, -0.004, -0.004]}
@@ -185,7 +185,7 @@ export const Cabin = memo(function Cabin({
           fillOpacity={hovered ? 1 : 0.92}
           depthOffset={-1}
         >
-          About/Gallery
+          Gallery
         </Text>
       </group>
     </group>
