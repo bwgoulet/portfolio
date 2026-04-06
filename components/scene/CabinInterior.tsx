@@ -97,9 +97,10 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
 type CabinInteriorProps = {
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
+  onDartboardSelect: () => void;
 };
 
-export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect }: CabinInteriorProps) {
+export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect, onDartboardSelect }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
@@ -396,8 +397,33 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]}>
+      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]} ref={dartboardInteractiveRef}>
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
+        <mesh
+          onPointerEnter={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startDartboardHover();
+          }}
+          onPointerMove={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            startDartboardHover();
+          }}
+          onPointerLeave={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            endDartboardHover();
+          }}
+          onClick={(event) => {
+            if (!photosInteractive) return;
+            event.stopPropagation();
+            onDartboardSelect();
+          }}
+        >
+          <cylinderGeometry args={[0.23, 0.23, 0.16, 36]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
       </group>
 
       <group
