@@ -32,9 +32,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 80
   },
   cabinDartboard: {
-    position: [5.62, 2.04, -0.68],
-    lookAt: [5.24, 1.83, -0.74],
-    fov: 54
+    position: [4.38, 1.9, -0.29],
+    lookAt: [5.07, 1.76, 0.03],
+    fov: 46
   },
   tablets: {
     position: [2.82, 1.74, 5.86],
