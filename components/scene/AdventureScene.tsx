@@ -548,8 +548,9 @@ export function AdventureScene() {
           />
           <IntroductionLandmark
             landmarkRef={introductionRef}
-            interactiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
-            hoverEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'introductionCloseup')}
+            interactiveEnabled={!isFreeModeEnabled && isOverviewState}
+            detailInteractiveEnabled={!isFreeModeEnabled && interactionState === 'introductionCloseup'}
+            hoverEnabled={!isFreeModeEnabled && isOverviewState}
             hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
             onHoverChange={(hovered) => {
               if (interactionState === 'introductionCloseup') {
