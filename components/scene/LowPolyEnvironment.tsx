@@ -5,9 +5,10 @@ import { VISUAL_TOKENS } from '@/config/visualTokens';
 import { Text, useGLTF, useTexture } from '@react-three/drei';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
+import { EXRLoader } from 'three-stdlib';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -449,31 +450,108 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const grassTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
+  const [grassTexture, grassDisplacementTexture, grassRoughnessTexture] = useTexture([
+    '/textures/aerial_grass_rock_diff_4k.jpg',
+    '/textures/aerial_grass_rock_disp_4k.png',
+    '/textures/aerial_grass_rock_rough_4k.jpg'
+  ]);
+  const grassNormalTexture = useLoader(EXRLoader, '/textures/aerial_grass_rock_nor_gl_4k.exr');
+  const gl = useThree((state) => state.gl);
 
   useEffect(() => {
-    grassTexture.wrapS = RepeatWrapping;
-    grassTexture.wrapT = RepeatWrapping;
-    grassTexture.repeat.set(4.8, 4.8);
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    [grassTexture, grassDisplacementTexture, grassRoughnessTexture, grassNormalTexture].forEach((texture) => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(4.8, 4.8);
+      texture.anisotropy = maxAnisotropy;
+      texture.minFilter = LinearMipmapLinearFilter;
+      texture.needsUpdate = true;
+    });
     grassTexture.colorSpace = SRGBColorSpace;
-    grassTexture.needsUpdate = true;
-  }, [grassTexture]);
+  }, [gl, grassDisplacementTexture, grassNormalTexture, grassRoughnessTexture, grassTexture]);
 
   return (
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.95, 8.05, 0.25, 20]} />
-        <meshStandardMaterial color={PALETTE.islandTop} map={grassTexture} roughness={0.98} metalness={0.03} />
+        <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={grassTexture}
+          normalMap={grassNormalTexture}
+          roughnessMap={grassRoughnessTexture}
+          displacementMap={grassDisplacementTexture}
+          displacementScale={0.06}
+          roughness={1}
+          metalness={0.03}
+        />
       </mesh>
       <mesh position={[-1.3, 1.14, -2.8]} rotation={[0, 0.32, 0]} receiveShadow>
-        <cylinderGeometry args={[2.4, 2.9, 0.21, 16]} />
-        <meshStandardMaterial color="#4e7d5f" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <cylinderGeometry args={[2.4, 2.9, 0.21, 96, 8]} />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={grassTexture}
+          normalMap={grassNormalTexture}
+          roughnessMap={grassRoughnessTexture}
+          displacementMap={grassDisplacementTexture}
+          displacementScale={0.04}
+          roughness={1}
+          metalness={0.03}
+        />
       </mesh>
       <mesh position={[2.5, 1.15, 1.7]} rotation={[0, -0.1, 0]} receiveShadow>
-        <cylinderGeometry args={[1.8, 2.2, 0.18, 14]} />
-        <meshStandardMaterial color="#4a7a5a" map={grassTexture} roughness={0.99} metalness={0.03} />
+        <cylinderGeometry args={[1.8, 2.2, 0.18, 96, 8]} />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={grassTexture}
+          normalMap={grassNormalTexture}
+          roughnessMap={grassRoughnessTexture}
+          displacementMap={grassDisplacementTexture}
+          displacementScale={0.035}
+          roughness={1}
+          metalness={0.03}
+        />
       </mesh>
     </>
+  );
+}
+
+function SceneFloor() {
+  const [floorTexture, floorDisplacementTexture, floorRoughnessTexture] = useTexture([
+    '/textures/forest_leaves_02_diff_4k.jpg',
+    '/textures/forest_leaves_02_disp_4k.png',
+    '/textures/forest_leaves_02_rough_4k.jpg'
+  ]);
+  const floorNormalTexture = useLoader(EXRLoader, '/textures/forest_leaves_02_nor_gl_4k.exr');
+  const gl = useThree((state) => state.gl);
+
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    [floorTexture, floorDisplacementTexture, floorRoughnessTexture, floorNormalTexture].forEach((texture) => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(18, 18);
+      texture.anisotropy = maxAnisotropy;
+      texture.minFilter = LinearMipmapLinearFilter;
+      texture.needsUpdate = true;
+    });
+    floorTexture.colorSpace = SRGBColorSpace;
+  }, [floorDisplacementTexture, floorNormalTexture, floorRoughnessTexture, floorTexture, gl]);
+
+  return (
+    <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <circleGeometry args={[60, 256]} />
+      <meshStandardMaterial
+        color="#ffffff"
+        map={floorTexture}
+        normalMap={floorNormalTexture}
+        roughnessMap={floorRoughnessTexture}
+        displacementMap={floorDisplacementTexture}
+        displacementScale={0.14}
+        roughness={1}
+        metalness={0}
+      />
+    </mesh>
   );
 }
 
@@ -510,10 +588,7 @@ export function LowPolyEnvironment({
 }: LowPolyEnvironmentProps) {
   return (
     <group>
-      <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[60, 32]} />
-        <meshStandardMaterial color={environmentPalette.grassBase} flatShading />
-      </mesh>
+      <SceneFloor />
 
       <mesh rotation={[0, 0.2, 0]} receiveShadow>
         <cylinderGeometry args={[6.8, 7.9, 2.2, 8]} />
