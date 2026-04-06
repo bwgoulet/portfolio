@@ -311,11 +311,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group position={[-0.85, 1.2, -0.4]} rotation={[0.05, -Math.PI/15, 0]} scale={0.4}>
-        <primitive object={paintingModel} />
+        {/* <primitive object={paintingModel} /> */}
         <mesh
-          position={[0.25, 0.035, .97]}
-          rotation={[0, 96, -0.05]} // [x, y, z] in radians
-          scale={0.9}
+          position={[0.18, 0.034, .8]}
+          rotation={[-0.01, 96, -0.05]} // [x, y, z] in radians
+          scale={0.911}
         >
           <planeGeometry args={[0.72, 0.48]} />
           <meshStandardMaterial
@@ -327,15 +327,16 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       </group>
 
-      <group position={[-0.84, 1.2, 0]} rotation={[0, Math.PI/1, 1.6]} scale={0.002}>
-        <primitive object={wallPaintingModel} />
-        <mesh position={[0, 0, 7]} rotation={[0, 0, -Math.PI/2 ]}>
+      <group position={[-0.84, 1.2, 0]} rotation={[0, Math.PI/1, 1.6]} scale={0.0007}>
+        {/* <primitive object={wallPaintingModel} /> */}
+        <mesh position={[0, -10, 550]} rotation={[-Math.PI/2, 0, -Math.PI / 2.01]}>
           <planeGeometry args={[210, 255]} />
           <meshStandardMaterial
-            color={'#ffffff'}
+            color="#ffffff"
             map={wallMountedPaintingTexture ?? undefined}
             roughness={0.82}
             metalness={0.04}
+            side={THREE.DoubleSide}
           />
         </mesh>
       </group>
