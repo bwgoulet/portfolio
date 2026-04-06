@@ -3,7 +3,7 @@
 import gsap from 'gsap';
 import { memo, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { useThree, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
@@ -235,9 +235,11 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     return [configureTexture(primaryPaintingTexture), configureTexture(secondaryPaintingTexture)];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
+  const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const wallMountedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
-  const dartboardInteractiveRef = useRef<THREE.Group | null>(null);
+  const mirrorCubeUpperInteractiveRef = useRef<THREE.Group | null>(null);
+  const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
   const gl = useThree((state) => state.gl);
@@ -310,25 +312,20 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     gsap.to(artworkGroup.scale, { x: baseScale, y: baseScale, z: baseScale, duration: 0.18, ease: 'power2.out' });
   };
 
-  const startDartboardHover = () => {
-    if (!photosInteractive) return;
-    const dartboardGroup = dartboardInteractiveRef.current;
-    if (!dartboardGroup) return;
-    setInteractiveCursor(true);
-    gsap.killTweensOf(dartboardGroup.scale);
-    gsap.to(dartboardGroup.scale, { x: 1.05, y: 1.05, z: 1.05, duration: 0.18, ease: 'power2.out' });
-  };
-
-  const endDartboardHover = () => {
-    const dartboardGroup = dartboardInteractiveRef.current;
-    if (!dartboardGroup) return;
-    setInteractiveCursor(false);
-    gsap.killTweensOf(dartboardGroup.scale);
-    gsap.to(dartboardGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
+  const isMirrorCubeHoverAllowed = (event: ThreeEvent<PointerEvent>) => {
+    if (!photosInteractive) return false;
+    const cabinGroup = cabinInteriorRef.current;
+    if (!cabinGroup) return false;
+    const localCamera = cabinGroup.worldToLocal(event.ray.origin.clone());
+    const localHitPoint = cabinGroup.worldToLocal(event.point.clone());
+    const rightInteriorWallX = 0.85;
+    const isCameraInsideRightWall = localCamera.x < rightInteriorWallX;
+    const isHitInsideRightWall = localHitPoint.x < rightInteriorWallX;
+    return isCameraInsideRightWall && isHitInsideRightWall;
   };
 
   return (
-    <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28}>
+    <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28} ref={cabinInteriorRef}>
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[1.86, 0.22, 1.52]} />
         <meshStandardMaterial
@@ -430,7 +427,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group
-        position={[0.96, 1.41, -0.45]}
+        position={[0.82, 1.41, -0.45]}
         rotation={[0.07, -Math.PI / 2, 0.06]}
         scale={2}
         ref={mirrorCubeUpperInteractiveRef}
@@ -438,12 +435,15 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale} />
         <mesh
           onPointerEnter={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
             startArtworkHover(mirrorCubeUpperInteractiveRef, 2);
           }}
           onPointerMove={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) {
+              endArtworkHover(mirrorCubeUpperInteractiveRef, 2);
+              return;
+            }
             event.stopPropagation();
             startArtworkHover(mirrorCubeUpperInteractiveRef, 2);
           }}
@@ -453,17 +453,17 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
             endArtworkHover(mirrorCubeUpperInteractiveRef, 2);
           }}
           onClick={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
             onPhotoSelect('artwork-mirror-cube-upper');
           }}
         >
-          <boxGeometry args={[0.48, 0.48, 0.48]} />
+          <boxGeometry args={[0.18, 0.18, 0.18]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       </group>
       <group
-        position={[0.95, 0.7, -0.45]}
+        position={[0.82, 0.7, -0.45]}
         rotation={[0.07, -Math.PI / 2, 0.06]}
         scale={2}
         ref={mirrorCubeLowerInteractiveRef}
@@ -471,12 +471,15 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale * 0.94} />
         <mesh
           onPointerEnter={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
             startArtworkHover(mirrorCubeLowerInteractiveRef, 2);
           }}
           onPointerMove={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) {
+              endArtworkHover(mirrorCubeLowerInteractiveRef, 2);
+              return;
+            }
             event.stopPropagation();
             startArtworkHover(mirrorCubeLowerInteractiveRef, 2);
           }}
@@ -486,12 +489,12 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
             endArtworkHover(mirrorCubeLowerInteractiveRef, 2);
           }}
           onClick={(event) => {
-            if (!photosInteractive) return;
+            if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
             onPhotoSelect('artwork-mirror-cube-lower');
           }}
         >
-          <boxGeometry args={[0.48, 0.48, 0.48]} />
+          <boxGeometry args={[0.18, 0.18, 0.18]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       </group>
