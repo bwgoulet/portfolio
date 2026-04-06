@@ -3,9 +3,8 @@
 import gsap from 'gsap';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
-import { useLoader, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { EXRLoader } from 'three-stdlib';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
@@ -39,6 +38,33 @@ const setInteractiveCursor = (isPointer: boolean) => {
 };
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
+
+const clearTextureSlot = (material: THREE.Material, slot: string) => {
+  if (!(slot in material)) return;
+  (material as THREE.Material & Record<string, unknown>)[slot] = null;
+};
+
+const stripMaterialToDiffuseMap = (material: THREE.Material) => {
+  if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+  const nextMaterial = material.clone();
+  ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
+    clearTextureSlot(nextMaterial, slot)
+  );
+  nextMaterial.needsUpdate = true;
+  return nextMaterial;
+};
+
+const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
+  scene.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    if (Array.isArray(child.material)) {
+      child.material = child.material.map(stripMaterialToDiffuseMap);
+      return;
+    }
+    child.material = stripMaterialToDiffuseMap(child.material);
+  });
+};
+
 type CabinInteriorProps = {
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
@@ -53,6 +79,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const wallPaintingGltf = useGLTF('/models/Wall painting.glb');
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(chairScene);
     chairScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -63,6 +90,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [chairGltf.scene]);
   const tableModel = useMemo(() => {
     const tableScene = tableGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(tableScene);
     tableScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -79,6 +107,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [tableGltf.scene]);
   const crtModel = useMemo(() => {
     const crtScene = crtGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(crtScene);
     crtScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -96,6 +125,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [crtGltf.scene]);
   const paintingModel = useMemo(() => {
     const paintingScene = paintingGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(paintingScene);
     paintingScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -107,6 +137,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [paintingGltf.scene]);
   const wallPaintingModel = useMemo(() => {
     const wallPaintingScene = wallPaintingGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(wallPaintingScene);
     wallPaintingScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
@@ -153,16 +184,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
-  const [woodFloorTexture, woodFloorDisplacementTexture] = useTexture([
-    '/textures/wood_floor_worn_diff_4k.jpg',
-    '/textures/wood_floor_worn_disp_4k.png'
-  ]);
-  const woodFloorNormalTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_nor_gl_4k.exr');
-  const [wallTexture, wallDisplacementTexture] = useTexture([
-    '/textures/stained_pine_diff_4k.jpg',
-    '/textures/stained_pine_disp_4k.png'
-  ]);
-  const wallNormalTexture = useLoader(EXRLoader, '/textures/stained_pine_nor_gl_4k.exr');
+  const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
@@ -176,18 +198,14 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       texture.needsUpdate = true;
     };
 
-    [woodFloorTexture, woodFloorDisplacementTexture, woodFloorNormalTexture].forEach((texture) => configureTexture(texture, 1.1, 1.45));
-    [wallTexture, wallDisplacementTexture, wallNormalTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
+    [woodFloorTexture].forEach((texture) => configureTexture(texture, 1.1, 1.45));
+    [wallTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
 
     woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
     wallTexture.colorSpace = THREE.SRGBColorSpace;
   }, [
     gl,
-    wallDisplacementTexture,
-    wallNormalTexture,
     wallTexture,
-    woodFloorDisplacementTexture,
-    woodFloorNormalTexture,
     woodFloorTexture
   ]);
 
@@ -226,9 +244,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial
           color="#ffffff"
           map={woodFloorTexture}
-          normalMap={woodFloorNormalTexture}
-          displacementMap={woodFloorDisplacementTexture}
-          displacementScale={0.01}
           roughness={1}
           metalness={0.02}
         />
@@ -239,9 +254,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
-          normalMap={wallNormalTexture}
-          bumpMap={wallDisplacementTexture}
-          bumpScale={0.035}
           roughness={1}
           metalness={0.01}
         />
@@ -252,9 +264,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
-          normalMap={wallNormalTexture}
-          bumpMap={wallDisplacementTexture}
-          bumpScale={0.035}
           roughness={1}
           metalness={0.01}
         />
@@ -265,9 +274,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
-          normalMap={wallNormalTexture}
-          bumpMap={wallDisplacementTexture}
-          bumpScale={0.035}
           roughness={1}
           metalness={0.01}
         />
@@ -278,9 +284,6 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
-          normalMap={wallNormalTexture}
-          bumpMap={wallDisplacementTexture}
-          bumpScale={0.03}
           roughness={1}
           metalness={0.01}
         />
