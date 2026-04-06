@@ -98,9 +98,10 @@ type CabinInteriorProps = {
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
   onDartboardSelect: () => void;
+  onReady?: () => void;
 };
 
-export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect, onDartboardSelect }: CabinInteriorProps) {
+export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect, onDartboardSelect, onReady }: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF('/models/Chair.glb');
   const tableGltf = useGLTF('/models/Table.glb');
@@ -244,6 +245,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture] = useTexture(['/textures/wood_floor_worn_diff_4k.jpg', '/textures/stained_pine_diff_4k.jpg']);
   const gl = useThree((state) => state.gl);
+
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();

@@ -577,6 +577,7 @@ type LowPolyEnvironmentProps = {
   onTimelineHoverChange: (hovered: boolean) => void;
   onTimelineClick: (target: InteractiveTarget) => void;
   reducedMotion: boolean;
+  onReady?: () => void;
 };
 
 export function LowPolyEnvironment({
@@ -592,8 +593,13 @@ export function LowPolyEnvironment({
   timelineHovered,
   onTimelineHoverChange,
   onTimelineClick,
-  reducedMotion
+  reducedMotion,
+  onReady
 }: LowPolyEnvironmentProps) {
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
+
   return (
     <group>
       <SceneFloor />
