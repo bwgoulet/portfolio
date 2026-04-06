@@ -487,7 +487,7 @@ function GrassGround() {
     mainIslandTexture.colorSpace = SRGBColorSpace;
     mainIslandTexture.wrapS = RepeatWrapping;
     mainIslandTexture.wrapT = RepeatWrapping;
-    mainIslandTexture.repeat.set(2.6, 2.6);
+    mainIslandTexture.repeat.set(2.85, 2.85);
     mainIslandTexture.anisotropy = maxAnisotropy;
     mainIslandTexture.needsUpdate = true;
   }, [gl, mainIslandTexture]);
@@ -495,10 +495,37 @@ function GrassGround() {
   return (
     <>
       <mesh position={[0, 1.121, 0]} rotation={[0, 0.2, 0]} receiveShadow>
-        <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
+        <cylinderGeometry args={[7.25, 8.4, 0.25, 96, 8]} />
         <meshStandardMaterial
           map={mainIslandTexture}
           color="#bfd19c"
+          roughness={1}
+          metalness={0}
+        />
+      </mesh>
+      <mesh position={[0.05, 1.12, 3.25]} rotation={[0, 0.15, 0]} receiveShadow>
+        <cylinderGeometry args={[3.2, 3.95, 0.24, 96, 6]} />
+        <meshStandardMaterial
+          map={mainIslandTexture}
+          color="#b8ca93"
+          roughness={1}
+          metalness={0}
+        />
+      </mesh>
+      <mesh position={[-2.9, 1.115, 2.95]} rotation={[0, 0.5, 0]} receiveShadow>
+        <cylinderGeometry args={[1.85, 2.25, 0.2, 96, 6]} />
+        <meshStandardMaterial
+          map={mainIslandTexture}
+          color="#b4c58e"
+          roughness={1}
+          metalness={0}
+        />
+      </mesh>
+      <mesh position={[2.95, 1.115, 2.9]} rotation={[0, -0.35, 0]} receiveShadow>
+        <cylinderGeometry args={[1.9, 2.3, 0.2, 96, 6]} />
+        <meshStandardMaterial
+          map={mainIslandTexture}
+          color="#b3c58d"
           roughness={1}
           metalness={0}
         />
