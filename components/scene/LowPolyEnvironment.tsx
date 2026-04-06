@@ -213,6 +213,47 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
 useGLTF.preload('/models/Pine.glb');
 useGLTF.preload('/models/Wooden Sign.glb');
 useGLTF.preload('/models/Mountain.glb');
+useGLTF.preload('/models/Parchment.glb');
+
+function IntroductionParchment() {
+  const parchmentGltf = useGLTF('/models/Parchment.glb');
+  const parchmentModel = useMemo(() => {
+    const parchmentScene = parchmentGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(parchmentScene);
+    parchmentScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+
+    parchmentScene.updateMatrixWorld(true);
+    const parchmentBounds = new THREE.Box3().setFromObject(parchmentScene);
+    const parchmentCenter = parchmentBounds.getCenter(new THREE.Vector3());
+    const parchmentSize = parchmentBounds.getSize(new THREE.Vector3());
+    const dominantAxis = Math.max(parchmentSize.x, parchmentSize.z, 1);
+    const normalizedScale = 0.72 / dominantAxis;
+
+    parchmentScene.scale.setScalar(normalizedScale);
+    parchmentScene.position.x -= parchmentCenter.x;
+    parchmentScene.position.z -= parchmentCenter.z;
+    parchmentScene.position.y -= parchmentBounds.min.y;
+    parchmentScene.updateMatrixWorld(true);
+
+    return parchmentScene;
+  }, [parchmentGltf.scene]);
+
+  return (
+    <group
+      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.42, 1.14, SCENE_ANCHORS.introductionLandmark[2] + 0.28]}
+      rotation={[0, -0.35, 0]}
+    >
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <primitive object={parchmentModel} />
+      </group>
+    </group>
+  );
+}
 
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF('/models/rope bridge.glb');
@@ -582,6 +623,8 @@ export function LowPolyEnvironment({
         <dodecahedronGeometry args={[0.5, 0]} />
         <meshStandardMaterial color={PALETTE.rock} flatShading />
       </mesh>
+
+      <IntroductionParchment />
 
       <group ref={tabletsRef}>
         <StoneTablets
