@@ -567,9 +567,7 @@ export function AdventureScene() {
               setInteractionState(
                 completedTarget === 'billboard'
                   ? 'billboardCloseup'
-                  : completedTarget === 'cabinInterior'
-                    ? 'transitioning'
-                    : completedTarget === 'cabinDartboard'
+                  : completedTarget === 'cabinDartboard'
                       ? 'dartboardCloseup'
                     : completedTarget === 'tablets'
                       ? 'tabletsCloseup'
