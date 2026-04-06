@@ -259,8 +259,9 @@ function IntroductionParchment() {
 
   return (
     <group
-      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.42, SCENE_ANCHORS.introductionLandmark[1] - 0.08, SCENE_ANCHORS.introductionLandmark[2] + 0.28]}
-      rotation={[0, -0.35, 0.03]}
+      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.2, SCENE_ANCHORS.introductionLandmark[1] + 0.55, SCENE_ANCHORS.introductionLandmark[2] + 0.23]}
+      rotation={[0, 0, 0.03]}
+      scale={0.4}
     >
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <primitive object={parchmentModel} />

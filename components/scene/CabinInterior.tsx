@@ -245,7 +245,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const [woodFloorTexture, wallTexture, tableTexture] = useTexture([
     '/textures/wood_floor_worn_diff_4k.jpg',
     '/textures/stained_pine_diff_4k.jpg',
-    '/publix/textures/wood_table_diff_4k.jpg'
+    '/textures/oak_veneer_01_diff_4k.jpg'
   ]);
   const gl = useThree((state) => state.gl);
 
