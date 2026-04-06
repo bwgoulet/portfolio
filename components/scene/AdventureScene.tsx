@@ -126,7 +126,7 @@ function FreeModeKeyboardPan({
     const camera = controls.object;
     const moveSpeedPerSecond = 7;
     const step = moveSpeedPerSecond * delta;
-    const moveDirection = new Vector3((right ? 1 : 0) - (left ? 1 : 0), 0, (down ? 1 : 0) - (up ? 1 : 0));
+    const moveDirection = new Vector3((right ? 1 : 0) - (left ? 1 : 0), 0, (up ? 1 : 0) - (down ? 1 : 0));
     if (moveDirection.lengthSq() === 0) return;
     moveDirection.normalize();
 
