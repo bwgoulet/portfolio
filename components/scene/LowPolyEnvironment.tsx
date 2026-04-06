@@ -7,7 +7,7 @@ import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CanvasTexture, ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
+import { ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
 import type { Group } from 'three';
 import type { InteractiveTarget } from './types';
 import { EXPERIENCE_ENTRIES } from './experienceData';
@@ -449,35 +449,15 @@ function TrailheadTimelineSign({
 }
 
 function GrassGround() {
-  const grassTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    const size = 256;
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext('2d');
-    if (!context) return null;
+  const grassTexture = useTexture('/textures/aerial_grass_rock_4k.blend');
 
-    context.fillStyle = '#4a7a56';
-    context.fillRect(0, 0, size, size);
-    for (let index = 0; index < 340; index += 1) {
-      const x = (index * 47) % size;
-      const y = (index * 89) % size;
-      const radius = 4 + (index % 5);
-      const shade = 30 + (index % 12);
-      context.fillStyle = `hsla(${112 + (index % 6)}, 42%, ${shade + 8}%, 0.35)`;
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2);
-      context.fill();
-    }
-
-    const texture = new CanvasTexture(canvas);
-    texture.wrapS = RepeatWrapping;
-    texture.wrapT = RepeatWrapping;
-    texture.repeat.set(4.8, 4.8);
-    texture.colorSpace = SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
-  }, []);
+  useEffect(() => {
+    grassTexture.wrapS = RepeatWrapping;
+    grassTexture.wrapT = RepeatWrapping;
+    grassTexture.repeat.set(4.8, 4.8);
+    grassTexture.colorSpace = SRGBColorSpace;
+    grassTexture.needsUpdate = true;
+  }, [grassTexture]);
 
   return (
     <>
