@@ -330,7 +330,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     gsap.to(dartboardGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
   };
 
-  const isMirrorCubeHoverAllowed = (event: ThreeEvent<PointerEvent>) => {
+  const isMirrorCubeHoverAllowed = (event: ThreeEvent<PointerEvent | MouseEvent>) => {
     if (!photosInteractive) return false;
     const cabinGroup = cabinInteriorRef.current;
     if (!cabinGroup) return false;
