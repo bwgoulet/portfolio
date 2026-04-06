@@ -498,7 +498,7 @@ function GrassGround() {
         <cylinderGeometry args={[6.95, 8.05, 0.25, 96, 8]} />
         <meshStandardMaterial
           map={mainIslandTexture}
-          color="#ffffff"
+          color="#bfd19c"
           roughness={1}
           metalness={0}
         />
