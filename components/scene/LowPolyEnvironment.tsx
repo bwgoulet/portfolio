@@ -224,20 +224,34 @@ function IntroductionParchment() {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true;
         child.receiveShadow = true;
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((material) => {
+            const nextMaterial = material.clone();
+            if ('side' in nextMaterial) nextMaterial.side = THREE.DoubleSide;
+            nextMaterial.needsUpdate = true;
+            return nextMaterial;
+          });
+        } else {
+          child.material = child.material.clone();
+          if ('side' in child.material) child.material.side = THREE.DoubleSide;
+          child.material.needsUpdate = true;
+        }
       }
     });
 
     parchmentScene.updateMatrixWorld(true);
-    const parchmentBounds = new THREE.Box3().setFromObject(parchmentScene);
-    const parchmentCenter = parchmentBounds.getCenter(new THREE.Vector3());
-    const parchmentSize = parchmentBounds.getSize(new THREE.Vector3());
-    const dominantAxis = Math.max(parchmentSize.x, parchmentSize.z, 1);
+    const initialBounds = new THREE.Box3().setFromObject(parchmentScene);
+    const initialSize = initialBounds.getSize(new THREE.Vector3());
+    const dominantAxis = Math.max(initialSize.x, initialSize.z, 1);
     const normalizedScale = 0.72 / dominantAxis;
 
     parchmentScene.scale.setScalar(normalizedScale);
+    parchmentScene.updateMatrixWorld(true);
+    const normalizedBounds = new THREE.Box3().setFromObject(parchmentScene);
+    const parchmentCenter = normalizedBounds.getCenter(new THREE.Vector3());
     parchmentScene.position.x -= parchmentCenter.x;
     parchmentScene.position.z -= parchmentCenter.z;
-    parchmentScene.position.y -= parchmentBounds.min.y;
+    parchmentScene.position.y -= normalizedBounds.min.y;
     parchmentScene.updateMatrixWorld(true);
 
     return parchmentScene;
@@ -245,8 +259,8 @@ function IntroductionParchment() {
 
   return (
     <group
-      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.42, 1.14, SCENE_ANCHORS.introductionLandmark[2] + 0.28]}
-      rotation={[0, -0.35, 0]}
+      position={[SCENE_ANCHORS.introductionLandmark[0] + 0.42, SCENE_ANCHORS.introductionLandmark[1] - 0.08, SCENE_ANCHORS.introductionLandmark[2] + 0.28]}
+      rotation={[0, -0.35, 0.03]}
     >
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <primitive object={parchmentModel} />
