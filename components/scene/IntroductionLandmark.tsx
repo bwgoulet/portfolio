@@ -79,7 +79,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const backpackGltf = useGLTF('/models/Backpack.glb');
   const keyCardGltf = useGLTF('/models/Pickup Key Card.glb');
   const gl = useThree((state) => state.gl);
-  const imageWidth = 0.46;
+  const imageWidth = 0.4;
   const imageHeight = imageWidth / (858 / 1356);
 
   const backpackModel = useMemo(() => {
@@ -128,20 +128,20 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
   useFrame(({ clock }) => {
     if (!engravingGroupRef.current || reducedMotion || detailInteractiveEnabled) return;
-    engravingGroupRef.current.position.y = 1.39 + Math.sin(clock.getElapsedTime() * 0.66) * 0.01;
+    engravingGroupRef.current.position.y = 1.2 + Math.sin(clock.getElapsedTime() * 0.66) * 0.008;
   });
 
   const engravingText = 'Introduction';
 
   return (
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
-      <group position={[0, 0, 0]} scale={1.52}>
+      <group position={[0, 0, 0.22]} scale={1.24}>
         <primitive object={backpackModel} />
       </group>
 
       {!detailInteractiveEnabled && (
         <mesh
-          position={[0, 0.92, 0.04]}
+          position={[0, 0.84, 0.24]}
           onPointerEnter={(event) => {
             event.stopPropagation();
             if (!isAboveIslandGround(event.point.y)) {
@@ -179,38 +179,31 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             if (interactiveEnabled) onClick('introduction');
           }}
         >
-          <capsuleGeometry args={[0.62, 1.05, 8, 12]} />
+          <capsuleGeometry args={[0.5, 0.88, 8, 12]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       )}
 
-      <group ref={engravingGroupRef} position={[0, 1.39, -0.08]} rotation={[-0.1, 0, 0]}>
-        {engravingText.split('').map((character, index) => {
-          const charOffset = (index - (engravingText.length - 1) / 2) * 0.102;
-          return (
-            <group key={`${character}-${index}`} position={[charOffset, 0, 0]}>
-              <group scale={0.16}>
-                <primitive object={keyCardModel.clone(true)} />
-              </group>
-              <Text
-                position={[0, 0.014, 0.024]}
-                rotation={[-Math.PI / 2, 0, 0]}
-                fontSize={0.042}
-                anchorX="center"
-                anchorY="middle"
-                color={hovered ? '#f7fafc' : '#dce2e9'}
-                outlineWidth={0.006}
-                outlineColor={hovered ? '#243140' : '#324353'}
-                fontWeight="700"
-              >
-                {character}
-              </Text>
-            </group>
-          );
-        })}
+      <group ref={engravingGroupRef} position={[0, 1.2, 0.5]} rotation={[0.04, 0, 0]}>
+        <group scale={0.28}>
+          <primitive object={keyCardModel.clone(true)} />
+        </group>
+        <Text
+          position={[0, 0.02, 0.038]}
+          rotation={[0, 0, 0]}
+          fontSize={0.078}
+          anchorX="center"
+          anchorY="middle"
+          color={hovered ? '#f7fafc' : '#dce2e9'}
+          outlineWidth={0.008}
+          outlineColor={hovered ? '#243140' : '#324353'}
+          fontWeight="700"
+        >
+          Introduction
+        </Text>
       </group>
 
-      <group position={[0, 0.92, 0.42]} rotation={[0.08, 0, 0]}>
+      <group position={[0, 0.85, 0.49]} rotation={[0.06, 0, 0]}>
         <mesh
           onPointerEnter={(event) => {
             event.stopPropagation();
