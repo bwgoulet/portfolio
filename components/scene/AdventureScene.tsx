@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, useProgress } from '@react-three/drei';
 import Image from 'next/image';
 import { Suspense, useCallback, useEffect, useId, useRef, useState, type RefObject } from 'react';
 import type { Group } from 'three';
@@ -171,6 +171,7 @@ export function AdventureScene() {
   const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
+  const [isCabinCameraTransitionComplete, setIsCabinCameraTransitionComplete] = useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
   const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
@@ -179,6 +180,13 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
+  const { active: isSceneLoaderActive, progress: sceneLoadProgress } = useProgress();
+  const isCabinInteriorTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
+  const cabinLoadingProgress = Math.min(100, Math.max(0, Math.round(sceneLoadProgress)));
+  const isCabinInteriorLoading =
+    isCabinInteriorTarget &&
+    !isCabinInteriorRevealed &&
+    (isCabinFadePending || !isCabinCameraTransitionComplete || isSceneLoaderActive);
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -338,6 +346,7 @@ export function AdventureScene() {
       setInteractionState('transitioning');
       setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
       setIsCabinInteriorRevealed(false);
+      setIsCabinCameraTransitionComplete(false);
       setIsCabinDoorOpen(target === 'cabin');
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
@@ -349,7 +358,7 @@ export function AdventureScene() {
         if (reducedMotion) {
           setCabinTransitionFadeState('idle');
           setIsCabinFadePending(false);
-          setIsCabinInteriorRevealed(true);
+          setIsCabinCameraTransitionComplete(true);
         } else {
           setCabinTransitionFadeState('idle');
           setIsCabinFadePending(true);
@@ -383,12 +392,6 @@ export function AdventureScene() {
   );
 
   useEffect(() => {
-    if (interactionState !== 'introductionCloseup') {
-      setIsIntroductionCloseupHovered(false);
-    }
-  }, [interactionState]);
-
-  useEffect(() => {
     if (interactionState !== 'timelineCloseup') {
       setIsTimelineCloseupHovered(false);
     }
@@ -401,6 +404,7 @@ export function AdventureScene() {
     setIsFreeModeEnabled(false);
     setIsCabinDoorOpen(false);
     setIsCabinInteriorRevealed(false);
+    setIsCabinCameraTransitionComplete(false);
     setFocusTarget('overview');
     setInteractionState('transitioning');
     setSelectedNoteId(null);
@@ -439,11 +443,40 @@ export function AdventureScene() {
     beginOverviewTransition();
   }, [beginOverviewTransition, focusTarget, isCabinExitTransitionPending, reducedMotion]);
 
+  useEffect(() => {
+    if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
+    if (!isCabinCameraTransitionComplete || isSceneLoaderActive) return;
+    setIsCabinInteriorRevealed(true);
+    setInteractionState('cabinCloseup');
+    if (!reducedMotion) {
+      setCabinTransitionFadeState('fade-in');
+      scheduleCabinFadeReset(320);
+    } else {
+      setCabinTransitionFadeState('idle');
+    }
+  }, [
+    isCabinCameraTransitionComplete,
+    isCabinInteriorLoading,
+    isCabinInteriorRevealed,
+    isCabinInteriorTarget,
+    isSceneLoaderActive,
+    reducedMotion,
+    scheduleCabinFadeReset
+  ]);
+
   return (
     <main>
       <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
         {cabinTransitionFadeState !== 'idle' && (
           <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
+        )}
+        {isCabinInteriorLoading && (
+          <div className="scene-loading-overlay" role="status" aria-live="polite">
+            <p>Loading Scene… {cabinLoadingProgress}%</p>
+            <div className="scene-loading-bar" aria-hidden="true">
+              <span style={{ width: `${cabinLoadingProgress}%` }} />
+            </div>
+          </div>
         )}
         <Canvas shadows camera={{ position: [0, 0, 8], fov: 42 }} dpr={[1, 1.7]} gl={{ alpha: false }}>
           <Suspense fallback={null}>
@@ -460,11 +493,11 @@ export function AdventureScene() {
             }}
             onTransitionEnd={(completedTarget) => {
               if (completedTarget === 'cabinInterior') {
-                setIsCabinInteriorRevealed(true);
-                if (!reducedMotion) {
-                  setCabinTransitionFadeState('fade-in');
-                  scheduleCabinFadeReset(320);
+                setIsCabinCameraTransitionComplete(true);
+                if (isSceneLoaderActive) {
+                  setCabinTransitionFadeState('black');
                 }
+                return;
               }
               if (completedTarget === 'overview') {
                 if (!reducedMotion && (cabinTransitionFadeState === 'fade-out' || cabinTransitionFadeState === 'black')) {
@@ -481,7 +514,7 @@ export function AdventureScene() {
                 completedTarget === 'billboard'
                   ? 'billboardCloseup'
                   : completedTarget === 'cabinInterior'
-                    ? 'cabinCloseup'
+                    ? 'transitioning'
                     : completedTarget === 'cabinDartboard'
                       ? 'dartboardCloseup'
                     : completedTarget === 'tablets'

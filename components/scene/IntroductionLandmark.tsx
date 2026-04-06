@@ -198,9 +198,6 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
       )}
 
       <group ref={engravingGroupRef} position={[0, 1.2, 0.5]} rotation={[0.04, 0, 0]}>
-        <group scale={0.28}>
-          <primitive object={keyCardModel.clone(true)} />
-        </group>
         <Text
           position={[-.17, -0.45, 0.9]}
           rotation={[0, 0, 0]}
