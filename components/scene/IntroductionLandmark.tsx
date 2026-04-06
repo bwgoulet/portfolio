@@ -51,8 +51,7 @@ type IntroductionLandmarkProps = {
   interactiveEnabled: boolean;
   detailInteractiveEnabled?: boolean;
   hoverEnabled?: boolean;
-  overviewHovered: boolean;
-  detailHovered: boolean;
+  hovered: boolean;
   onHoverChange: (hovered: boolean) => void;
   onClick: (target: InteractiveTarget) => void;
   landmarkRef: RefObject<Group | null>;
@@ -66,8 +65,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   interactiveEnabled,
   detailInteractiveEnabled = false,
   hoverEnabled = interactiveEnabled,
-  overviewHovered,
-  detailHovered,
+  hovered,
   onHoverChange,
   onClick,
   landmarkRef,
@@ -135,26 +133,16 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
   return (
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
-      <group position={[-0.15, 0, 1]} scale={1}>
+      <group position={[-.15, 0, 1]} scale={1}>
         <primitive object={backpackModel} />
-        {!detailInteractiveEnabled && overviewHovered && (
-          <mesh position={[0, 1.02, 0.04]}>
-            <capsuleGeometry args={[0.58, 1.16, 10, 16]} />
-            <meshStandardMaterial
-              color="#d9ecff"
-              emissive="#7ec7ff"
-              emissiveIntensity={0.75}
-              transparent
-              opacity={0.26}
-              depthWrite={false}
-            />
-          </mesh>
-        )}
+        <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
+          <primitive object={keyCardModel.clone(true)} />
+        </group>
       </group>
 
       {!detailInteractiveEnabled && (
         <mesh
-          position={[-0.15, 1.02, 1.04]}
+          position={[0, 0.84, 0.24]}
           onPointerEnter={(event) => {
             event.stopPropagation();
             if (!isAboveIslandGround(event.point.y)) {
@@ -192,7 +180,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             if (interactiveEnabled) onClick('introduction');
           }}
         >
-          <boxGeometry args={[1.45, 2.15, 1.12]} />
+          <capsuleGeometry args={[0.5, 0.88, 8, 12]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       )}
@@ -204,9 +192,9 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           fontSize={0.078}
           anchorX="center"
           anchorY="middle"
-          color={overviewHovered ? '#f7fafc' : '#dce2e9'}
+          color={hovered ? '#f7fafc' : '#dce2e9'}
           outlineWidth={0.008}
-          outlineColor={overviewHovered ? '#243140' : '#324353'}
+          outlineColor={hovered ? '#243140' : '#324353'}
           fontWeight="700"
         >
           Introduction
@@ -259,7 +247,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[imageWidth + 0.06, imageHeight + 0.06]} />
-          <meshStandardMaterial color={detailHovered && detailInteractiveEnabled ? '#9ba5ad' : '#7b858f'} emissive="#2d343a" emissiveIntensity={0.12} />
+          <meshStandardMaterial color={hovered && detailInteractiveEnabled ? '#9ba5ad' : '#7b858f'} emissive="#2d343a" emissiveIntensity={0.12} />
         </mesh>
       </group>
     </group>
