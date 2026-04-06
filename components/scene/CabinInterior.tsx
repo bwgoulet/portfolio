@@ -466,7 +466,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       </group>
 
       <group
-        position={[-0.59, -2, 0.4]}
+        position={[-0.59, 0.2, 0.4]}
         rotation={[Math.PI / 2, 0.5, 0]}
       >
         <primitive object={gameCubeControllerModel.scene} scale={gameCubeControllerScale} />
