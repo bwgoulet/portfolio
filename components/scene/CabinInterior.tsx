@@ -1,9 +1,11 @@
 'use client';
 
 import gsap from 'gsap';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { useGLTF, useTexture } from '@react-three/drei';
+import { useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { EXRLoader } from 'three-stdlib';
 import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
 import { VISUAL_TOKENS } from '@/config/visualTokens';
 
@@ -151,41 +153,49 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const hoveredPhotoIdRef = useRef<string | null>(null);
+  const [woodFloorTexture, woodFloorDisplacementTexture, woodFloorRoughnessTexture] = useTexture([
+    '/textures/wood_floor_worn_diff_4k.jpg',
+    '/textures/wood_floor_worn_disp_4k.png',
+    '/textures/wood_floor_worn_rough_4k.jpg'
+  ]);
+  const woodFloorNormalTexture = useLoader(EXRLoader, '/textures/wood_floor_worn_nor_gl_4k.exr');
+  const [wallTexture, wallDisplacementTexture, wallRoughnessTexture] = useTexture([
+    '/textures/stained_pine_diff_4k.jpg',
+    '/textures/stained_pine_disp_4k.png',
+    '/textures/stained_pine_rough_4k.jpg'
+  ]);
+  const wallNormalTexture = useLoader(EXRLoader, '/textures/stained_pine_nor_gl_4k.exr');
+  const gl = useThree((state) => state.gl);
 
-  const woodFloorTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const context = canvas.getContext('2d');
-    if (!context) return null;
+  useEffect(() => {
+    const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
+    const configureTexture = (texture: THREE.Texture, repeatX: number, repeatY: number) => {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(repeatX, repeatY);
+      texture.anisotropy = maxAnisotropy;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.needsUpdate = true;
+    };
 
-    context.fillStyle = cabinInterior.floorPlankA;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    [woodFloorTexture, woodFloorDisplacementTexture, woodFloorRoughnessTexture, woodFloorNormalTexture].forEach((texture) =>
+      configureTexture(texture, 1.1, 1.45)
+    );
+    [wallTexture, wallDisplacementTexture, wallRoughnessTexture, wallNormalTexture].forEach((texture) => configureTexture(texture, 2.2, 1.6));
 
-    const plankWidth = canvas.width / 6;
-    for (let plank = 0; plank < 6; plank += 1) {
-      const startX = plank * plankWidth;
-      context.fillStyle = plank % 2 === 0 ? cabinInterior.floorPlankA : cabinInterior.floorPlankB;
-      context.fillRect(startX, 0, plankWidth, canvas.height);
-
-      context.fillStyle = cabinInterior.floorPlankSeam;
-      context.fillRect(startX, 0, 4, canvas.height);
-
-      for (let y = 0; y < canvas.height; y += 9) {
-        const wave = Math.sin((y + plank * 17) * 0.04) * 8;
-        context.fillStyle = `rgba(32, 18, 10, ${0.08 + ((plank + y) % 5) * 0.02})`;
-        context.fillRect(startX + plankWidth * 0.14 + wave, y, plankWidth * 0.74, 2);
-      }
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1.1, 1.45);
-    texture.anisotropy = 4;
-    return texture;
-  }, [cabinInterior.floorPlankA, cabinInterior.floorPlankB, cabinInterior.floorPlankSeam]);
+    woodFloorTexture.colorSpace = THREE.SRGBColorSpace;
+    wallTexture.colorSpace = THREE.SRGBColorSpace;
+  }, [
+    gl,
+    wallDisplacementTexture,
+    wallNormalTexture,
+    wallRoughnessTexture,
+    wallTexture,
+    woodFloorDisplacementTexture,
+    woodFloorNormalTexture,
+    woodFloorRoughnessTexture,
+    woodFloorTexture
+  ]);
 
   const startPhotoHover = (photo: GalleryPhoto) => {
     if (!photosInteractive || hoveredPhotoIdRef.current === photo.id) return;
@@ -218,28 +228,73 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         <meshStandardMaterial color={cabinInterior.floor} flatShading />
       </mesh>
       <mesh position={[0, 0.045, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[1.84, 1.5]} />
-        <meshStandardMaterial color={cabinInterior.floorPlankA} map={woodFloorTexture ?? undefined} roughness={0.92} metalness={0.02} />
+        <planeGeometry args={[1.84, 1.5, 140, 120]} />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={woodFloorTexture}
+          normalMap={woodFloorNormalTexture}
+          roughnessMap={woodFloorRoughnessTexture}
+          displacementMap={woodFloorDisplacementTexture}
+          displacementScale={0.01}
+          roughness={1}
+          metalness={0.02}
+        />
       </mesh>
 
       <mesh position={[0, 0.94, -0.8]} receiveShadow>
         <boxGeometry args={[1.86, 1.8, 0.08]} />
-        <meshStandardMaterial color={cabinInterior.wallBack} flatShading />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={wallTexture}
+          normalMap={wallNormalTexture}
+          roughnessMap={wallRoughnessTexture}
+          bumpMap={wallDisplacementTexture}
+          bumpScale={0.035}
+          roughness={1}
+          metalness={0.01}
+        />
       </mesh>
 
       <mesh position={[-0.89, 0.94, -0.08]} receiveShadow>
         <boxGeometry args={[0.08, 1.8, 1.52]} />
-        <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={wallTexture}
+          normalMap={wallNormalTexture}
+          roughnessMap={wallRoughnessTexture}
+          bumpMap={wallDisplacementTexture}
+          bumpScale={0.035}
+          roughness={1}
+          metalness={0.01}
+        />
       </mesh>
 
       <mesh position={[0.89, 0.94, -0.08]} receiveShadow>
         <boxGeometry args={[0.08, 1.8, 1.52]} />
-        <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={wallTexture}
+          normalMap={wallNormalTexture}
+          roughnessMap={wallRoughnessTexture}
+          bumpMap={wallDisplacementTexture}
+          bumpScale={0.035}
+          roughness={1}
+          metalness={0.01}
+        />
       </mesh>
 
       <mesh position={[0, 1.82, -0.08]} receiveShadow>
         <boxGeometry args={[1.86, 0.08, 1.52]} />
-        <meshStandardMaterial color={cabinInterior.wallSide} flatShading />
+        <meshStandardMaterial
+          color="#ffffff"
+          map={wallTexture}
+          normalMap={wallNormalTexture}
+          roughnessMap={wallRoughnessTexture}
+          bumpMap={wallDisplacementTexture}
+          bumpScale={0.03}
+          roughness={1}
+          metalness={0.01}
+        />
       </mesh>
 
       <mesh position={[0, 0.03, -0.08]} receiveShadow>
