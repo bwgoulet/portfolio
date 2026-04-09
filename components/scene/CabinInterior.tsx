@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import gsap from 'gsap';
-import { memo, useEffect, useMemo, useRef, type MutableRefObject } from 'react';
-import { useGLTF, useTexture } from '@react-three/drei';
-import { useThree, type ThreeEvent } from '@react-three/fiber';
-import * as THREE from 'three';
-import { PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
-import { VISUAL_TOKENS } from '@/config/visualTokens';
+import gsap from "gsap";
+import { memo, useEffect, useMemo, useRef, type MutableRefObject } from "react";
+import { useGLTF, useTexture } from "@react-three/drei";
+import { useThree, type ThreeEvent } from "@react-three/fiber";
+import * as THREE from "three";
+import { PALETTE, SCENE_ANCHORS } from "@/config/sceneConfig";
+import { VISUAL_TOKENS } from "@/config/visualTokens";
 
 export type GalleryPhoto = {
   id: string;
@@ -19,68 +19,179 @@ export type GalleryPhoto = {
   description: string;
 };
 
-export type GalleryDetail = Pick<GalleryPhoto, 'id' | 'imageSrc' | 'title' | 'description'>;
+export type GalleryDetail = Pick<
+  GalleryPhoto,
+  "id" | "imageSrc" | "title" | "description"
+>;
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
-  { id: 'photo-01', position: [-0.7, 1.56, -0.759], size: [0.17, 0.12], rotation: -0.09, pinOffsetX: -0.02, imageSrc: '/gallery/hacknc_jump.jpeg', title: 'HackNC 2023', description: 'A picture of the team and I from HackNC 2023' },
-  { id: 'photo-02', position: [-0.47, 0.6, -0.759], size: [0.11, 0.17], rotation: 0.06, pinOffsetX: 0.018, imageSrc: '/gallery/beatduke.jpg', title: 'Late-Night Build', description: '' },
-  { id: 'photo-03', position: [-0.2, 1.4, -0.759], size: [0.18, 0.12], rotation: -0.03, pinOffsetX: -0.015, imageSrc: '/gallery/pywteam.jpg', title: 'Team Snapshot', description: '' },
-  { id: 'photo-04', position: [0, 0.85, -0.759], size: [0.115, 0.17], rotation: 0.08, pinOffsetX: 0.016, imageSrc: '/gallery/poker.jpg', title: 'Focused Work', description: '' },
-  { id: 'photo-05', position: [0.4, 1.6, -0.759], size: [0.17, 0.12], rotation: -0.05, pinOffsetX: -0.018, imageSrc: '/gallery/hgod.jpg', title: 'Community', description: '' },
-  { id: 'photo-06', position: [0.7, 1.5, -0.759], size: [0.11, 0.165], rotation: 0.04, pinOffsetX: 0.02, imageSrc: '/gallery/crater lake.jpg', title: 'Behind the Scenes', description: '' },
-  { id: 'photo-07', position: [-0.64, 1.2, -0.759], size: [0.17, 0.12], rotation: 0.07, pinOffsetX: 0.014, imageSrc: '/gallery/hellopio.jpg', title: 'Momentum', description: '' },
-  { id: 'photo-08', position: [-0.34, 1.04, -0.759], size: [0.18, 0.12], rotation: -0.07, pinOffsetX: -0.016, imageSrc: '/gallery/brevityaward.png', title: 'Shared Wins', description: '' },
-  { id: 'photo-09', position: [0.15, 1.3, -0.759], size: [0.105, 0.16], rotation: 0.05, pinOffsetX: 0.016, imageSrc: '/gallery/tarheel10.jpg', title: 'On the Move', description: '' },
-  { id: 'photo-10', position: [0.2, 0.5, -0.759], size: [0.17, 0.12], rotation: -0.06, pinOffsetX: -0.014, imageSrc: '/gallery/mayhem.jpg', title: 'Big Picture', description: '' },
-  { id: 'photo-11', position: [-0.7, 0.86, -0.759], size: [0.16, 0.115], rotation: 0.06, pinOffsetX: 0.015, imageSrc: '/gallery/acting.jpg', title: 'Gratitude', description: '' }
+  {
+    id: "photo-01",
+    position: [-0.7, 1.56, -0.759],
+    size: [0.17, 0.12],
+    rotation: -0.09,
+    pinOffsetX: -0.02,
+    imageSrc: "/gallery/hacknc_jump.jpeg",
+    title: "HackNC 2023",
+    description: "A picture of the team and I from HackNC 2023",
+  },
+  {
+    id: "photo-02",
+    position: [-0.47, 0.6, -0.759],
+    size: [0.11, 0.17],
+    rotation: 0.06,
+    pinOffsetX: 0.018,
+    imageSrc: "/gallery/beatduke.jpg",
+    title: "Late-Night Build",
+    description: "",
+  },
+  {
+    id: "photo-03",
+    position: [-0.2, 1.4, -0.759],
+    size: [0.18, 0.12],
+    rotation: -0.03,
+    pinOffsetX: -0.015,
+    imageSrc: "/gallery/pywteam.jpg",
+    title: "Team Snapshot",
+    description: "",
+  },
+  {
+    id: "photo-04",
+    position: [0, 0.85, -0.759],
+    size: [0.115, 0.17],
+    rotation: 0.08,
+    pinOffsetX: 0.016,
+    imageSrc: "/gallery/poker.jpg",
+    title: "Focused Work",
+    description: "",
+  },
+  {
+    id: "photo-05",
+    position: [0.4, 1.6, -0.759],
+    size: [0.17, 0.12],
+    rotation: -0.05,
+    pinOffsetX: -0.018,
+    imageSrc: "/gallery/hgod.jpg",
+    title: "Community",
+    description: "",
+  },
+  {
+    id: "photo-06",
+    position: [0.7, 1.5, -0.759],
+    size: [0.11, 0.165],
+    rotation: 0.04,
+    pinOffsetX: 0.02,
+    imageSrc: "/gallery/crater lake.jpg",
+    title: "Behind the Scenes",
+    description: "",
+  },
+  {
+    id: "photo-07",
+    position: [-0.64, 1.2, -0.759],
+    size: [0.17, 0.12],
+    rotation: 0.07,
+    pinOffsetX: 0.014,
+    imageSrc: "/gallery/hellopio.jpg",
+    title: "Momentum",
+    description: "",
+  },
+  {
+    id: "photo-08",
+    position: [-0.34, 1.04, -0.759],
+    size: [0.18, 0.12],
+    rotation: -0.07,
+    pinOffsetX: -0.016,
+    imageSrc: "/gallery/brevityaward.png",
+    title: "Shared Wins",
+    description: "",
+  },
+  {
+    id: "photo-09",
+    position: [0.15, 1.3, -0.759],
+    size: [0.105, 0.16],
+    rotation: 0.05,
+    pinOffsetX: 0.016,
+    imageSrc: "/gallery/tarheel10.jpg",
+    title: "On the Move",
+    description: "",
+  },
+  {
+    id: "photo-10",
+    position: [0.2, 0.5, -0.759],
+    size: [0.17, 0.12],
+    rotation: -0.06,
+    pinOffsetX: -0.014,
+    imageSrc: "/gallery/mayhem.jpg",
+    title: "Big Picture",
+    description: "",
+  },
+  {
+    id: "photo-11",
+    position: [-0.7, 0.86, -0.759],
+    size: [0.16, 0.115],
+    rotation: 0.06,
+    pinOffsetX: 0.015,
+    imageSrc: "/gallery/acting.jpg",
+    title: "test deployment",
+    description: "",
+  },
 ];
 
 export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
-    id: 'artwork-framed-painting',
-    imageSrc: '/gallery/prs25.jpg',
-    title: 'Framed Wall Painting',
-    description: 'A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.'
+    id: "artwork-framed-painting",
+    imageSrc: "/gallery/prs25.jpg",
+    title: "Framed Wall Painting",
+    description:
+      "A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.",
   },
   {
-    id: 'artwork-wall-mounted-painting',
-    imageSrc: '/gallery/prf25.png',
-    title: 'Wall Mounted Painting',
-    description: 'A larger wall piece that opens in a focused detail view with context text below the image.'
+    id: "artwork-wall-mounted-painting",
+    imageSrc: "/gallery/prf25.png",
+    title: "Wall Mounted Painting",
+    description:
+      "A larger wall piece that opens in a focused detail view with context text below the image.",
   },
   {
-    id: 'artwork-mirror-cube-upper',
-    imageSrc: '/gallery/hgod.jpg',
-    title: 'Mirror Cube — Upper',
-    description: 'A closer look at one of the reflective mirror cubes suspended along the cabin wall.'
+    id: "artwork-mirror-cube-upper",
+    imageSrc: "/gallery/hgod.jpg",
+    title: "Mirror Cube — Upper",
+    description:
+      "A closer look at one of the reflective mirror cubes suspended along the cabin wall.",
   },
   {
-    id: 'artwork-mirror-cube-lower',
-    imageSrc: '/gallery/hellopio.jpg',
-    title: 'Mirror Cube — Lower',
-    description: 'The second mirror cube detail view with supporting context shown beneath the enlarged image.'
-  }
+    id: "artwork-mirror-cube-lower",
+    imageSrc: "/gallery/hellopio.jpg",
+    title: "Mirror Cube — Lower",
+    description:
+      "The second mirror cube detail view with supporting context shown beneath the enlarged image.",
+  },
 ];
 
 export const CABIN_INTERIOR_MODEL_ASSETS = [
-  '/models/Chair.glb',
-  '/models/Table.glb',
-  '/models/CRT.glb',
-  '/models/Dartboard.glb',
-  '/models/Mirror Cube.glb',
-  '/models/Game Cube Controller.glb'
+  "/models/Chair.glb",
+  "/models/Table.glb",
+  "/models/CRT.glb",
+  "/models/Dartboard.glb",
+  "/models/Mirror Cube.glb",
+  "/models/Game Cube Controller.glb",
 ] as const;
 
 export const CABIN_INTERIOR_TEXTURE_ASSETS = [
-  '/textures/wood_floor_worn_diff_4k.jpg',
-  '/textures/stained_pine_diff_4k.jpg',
-  '/textures/oak_veneer_01_diff_4k.jpg',
-  '/gallery/prs25.jpg',
-  '/gallery/prf25.png',
-  ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc)))
+  "/textures/wood_floor_worn_diff_4k.jpg",
+  "/textures/stained_pine_diff_4k.jpg",
+  "/textures/oak_veneer_01_diff_4k.jpg",
+  "/gallery/prs25.jpg",
+  "/gallery/prf25.png",
+  ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
 ] as const;
 
-const configureRepeatingTexture = (texture: THREE.Texture, repeatX: number, repeatY: number, maxAnisotropy: number) => {
+const configureRepeatingTexture = (
+  texture: THREE.Texture,
+  repeatX: number,
+  repeatY: number,
+  maxAnisotropy: number
+) => {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(repeatX, repeatY);
@@ -91,7 +202,7 @@ const configureRepeatingTexture = (texture: THREE.Texture, repeatX: number, repe
 };
 
 const setInteractiveCursor = (isPointer: boolean) => {
-  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+  document.body.style.cursor = isPointer ? "pointer" : "auto";
 };
 
 const PHOTO_COLORS = VISUAL_TOKENS.scene.cabinInterior.photoPalette;
@@ -102,11 +213,22 @@ const clearTextureSlot = (material: THREE.Material, slot: string) => {
 };
 
 const stripMaterialToDiffuseMap = (material: THREE.Material) => {
-  if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+  if (
+    !(material instanceof THREE.MeshStandardMaterial) &&
+    !(material instanceof THREE.MeshLambertMaterial)
+  )
+    return material;
   const nextMaterial = material.clone();
-  ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
-    clearTextureSlot(nextMaterial, slot)
-  );
+  [
+    "normalMap",
+    "bumpMap",
+    "displacementMap",
+    "roughnessMap",
+    "metalnessMap",
+    "aoMap",
+    "emissiveMap",
+    "alphaMap",
+  ].forEach((slot) => clearTextureSlot(nextMaterial, slot));
   nextMaterial.needsUpdate = true;
   return nextMaterial;
 };
@@ -128,14 +250,18 @@ type CabinInteriorProps = {
   onDartboardSelect: () => void;
 };
 
-export const CabinInterior = memo(function CabinInterior({ photosInteractive, onPhotoSelect, onDartboardSelect }: CabinInteriorProps) {
+export const CabinInterior = memo(function CabinInterior({
+  photosInteractive,
+  onPhotoSelect,
+  onDartboardSelect,
+}: CabinInteriorProps) {
   const { cabinInterior } = VISUAL_TOKENS.scene;
-  const chairGltf = useGLTF('/models/Chair.glb');
-  const tableGltf = useGLTF('/models/Table.glb');
-  const crtGltf = useGLTF('/models/CRT.glb');
-  const dartboardGltf = useGLTF('/models/Dartboard.glb');
-  const mirrorCubeGltf = useGLTF('/models/Mirror Cube.glb');
-  const gameCubeControllerGltf = useGLTF('/models/Game Cube Controller.glb');
+  const chairGltf = useGLTF("/models/Chair.glb");
+  const tableGltf = useGLTF("/models/Table.glb");
+  const crtGltf = useGLTF("/models/CRT.glb");
+  const dartboardGltf = useGLTF("/models/Dartboard.glb");
+  const mirrorCubeGltf = useGLTF("/models/Mirror Cube.glb");
+  const gameCubeControllerGltf = useGLTF("/models/Game Cube Controller.glb");
   const chairModel = useMemo(() => {
     const chairScene = chairGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(chairScene);
@@ -256,7 +382,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     const desiredControllerWidth = 0.18;
     return desiredControllerWidth / gameCubeControllerModel.size.x;
   }, [gameCubeControllerModel.size.x]);
-  const gameCubeControllerPosition = useMemo<[number, number, number]>(() => [-0.59, 0.2, 0.4], []);
+  const gameCubeControllerPosition = useMemo<[number, number, number]>(
+    () => [-0.59, 0.2, 0.4],
+    []
+  );
   const gameCubeControllerRotation = useMemo<[number, number, number]>(
     () => [Math.PI / 2, 1.5, -Math.PI / 2],
     []
@@ -268,19 +397,25 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const galleryTextures = useTexture(galleryTextureSources);
   const galleryTextureBySrc = useMemo(
     () =>
-      galleryTextureSources.reduce<Record<string, THREE.Texture>>((texturesBySrc, source, index) => {
-        const texture = galleryTextures[index];
-        if (texture) {
-          texture.colorSpace = THREE.SRGBColorSpace;
-          texture.anisotropy = 4;
-          texture.needsUpdate = true;
-          texturesBySrc[source] = texture;
-        }
-        return texturesBySrc;
-      }, {}),
+      galleryTextureSources.reduce<Record<string, THREE.Texture>>(
+        (texturesBySrc, source, index) => {
+          const texture = galleryTextures[index];
+          if (texture) {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.anisotropy = 4;
+            texture.needsUpdate = true;
+            texturesBySrc[source] = texture;
+          }
+          return texturesBySrc;
+        },
+        {}
+      ),
     [galleryTextureSources, galleryTextures]
   );
-  const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture(['/gallery/prs25.jpg', '/gallery/prf25.png']);
+  const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture([
+    "/gallery/prs25.jpg",
+    "/gallery/prf25.png",
+  ]);
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -289,7 +424,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
       texture.needsUpdate = true;
       return texture;
     };
-    return [configureTexture(primaryPaintingTexture), configureTexture(secondaryPaintingTexture)];
+    return [
+      configureTexture(primaryPaintingTexture),
+      configureTexture(secondaryPaintingTexture),
+    ];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
@@ -300,9 +438,9 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture, tableTexture] = useTexture([
-    '/textures/wood_floor_worn_diff_4k.jpg',
-    '/textures/stained_pine_diff_4k.jpg',
-    '/textures/oak_veneer_01_diff_4k.jpg'
+    "/textures/wood_floor_worn_diff_4k.jpg",
+    "/textures/stained_pine_diff_4k.jpg",
+    "/textures/oak_veneer_01_diff_4k.jpg",
   ]);
   const gl = useThree((state) => state.gl);
   const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
@@ -319,9 +457,13 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     tableModel.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       const applyTextureToMaterial = (material: THREE.Material) => {
-        if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return;
+        if (
+          !(material instanceof THREE.MeshStandardMaterial) &&
+          !(material instanceof THREE.MeshLambertMaterial)
+        )
+          return;
         material.map = tableTexture;
-        material.color.set('#c7956f');
+        material.color.set("#c7956f");
         material.needsUpdate = true;
       };
       if (Array.isArray(child.material)) {
@@ -340,8 +482,18 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     setInteractiveCursor(true);
     gsap.killTweensOf(group.scale);
     gsap.killTweensOf(group.position);
-    gsap.to(group.scale, { x: 1.07, y: 1.07, z: 1.07, duration: 0.18, ease: 'power2.out' });
-    gsap.to(group.position, { z: photo.position[2] + 0.018, duration: 0.18, ease: 'power2.out' });
+    gsap.to(group.scale, {
+      x: 1.07,
+      y: 1.07,
+      z: 1.07,
+      duration: 0.18,
+      ease: "power2.out",
+    });
+    gsap.to(group.position, {
+      z: photo.position[2] + 0.018,
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
   const endPhotoHover = (photo: GalleryPhoto) => {
@@ -352,26 +504,54 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     setInteractiveCursor(false);
     gsap.killTweensOf(group.scale);
     gsap.killTweensOf(group.position);
-    gsap.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
-    gsap.to(group.position, { z: photo.position[2], duration: 0.18, ease: 'power2.out' });
+    gsap.to(group.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 0.18,
+      ease: "power2.out",
+    });
+    gsap.to(group.position, {
+      z: photo.position[2],
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
-  const startArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>, baseScale: number) => {
+  const startArtworkHover = (
+    artworkRef: MutableRefObject<THREE.Group | null>,
+    baseScale: number
+  ) => {
     if (!photosInteractive) return;
     const artworkGroup = artworkRef.current;
     if (!artworkGroup) return;
     setInteractiveCursor(true);
     gsap.killTweensOf(artworkGroup.scale);
     const hoverScale = baseScale * 1.03;
-    gsap.to(artworkGroup.scale, { x: hoverScale, y: hoverScale, z: hoverScale, duration: 0.18, ease: 'power2.out' });
+    gsap.to(artworkGroup.scale, {
+      x: hoverScale,
+      y: hoverScale,
+      z: hoverScale,
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
-  const endArtworkHover = (artworkRef: MutableRefObject<THREE.Group | null>, baseScale: number) => {
+  const endArtworkHover = (
+    artworkRef: MutableRefObject<THREE.Group | null>,
+    baseScale: number
+  ) => {
     const artworkGroup = artworkRef.current;
     if (!artworkGroup) return;
     setInteractiveCursor(false);
     gsap.killTweensOf(artworkGroup.scale);
-    gsap.to(artworkGroup.scale, { x: baseScale, y: baseScale, z: baseScale, duration: 0.18, ease: 'power2.out' });
+    gsap.to(artworkGroup.scale, {
+      x: baseScale,
+      y: baseScale,
+      z: baseScale,
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
   const startDartboardHover = () => {
@@ -380,7 +560,13 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     if (!dartboardGroup) return;
     setInteractiveCursor(true);
     gsap.killTweensOf(dartboardGroup.scale);
-    gsap.to(dartboardGroup.scale, { x: 1.03, y: 1.03, z: 1.03, duration: 0.18, ease: 'power2.out' });
+    gsap.to(dartboardGroup.scale, {
+      x: 1.03,
+      y: 1.03,
+      z: 1.03,
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
   const endDartboardHover = () => {
@@ -388,10 +574,18 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
     if (!dartboardGroup) return;
     setInteractiveCursor(false);
     gsap.killTweensOf(dartboardGroup.scale);
-    gsap.to(dartboardGroup.scale, { x: 1, y: 1, z: 1, duration: 0.18, ease: 'power2.out' });
+    gsap.to(dartboardGroup.scale, {
+      x: 1,
+      y: 1,
+      z: 1,
+      duration: 0.18,
+      ease: "power2.out",
+    });
   };
 
-  const isMirrorCubeHoverAllowed = <TEvent extends Event>(event: ThreeEvent<TEvent>) => {
+  const isMirrorCubeHoverAllowed = <TEvent extends Event>(
+    event: ThreeEvent<TEvent>
+  ) => {
     if (!photosInteractive) return false;
     const cabinGroup = cabinInteriorRef.current;
     if (!cabinGroup) return false;
@@ -404,7 +598,12 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
   };
 
   return (
-    <group position={SCENE_ANCHORS.cabin} rotation={[0, -0.46, 0]} scale={1.28} ref={cabinInteriorRef}>
+    <group
+      position={SCENE_ANCHORS.cabin}
+      rotation={[0, -0.46, 0]}
+      scale={1.28}
+      ref={cabinInteriorRef}
+    >
       <mesh position={[0, 0.02, 0]} receiveShadow>
         <boxGeometry args={[1.86, 0.22, 1.52]} />
         <meshStandardMaterial
@@ -466,23 +665,39 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
       ))}
 
-      <group position={[-0.62, 0.13, -0.12]} scale={0.015} rotation={[0, Math.PI/2, 0]}>
+      <group
+        position={[-0.62, 0.13, -0.12]}
+        scale={0.015}
+        rotation={[0, Math.PI / 2, 0]}
+      >
         <primitive object={tableModel} />
       </group>
 
       <group position={gameCubeControllerPosition}>
         <group rotation={gameCubeControllerRotation}>
-          <primitive object={gameCubeControllerModel.scene} scale={gameCubeControllerScale} />
+          <primitive
+            object={gameCubeControllerModel.scene}
+            scale={gameCubeControllerScale}
+          />
         </group>
       </group>
 
-      <primitive object={chairModel} position={[-0.2, 0.05, 0]} rotation={[0, -Math.PI/4, 0]} scale={0.05} />
+      <primitive
+        object={chairModel}
+        position={[-0.2, 0.05, 0]}
+        rotation={[0, -Math.PI / 4, 0]}
+        scale={0.05}
+      />
 
-      <group position={[-0.98, -.02, -0.5]} rotation={[0, -Math.PI/1.6, 0]}>
+      <group position={[-0.98, -0.02, -0.5]} rotation={[0, -Math.PI / 1.6, 0]}>
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
-      <group position={[0.85, 0.5, 0]} rotation={[0, -Math.PI, 0]} ref={dartboardInteractiveRef}>
+      <group
+        position={[0.85, 0.5, 0]}
+        rotation={[0, -Math.PI, 0]}
+        ref={dartboardInteractiveRef}
+      >
         <primitive object={dartboardModel.scene} scale={dartboardScale} />
         <mesh
           position={[0, 0.5, 0]}
@@ -519,7 +734,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         scale={2}
         ref={mirrorCubeUpperInteractiveRef}
       >
-        <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale} />
+        <primitive
+          object={mirrorCubeModel.scene.clone()}
+          scale={mirrorCubeScale}
+        />
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
@@ -542,7 +760,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onClick={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
-            onPhotoSelect('artwork-mirror-cube-upper');
+            onPhotoSelect("artwork-mirror-cube-upper");
           }}
         >
           <boxGeometry args={[0.18, 0.18, 0.18]} />
@@ -555,7 +773,10 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         scale={2}
         ref={mirrorCubeLowerInteractiveRef}
       >
-        <primitive object={mirrorCubeModel.scene.clone()} scale={mirrorCubeScale * 0.94} />
+        <primitive
+          object={mirrorCubeModel.scene.clone()}
+          scale={mirrorCubeScale * 0.94}
+        />
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
@@ -578,7 +799,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onClick={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
             event.stopPropagation();
-            onPhotoSelect('artwork-mirror-cube-lower');
+            onPhotoSelect("artwork-mirror-cube-lower");
           }}
         >
           <boxGeometry args={[0.18, 0.18, 0.18]} />
@@ -588,19 +809,19 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group
         position={[-0.85, 1.2, -0.4]}
-        rotation={[0.05, -Math.PI/15, 0]}
+        rotation={[0.05, -Math.PI / 15, 0]}
         scale={0.4}
         ref={framedPaintingInteractiveRef}
       >
         {/* <primitive object={paintingModel} /> */}
         <mesh
-          position={[0.18, 0.034, .8]}
+          position={[0.18, 0.034, 0.8]}
           rotation={[-0.01, 96, -0.05]} // [x, y, z] in radians
           scale={0.911}
         >
           <planeGeometry args={[0.72, 0.48]} />
           <meshStandardMaterial
-            color={'#ffffff'}
+            color={"#ffffff"}
             map={framedPaintingTexture ?? undefined}
             roughness={0.82}
             metalness={0.04}
@@ -626,7 +847,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onClick={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            onPhotoSelect('artwork-framed-painting');
+            onPhotoSelect("artwork-framed-painting");
           }}
         >
           <boxGeometry args={[0.84, 0.6, 0.08]} />
@@ -636,12 +857,15 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
 
       <group
         position={[-0.84, 1.2, 0]}
-        rotation={[0, Math.PI/1, 1.6]}
+        rotation={[0, Math.PI / 1, 1.6]}
         scale={0.0007}
         ref={wallMountedPaintingInteractiveRef}
       >
         {/* <primitive object={wallPaintingModel} /> */}
-        <mesh position={[0, -10, 550]} rotation={[-Math.PI/2, 0, -Math.PI / 2.01]}>
+        <mesh
+          position={[0, -10, 550]}
+          rotation={[-Math.PI / 2, 0, -Math.PI / 2.01]}
+        >
           <planeGeometry args={[210, 255]} />
           <meshStandardMaterial
             color="#ffffff"
@@ -653,7 +877,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
         <mesh
           position={[0, -10, 550]}
-          rotation={[-Math.PI/2, 0, -Math.PI / 2.01]}
+          rotation={[-Math.PI / 2, 0, -Math.PI / 2.01]}
           onPointerEnter={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
@@ -672,7 +896,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           onClick={(event) => {
             if (!photosInteractive) return;
             event.stopPropagation();
-            onPhotoSelect('artwork-wall-mounted-painting');
+            onPhotoSelect("artwork-wall-mounted-painting");
           }}
         >
           <boxGeometry args={[235, 275, 20]} />
@@ -688,7 +912,12 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
           </mesh>
           <mesh position={[0, 0, 0.045]}>
             <sphereGeometry args={[0.045, 10, 10]} />
-            <meshStandardMaterial color={cabinInterior.lampGlow} emissive={cabinInterior.lampGlow} emissiveIntensity={1.2} flatShading />
+            <meshStandardMaterial
+              color={cabinInterior.lampGlow}
+              emissive={cabinInterior.lampGlow}
+              emissiveIntensity={1.2}
+              flatShading
+            />
           </mesh>
           <pointLight
             color={cabinInterior.lampGlow}
@@ -714,9 +943,21 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
         <mesh position={[0, -0.2, 0]}>
           <sphereGeometry args={[0.05, 10, 10]} />
-          <meshStandardMaterial color={cabinInterior.lampGlow} emissive={cabinInterior.lampGlow} emissiveIntensity={1.35} flatShading />
+          <meshStandardMaterial
+            color={cabinInterior.lampGlow}
+            emissive={cabinInterior.lampGlow}
+            emissiveIntensity={1.35}
+            flatShading
+          />
         </mesh>
-        <pointLight color={cabinInterior.lampGlow} intensity={1.05} distance={2.3} decay={1.8} position={[0, -0.24, 0]} castShadow />
+        <pointLight
+          color={cabinInterior.lampGlow}
+          intensity={1.05}
+          distance={2.3}
+          decay={1.8}
+          position={[0, -0.24, 0]}
+          castShadow
+        />
       </group>
 
       <group position={[0.63, 1.02, -0.72]}>
@@ -742,7 +983,7 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         </mesh>
         <mesh position={[0.12, 0.1925, 0.03]}>
           <sphereGeometry args={[0.05, 8, 8]} />
-          <meshStandardMaterial color={'#628e5e'} flatShading />
+          <meshStandardMaterial color={"#628e5e"} flatShading />
         </mesh>
         <mesh position={[-0.08, -0.1975, 0]}>
           <boxGeometry args={[0.1, 0.2, 0.08]} />
@@ -765,24 +1006,37 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
         >
           <mesh>
             <planeGeometry args={photo.size} />
-            <meshBasicMaterial color={PHOTO_COLORS[index % PHOTO_COLORS.length]} />
+            <meshBasicMaterial
+              color={PHOTO_COLORS[index % PHOTO_COLORS.length]}
+            />
           </mesh>
           <mesh name={`gallery-photo-${photo.id}`} position={[0, 0, 0.001]}>
-            <planeGeometry args={[photo.size[0] * 0.88, photo.size[1] * 0.84]} />
+            <planeGeometry
+              args={[photo.size[0] * 0.88, photo.size[1] * 0.84]}
+            />
             <meshStandardMaterial
-              color={'#ffffff'}
+              color={"#ffffff"}
               map={galleryTextureBySrc[photo.imageSrc]}
               roughness={0.85}
               metalness={0.03}
             />
           </mesh>
           <mesh position={[0, 0, -0.002]}>
-            <planeGeometry args={[photo.size[0] + 0.016, photo.size[1] + 0.016]} />
+            <planeGeometry
+              args={[photo.size[0] + 0.016, photo.size[1] + 0.016]}
+            />
             <meshStandardMaterial color={PALETTE.cabinWall} flatShading />
           </mesh>
-          <mesh position={[photo.pinOffsetX, photo.size[1] * 0.5 + 0.012, 0.004]} castShadow>
+          <mesh
+            position={[photo.pinOffsetX, photo.size[1] * 0.5 + 0.012, 0.004]}
+            castShadow
+          >
             <cylinderGeometry args={[0.007, 0.007, 0.012, 10]} />
-            <meshStandardMaterial color={cabinInterior.lampMetal} roughness={0.45} metalness={0.5} />
+            <meshStandardMaterial
+              color={cabinInterior.lampMetal}
+              roughness={0.45}
+              metalness={0.5}
+            />
           </mesh>
           <mesh
             position={[0, 0, 0.012]}
@@ -807,7 +1061,9 @@ export const CabinInterior = memo(function CabinInterior({ photosInteractive, on
               onPhotoSelect(photo.id);
             }}
           >
-            <boxGeometry args={[photo.size[0] + 0.08, photo.size[1] + 0.08, 0.1]} />
+            <boxGeometry
+              args={[photo.size[0] + 0.08, photo.size[1] + 0.08, 0.1]}
+            />
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
         </group>
