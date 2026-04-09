@@ -178,9 +178,9 @@ export const CABIN_INTERIOR_MODEL_ASSETS = [
 ] as const;
 
 export const CABIN_INTERIOR_TEXTURE_ASSETS = [
-  "/textures/wood_floor_worn_diff_4k.jpg",
-  "/textures/stained_pine_diff_4k.jpg",
-  "/textures/oak_veneer_01_diff_4k.jpg",
+  "/textures-optimized/wood_floor_worn_diff_4k.jpg",
+  "/textures-optimized/stained_pine_diff_4k.jpg",
+  "/textures-optimized/oak_veneer_01_diff_4k.jpg",
   "/gallery/prs25.jpg",
   "/gallery/prf25.png",
   ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
@@ -438,9 +438,9 @@ export const CabinInterior = memo(function CabinInterior({
   const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
   const [woodFloorTexture, wallTexture, tableTexture] = useTexture([
-    "/textures/wood_floor_worn_diff_4k.jpg",
-    "/textures/stained_pine_diff_4k.jpg",
-    "/textures/oak_veneer_01_diff_4k.jpg",
+    "/textures-optimized/wood_floor_worn_diff_4k.jpg",
+    "/textures-optimized/stained_pine_diff_4k.jpg",
+    "/textures-optimized/oak_veneer_01_diff_4k.jpg",
   ]);
   const gl = useThree((state) => state.gl);
   const maxAnisotropy = gl.capabilities.getMaxAnisotropy();

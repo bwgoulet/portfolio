@@ -1,23 +1,33 @@
-'use client';
+"use client";
 
-import { ISLAND_GROUND_INTERACTION_MIN_Y, PALETTE, SCENE_ANCHORS } from '@/config/sceneConfig';
-import { VISUAL_TOKENS } from '@/config/visualTokens';
-import { Text, useGLTF, useTexture } from '@react-three/drei';
-import type { RefObject } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
-import { ClampToEdgeWrapping, LinearMipmapLinearFilter, RepeatWrapping, SRGBColorSpace } from 'three';
-import type { Group } from 'three';
-import type { InteractiveTarget } from './types';
-import { EXPERIENCE_ENTRIES } from './experienceData';
+import {
+  ISLAND_GROUND_INTERACTION_MIN_Y,
+  PALETTE,
+  SCENE_ANCHORS,
+} from "@/config/sceneConfig";
+import { VISUAL_TOKENS } from "@/config/visualTokens";
+import { Text, useGLTF, useTexture } from "@react-three/drei";
+import type { RefObject } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
+import {
+  ClampToEdgeWrapping,
+  LinearMipmapLinearFilter,
+  RepeatWrapping,
+  SRGBColorSpace,
+} from "three";
+import type { Group } from "three";
+import type { InteractiveTarget } from "./types";
+import { EXPERIENCE_ENTRIES } from "./experienceData";
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
 const setInteractiveCursor = (isPointer: boolean) => {
-  document.body.style.cursor = isPointer ? 'pointer' : 'auto';
+  document.body.style.cursor = isPointer ? "pointer" : "auto";
 };
 
-const isAboveIslandGround = (worldY: number) => worldY >= ISLAND_GROUND_INTERACTION_MIN_Y;
+const isAboveIslandGround = (worldY: number) =>
+  worldY >= ISLAND_GROUND_INTERACTION_MIN_Y;
 
 const clearTextureSlot = (material: THREE.Material, slot: string) => {
   if (!(slot in material)) return;
@@ -25,11 +35,22 @@ const clearTextureSlot = (material: THREE.Material, slot: string) => {
 };
 
 const stripMaterialToDiffuseMap = (material: THREE.Material) => {
-  if (!(material instanceof THREE.MeshStandardMaterial) && !(material instanceof THREE.MeshLambertMaterial)) return material;
+  if (
+    !(material instanceof THREE.MeshStandardMaterial) &&
+    !(material instanceof THREE.MeshLambertMaterial)
+  )
+    return material;
   const nextMaterial = material.clone();
-  ['normalMap', 'bumpMap', 'displacementMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap', 'alphaMap'].forEach((slot) =>
-    clearTextureSlot(nextMaterial, slot)
-  );
+  [
+    "normalMap",
+    "bumpMap",
+    "displacementMap",
+    "roughnessMap",
+    "metalnessMap",
+    "aoMap",
+    "emissiveMap",
+    "alphaMap",
+  ].forEach((slot) => clearTextureSlot(nextMaterial, slot));
   nextMaterial.needsUpdate = true;
   return nextMaterial;
 };
@@ -45,8 +66,14 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
   });
 };
 
-function Tree({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  const pineGltf = useGLTF('/models/Pine.glb');
+function Tree({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  const pineGltf = useGLTF("/models/Pine.glb");
   const pineModel = useMemo(() => {
     const pineScene = pineGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(pineScene);
@@ -81,15 +108,26 @@ type StoneTabletsProps = {
   onDetailSelect: (entryId: string) => void;
 };
 
-function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, onHoverChange, onClick, onDetailSelect }: StoneTabletsProps) {
+function StoneTablets({
+  interactiveEnabled,
+  detailInteractiveEnabled,
+  hovered,
+  onHoverChange,
+  onClick,
+  onDetailSelect,
+}: StoneTabletsProps) {
   const [hoveredTabletId, setHoveredTabletId] = useState<string | null>(null);
-  const tabletTextures = useTexture(EXPERIENCE_ENTRIES.map((entry) => entry.placeholderImageSrc));
+  const tabletTextures = useTexture(
+    EXPERIENCE_ENTRIES.map((entry) => entry.placeholderImageSrc)
+  );
   const gl = useThree((state) => state.gl);
 
   const tabletImageDimensions = useMemo(
     () =>
       tabletTextures.map((texture) => {
-        const image = texture.image as { width?: number; height?: number } | undefined;
+        const image = texture.image as
+          | { width?: number; height?: number }
+          | undefined;
         const width = image?.width ?? 1;
         const height = image?.height ?? 1;
         return { width, height };
@@ -118,8 +156,13 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
         const height = 1.36;
         const rotationY = index === 3 ? 0.1 : -0.11 + index * 0.09;
         const logoFrameHeight = 0.42;
-        const logoAspectRatio = tabletImageDimensions[index].width / tabletImageDimensions[index].height;
-        const logoFrameWidth = Math.min(0.28, logoFrameHeight * logoAspectRatio);
+        const logoAspectRatio =
+          tabletImageDimensions[index].width /
+          tabletImageDimensions[index].height;
+        const logoFrameWidth = Math.min(
+          0.28,
+          logoFrameHeight * logoAspectRatio
+        );
         const logoPlaqueWidth = Math.min(0.32, logoFrameWidth + 0.04);
         const logoPlaqueHeight = logoFrameHeight + 0.032;
         const logoY = height * 0.39;
@@ -127,10 +170,17 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
         const logoZ = logoPlaqueZ + 0.007;
 
         return (
-          <group key={index} position={[x, SCENE_ANCHORS.tabletsStart[1], z]} rotation={[0, rotationY, 0]}>
+          <group
+            key={index}
+            position={[x, SCENE_ANCHORS.tabletsStart[1], z]}
+            rotation={[0, rotationY, 0]}
+          >
             <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
               <cylinderGeometry args={[0.31, 0.37, 0.12, 6]} />
-              <meshStandardMaterial color={environmentPalette.tabletBase} flatShading />
+              <meshStandardMaterial
+                color={environmentPalette.tabletBase}
+                flatShading
+              />
             </mesh>
             <mesh
               castShadow
@@ -138,7 +188,9 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               onPointerEnter={(event) => {
                 event.stopPropagation();
                 if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) => (current === entry.id ? null : current));
+                  setHoveredTabletId((current) =>
+                    current === entry.id ? null : current
+                  );
                   onHoverChange(false);
                   setInteractiveCursor(false);
                   return;
@@ -152,7 +204,9 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               onPointerMove={(event) => {
                 event.stopPropagation();
                 if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) => (current === entry.id ? null : current));
+                  setHoveredTabletId((current) =>
+                    current === entry.id ? null : current
+                  );
                   onHoverChange(false);
                   setInteractiveCursor(false);
                   return;
@@ -165,38 +219,61 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
-                setHoveredTabletId((current) => (current === entry.id ? null : current));
+                setHoveredTabletId((current) =>
+                  current === entry.id ? null : current
+                );
                 onHoverChange(false);
                 setInteractiveCursor(false);
               }}
               onClick={(event) => {
                 event.stopPropagation();
                 if (!isAboveIslandGround(event.point.y)) return;
-                if (interactiveEnabled) onClick('tablets');
+                if (interactiveEnabled) onClick("tablets");
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
               <capsuleGeometry args={[width, height, 4, 6]} />
               <meshStandardMaterial
-                color={hoveredTabletId === entry.id ? environmentPalette.tabletHover : PALETTE.tablet}
-                emissive={hoveredTabletId === entry.id || hovered ? environmentPalette.tabletEmissiveHover : environmentPalette.tabletEmissiveIdle}
-                emissiveIntensity={hoveredTabletId === entry.id || hovered ? 0.28 : 0.08}
+                color={
+                  hoveredTabletId === entry.id
+                    ? environmentPalette.tabletHover
+                    : PALETTE.tablet
+                }
+                emissive={
+                  hoveredTabletId === entry.id || hovered
+                    ? environmentPalette.tabletEmissiveHover
+                    : environmentPalette.tabletEmissiveIdle
+                }
+                emissiveIntensity={
+                  hoveredTabletId === entry.id || hovered ? 0.28 : 0.08
+                }
                 flatShading
               />
             </mesh>
             <mesh position={[0, height * 0.58, 0]} castShadow>
               <cylinderGeometry args={[0.16, 0.2, 0.09, 6]} />
-              <meshStandardMaterial color={environmentPalette.tabletCap} flatShading />
+              <meshStandardMaterial
+                color={environmentPalette.tabletCap}
+                flatShading
+              />
             </mesh>
             <mesh position={[0, logoY, logoPlaqueZ]} receiveShadow>
               <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
-              <meshStandardMaterial color="#ece8de" roughness={0.84} metalness={0.02} />
+              <meshStandardMaterial
+                color="#ece8de"
+                roughness={0.84}
+                metalness={0.02}
+              />
             </mesh>
             <mesh position={[0, logoY, logoZ]}>
               <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
               <meshBasicMaterial
                 map={tabletTextures[index]}
-                color={hoveredTabletId === entry.id ? environmentPalette.tabletImageHover : environmentPalette.tabletImageIdle}
+                color={
+                  hoveredTabletId === entry.id
+                    ? environmentPalette.tabletImageHover
+                    : environmentPalette.tabletImageIdle
+                }
                 transparent
                 opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
                 polygonOffset
@@ -210,12 +287,12 @@ function StoneTablets({ interactiveEnabled, detailInteractiveEnabled, hovered, o
   );
 }
 
-useGLTF.preload('/models/Pine.glb');
-useGLTF.preload('/models/Wooden Sign.glb');
-useGLTF.preload('/models/Mountain.glb');
+useGLTF.preload("/models/Pine.glb");
+useGLTF.preload("/models/Wooden Sign.glb");
+useGLTF.preload("/models/Mountain.glb");
 
 function MountainRopeBridge() {
-  const bridgeGltf = useGLTF('/models/rope bridge.glb');
+  const bridgeGltf = useGLTF("/models/rope bridge.glb");
   const bridgeModel = useMemo(() => {
     const bridgeScene = bridgeGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(bridgeScene);
@@ -252,7 +329,7 @@ function MountainRopeBridge() {
 }
 
 function MountainBackdrop() {
-  const mountainGltf = useGLTF('/models/Mountain.glb');
+  const mountainGltf = useGLTF("/models/Mountain.glb");
 
   const mountainModel = useMemo(() => {
     const mountainScene = mountainGltf.scene.clone(true);
@@ -310,22 +387,46 @@ function Clouds({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <group ref={cloudGroupRef}>
       {cloudOffsets.map((offset, index) => (
-        <group key={offset} position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]} scale={[1.24, 0.56, 0.86]}>
+        <group
+          key={offset}
+          position={[index * 4.8 - 8.2, 6.5, -19 + index * 2]}
+          scale={[1.24, 0.56, 0.86]}
+        >
           <mesh position={[0, 0, 0]}>
             <dodecahedronGeometry args={[1.06, 0]} />
-            <meshStandardMaterial color={environmentPalette.cloudMain} flatShading transparent opacity={0.88} />
+            <meshStandardMaterial
+              color={environmentPalette.cloudMain}
+              flatShading
+              transparent
+              opacity={0.88}
+            />
           </mesh>
           <mesh position={[-1.18, 0.12, 0.12]}>
             <dodecahedronGeometry args={[0.75, 0]} />
-            <meshStandardMaterial color={environmentPalette.cloudBright} flatShading transparent opacity={0.9} />
+            <meshStandardMaterial
+              color={environmentPalette.cloudBright}
+              flatShading
+              transparent
+              opacity={0.9}
+            />
           </mesh>
           <mesh position={[1.12, 0.1, 0.04]}>
             <dodecahedronGeometry args={[0.83, 0]} />
-            <meshStandardMaterial color={environmentPalette.cloudCool} flatShading transparent opacity={0.86} />
+            <meshStandardMaterial
+              color={environmentPalette.cloudCool}
+              flatShading
+              transparent
+              opacity={0.86}
+            />
           </mesh>
           <mesh position={[0.22, 0.3, 0.12]} scale={[0.88, 0.78, 0.9]}>
             <dodecahedronGeometry args={[0.63, 0]} />
-            <meshStandardMaterial color={environmentPalette.cloudCore} flatShading transparent opacity={0.9} />
+            <meshStandardMaterial
+              color={environmentPalette.cloudCore}
+              flatShading
+              transparent
+              opacity={0.9}
+            />
           </mesh>
         </group>
       ))}
@@ -338,7 +439,11 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
   const textSize = hovered ? 0.218 : 0.196;
 
   return (
-    <group position={[2.75, 1.37, 4.4]} rotation={[0, -0.16, 0]} scale={baseScale}>
+    <group
+      position={[2.75, 1.37, 4.4]}
+      rotation={[0, -0.16, 0]}
+      scale={baseScale}
+    >
       <mesh position={[0, -0.14, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.3, 0.26, 0.12]} />
         <meshStandardMaterial color="#6e563d" flatShading />
@@ -349,9 +454,9 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
         letterSpacing={0.03}
         anchorX="center"
         anchorY="middle"
-        color={hovered ? '#3a2a16' : '#2a1a10'}
+        color={hovered ? "#3a2a16" : "#2a1a10"}
         outlineWidth={hovered ? 0.012 : 0.006}
-        outlineColor={hovered ? '#3a2a16' : '#2d210f'}
+        outlineColor={hovered ? "#3a2a16" : "#2d210f"}
       >
         Experience
       </Text>
@@ -361,7 +466,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
         letterSpacing={0.03}
         anchorX="center"
         anchorY="middle"
-        color={hovered ? '#ffd8a5' : '#c79b62'}
+        color={hovered ? "#ffd8a5" : "#c79b62"}
         fillOpacity={hovered ? 1 : 0.92}
       >
         Experience
@@ -385,9 +490,9 @@ function TrailheadTimelineSign({
   hovered,
   onHoverChange,
   onClick,
-  signRef
+  signRef,
 }: TrailheadTimelineSignProps) {
-  const woodenSignGltf = useGLTF('/models/Wooden Sign.glb');
+  const woodenSignGltf = useGLTF("/models/Wooden Sign.glb");
   const { woodenSignModel, hitAreaSize, hitAreaOffset } = useMemo(() => {
     const signScene = woodenSignGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(signScene);
@@ -409,8 +514,16 @@ function TrailheadTimelineSign({
     const boundsCenter = normalizedBounds.getCenter(new THREE.Vector3());
     return {
       woodenSignModel: signScene,
-      hitAreaSize: [boundsSize.x, boundsSize.y, boundsSize.z] as [number, number, number],
-      hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [number, number, number]
+      hitAreaSize: [boundsSize.x, boundsSize.y, boundsSize.z] as [
+        number,
+        number,
+        number
+      ],
+      hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [
+        number,
+        number,
+        number
+      ],
     };
   }, [woodenSignGltf.scene]);
   const signScale = hovered ? 1.15 : 1.12;
@@ -423,7 +536,12 @@ function TrailheadTimelineSign({
   });
 
   return (
-    <group ref={signRef} position={[-0.9, 1.2, -5.5]} rotation={[0, 0.22, 0]} scale={signScale}>
+    <group
+      ref={signRef}
+      position={[-0.9, 1.2, -5.5]}
+      rotation={[0, 0.22, 0]}
+      scale={signScale}
+    >
       <group scale={0.55}>
         <primitive object={woodenSignModel} />
       </group>
@@ -457,7 +575,7 @@ function TrailheadTimelineSign({
         onClick={(event) => {
           event.stopPropagation();
           if (!isAboveIslandGround(event.point.y)) return;
-          if (interactiveEnabled) onClick('timeline');
+          if (interactiveEnabled) onClick("timeline");
         }}
       >
         <boxGeometry args={hitAreaSize} />
@@ -470,7 +588,7 @@ function TrailheadTimelineSign({
         letterSpacing={0.035}
         anchorX="center"
         anchorY="middle"
-        color={hovered ? '#f7ebd2' : environmentPalette.signText}
+        color={hovered ? "#f7ebd2" : environmentPalette.signText}
       >
         Timeline
       </Text>
@@ -480,7 +598,9 @@ function TrailheadTimelineSign({
 
 function GrassGround() {
   const gl = useThree((state) => state.gl);
-  const mainIslandTexture = useTexture('/textures/aerial_grass_rock_diff_4k.jpg');
+  const mainIslandTexture = useTexture(
+    "/textures-optimized/aerial_grass_rock_diff_4k.jpg"
+  );
   const mainIslandHalfCircleCenterZ = 10;
 
   useEffect(() => {
@@ -494,8 +614,15 @@ function GrassGround() {
   }, [gl, mainIslandTexture]);
 
   return (
-    <mesh position={[0, 1, mainIslandHalfCircleCenterZ]} rotation={[0, -Math.PI / 2, 0]} scale={2} receiveShadow>
-      <cylinderGeometry args={[8.9, 10.2, 0.25, 96, 8, false, Math.PI, Math.PI]} />
+    <mesh
+      position={[0, 1, mainIslandHalfCircleCenterZ]}
+      rotation={[0, -Math.PI / 2, 0]}
+      scale={2}
+      receiveShadow
+    >
+      <cylinderGeometry
+        args={[8.9, 10.2, 0.25, 96, 8, false, Math.PI, Math.PI]}
+      />
       <meshStandardMaterial
         map={mainIslandTexture}
         color="#bfd19c"
@@ -508,7 +635,11 @@ function GrassGround() {
 
 function SceneFloor() {
   return (
-    <mesh position={[0, -0.25, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+    <mesh
+      position={[0, -0.25, -1]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      receiveShadow
+    >
       <circleGeometry args={[60, 256]} />
       <meshStandardMaterial
         color={PALETTE.islandTop}
@@ -548,14 +679,20 @@ export function LowPolyEnvironment({
   timelineHovered,
   onTimelineHoverChange,
   onTimelineClick,
-  reducedMotion
+  reducedMotion,
 }: LowPolyEnvironmentProps) {
   return (
     <group>
       <SceneFloor />
 
-      <mesh position={[0, 0, 3.2]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <cylinderGeometry args={[8.2, 9.4, 2.2, 96, 1, false, Math.PI, Math.PI]} />
+      <mesh
+        position={[0, 0, 3.2]}
+        rotation={[0, -Math.PI / 2, 0]}
+        receiveShadow
+      >
+        <cylinderGeometry
+          args={[8.2, 9.4, 2.2, 96, 1, false, Math.PI, Math.PI]}
+        />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
@@ -563,7 +700,9 @@ export function LowPolyEnvironment({
 
       <MountainRopeBridge />
 
-      <ExperienceEngraving hovered={tabletsHovered && tabletsInteractiveEnabled} />
+      <ExperienceEngraving
+        hovered={tabletsHovered && tabletsInteractiveEnabled}
+      />
       <TrailheadTimelineSign
         reducedMotion={reducedMotion}
         signRef={timelineSignRef}
@@ -603,4 +742,4 @@ export function LowPolyEnvironment({
   );
 }
 
-useGLTF.preload('/models/rope bridge.glb');
+useGLTF.preload("/models/rope bridge.glb");
