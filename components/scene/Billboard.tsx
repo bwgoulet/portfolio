@@ -190,11 +190,7 @@ export const Billboard = memo(function Billboard({
               style={{ opacity: hideThumbnails ? 0 : 1 }}
             >
               <div className="note-preview" aria-hidden>
-                <Image src={note.imageSrc} alt="" width={44} height={26} />
-                <div className="note-scribbles">
-                  <span />
-                  <span />
-                </div>
+                <Image src={note.imageSrc} alt="" width={50} height={32} />
               </div>
             </Html>
             <mesh
