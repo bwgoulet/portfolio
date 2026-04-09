@@ -1,38 +1,58 @@
-'use client';
+"use client";
 
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, useProgress } from '@react-three/drei';
-import Image from 'next/image';
-import { Suspense, useCallback, useEffect, useId, useRef, useState, type CSSProperties, type RefObject } from 'react';
-import type { Group } from 'three';
-import { Vector3 } from 'three';
-import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { Billboard } from './Billboard';
-import { Cabin } from './Cabin';
-import { CameraRig } from './CameraRig';
-import { LightingAtmosphere } from './LightingAtmosphere';
-import { LowPolyEnvironment } from './LowPolyEnvironment';
-import { InteractionState, InteractiveTarget } from './types';
-import { CABIN_INTERIOR_ARTWORKS, CabinInterior, GALLERY_PHOTOS } from './CabinInterior';
-import { PROJECT_NOTE_RECORD } from './projectNotes';
-import { EXPERIENCE_RECORD } from './experienceData';
-import { CAMERA_PRESETS, FocusTarget, MOTION_TIERS } from '@/config/sceneConfig';
-import { IntroductionLandmark } from './IntroductionLandmark';
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, useProgress } from "@react-three/drei";
+import Image from "next/image";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+  type RefObject,
+} from "react";
+import type { Group } from "three";
+import { Vector3 } from "three";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import { Billboard } from "./Billboard";
+import { Cabin } from "./Cabin";
+import { CameraRig } from "./CameraRig";
+import { LightingAtmosphere } from "./LightingAtmosphere";
+import { LowPolyEnvironment } from "./LowPolyEnvironment";
+import { InteractionState, InteractiveTarget } from "./types";
+import {
+  CABIN_INTERIOR_ARTWORKS,
+  CabinInterior,
+  GALLERY_PHOTOS,
+} from "./CabinInterior";
+import { PROJECT_NOTE_RECORD } from "./projectNotes";
+import { EXPERIENCE_RECORD } from "./experienceData";
+import {
+  CAMERA_PRESETS,
+  FocusTarget,
+  MOTION_TIERS,
+} from "@/config/sceneConfig";
+import { IntroductionLandmark } from "./IntroductionLandmark";
 
-const FREE_MODE_VIEW_PRESETS: Record<'overview' | 'cabinInterior', { position: [number, number, number]; lookAt: [number, number, number] }> = {
+const FREE_MODE_VIEW_PRESETS: Record<
+  "overview" | "cabinInterior",
+  { position: [number, number, number]; lookAt: [number, number, number] }
+> = {
   overview: {
     position: [-10.2, 9.2, 14.3],
-    lookAt: [0.25, 1.75, -2.9]
+    lookAt: [0.25, 1.75, -2.9],
   },
   cabinInterior: {
     position: [4.9, 4.3, 2.4],
-    lookAt: [4.35, 2.2, -1.45]
-  }
+    lookAt: [4.35, 2.2, -1.45],
+  },
 };
 
 function FreeModeCameraPositioner({
   enabled,
-  focusTarget
+  focusTarget,
 }: {
   enabled: boolean;
   focusTarget: FocusTarget;
@@ -41,7 +61,11 @@ function FreeModeCameraPositioner({
   const wasEnabledRef = useRef(false);
 
   useEffect(() => {
-    if (enabled && !wasEnabledRef.current && (focusTarget === 'overview' || focusTarget === 'cabinInterior')) {
+    if (
+      enabled &&
+      !wasEnabledRef.current &&
+      (focusTarget === "overview" || focusTarget === "cabinInterior")
+    ) {
       const preset = FREE_MODE_VIEW_PRESETS[focusTarget];
       camera.position.set(...preset.position);
       camera.lookAt(...preset.lookAt);
@@ -55,7 +79,7 @@ function FreeModeCameraPositioner({
 
 function FreeModeKeyboardPan({
   enabled,
-  controlsRef
+  controlsRef,
 }: {
   enabled: boolean;
   controlsRef: RefObject<OrbitControlsImpl | null>;
@@ -64,12 +88,17 @@ function FreeModeKeyboardPan({
     left: false,
     right: false,
     up: false,
-    down: false
+    down: false,
   });
 
   useEffect(() => {
     if (!enabled) {
-      pressedKeysRef.current = { left: false, right: false, up: false, down: false };
+      pressedKeysRef.current = {
+        left: false,
+        right: false,
+        up: false,
+        down: false,
+      };
       return;
     }
 
@@ -77,21 +106,23 @@ function FreeModeKeyboardPan({
       const eventTarget = event.target;
       if (
         eventTarget instanceof HTMLElement &&
-        (eventTarget.tagName === 'INPUT' || eventTarget.tagName === 'TEXTAREA' || eventTarget.tagName === 'SELECT')
+        (eventTarget.tagName === "INPUT" ||
+          eventTarget.tagName === "TEXTAREA" ||
+          eventTarget.tagName === "SELECT")
       ) {
         return;
       }
 
-      if (event.key === 'ArrowLeft') {
+      if (event.key === "ArrowLeft") {
         pressedKeysRef.current.left = isPressed;
         event.preventDefault();
-      } else if (event.key === 'ArrowRight') {
+      } else if (event.key === "ArrowRight") {
         pressedKeysRef.current.right = isPressed;
         event.preventDefault();
-      } else if (event.key === 'ArrowUp') {
+      } else if (event.key === "ArrowUp") {
         pressedKeysRef.current.up = isPressed;
         event.preventDefault();
-      } else if (event.key === 'ArrowDown') {
+      } else if (event.key === "ArrowDown") {
         pressedKeysRef.current.down = isPressed;
         event.preventDefault();
       }
@@ -100,17 +131,22 @@ function FreeModeKeyboardPan({
     const onKeyDown = (event: KeyboardEvent) => updateKeyState(event, true);
     const onKeyUp = (event: KeyboardEvent) => updateKeyState(event, false);
     const clearKeys = () => {
-      pressedKeysRef.current = { left: false, right: false, up: false, down: false };
+      pressedKeysRef.current = {
+        left: false,
+        right: false,
+        up: false,
+        down: false,
+      };
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    window.addEventListener('keyup', onKeyUp);
-    window.addEventListener('blur', clearKeys);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", clearKeys);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
-      window.removeEventListener('keyup', onKeyUp);
-      window.removeEventListener('blur', clearKeys);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", clearKeys);
       clearKeys();
     };
   }, [enabled]);
@@ -125,7 +161,11 @@ function FreeModeKeyboardPan({
     const camera = controls.object;
     const moveSpeedPerSecond = 7;
     const step = moveSpeedPerSecond * delta;
-    const moveDirection = new Vector3((right ? 1 : 0) - (left ? 1 : 0), 0, (up ? 1 : 0) - (down ? 1 : 0));
+    const moveDirection = new Vector3(
+      (right ? 1 : 0) - (left ? 1 : 0),
+      0,
+      (up ? 1 : 0) - (down ? 1 : 0)
+    );
     if (moveDirection.lengthSq() === 0) return;
     moveDirection.normalize();
 
@@ -136,8 +176,13 @@ function FreeModeKeyboardPan({
       forward.normalize();
     }
 
-    const rightVector = new Vector3().crossVectors(forward, camera.up).normalize();
-    const panOffset = rightVector.multiplyScalar(moveDirection.x).add(forward.multiplyScalar(moveDirection.z)).multiplyScalar(step);
+    const rightVector = new Vector3()
+      .crossVectors(forward, camera.up)
+      .normalize();
+    const panOffset = rightVector
+      .multiplyScalar(moveDirection.x)
+      .add(forward.multiplyScalar(moveDirection.z))
+      .multiplyScalar(step);
 
     camera.position.add(panOffset);
     controls.target.add(panOffset);
@@ -158,42 +203,64 @@ export function AdventureScene() {
   const noteTitleId = useId();
   const experienceTitleId = useId();
 
-  const [interactionState, setInteractionState] = useState<InteractionState>('idleOverview');
-  const [focusTarget, setFocusTarget] = useState<FocusTarget>('overview');
+  const [interactionState, setInteractionState] =
+    useState<InteractionState>("idleOverview");
+  const [focusTarget, setFocusTarget] = useState<FocusTarget>("overview");
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [selectedExperienceId, setSelectedExperienceId] = useState<string | null>(null);
-  const [selectedGalleryPhotoId, setSelectedGalleryPhotoId] = useState<string | null>(null);
+  const [selectedExperienceId, setSelectedExperienceId] = useState<
+    string | null
+  >(null);
+  const [selectedGalleryPhotoId, setSelectedGalleryPhotoId] = useState<
+    string | null
+  >(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
-  const [closingExperienceId, setClosingExperienceId] = useState<string | null>(null);
-  const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] = useState(false);
-  const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] = useState(false);
+  const [closingExperienceId, setClosingExperienceId] = useState<string | null>(
+    null
+  );
+  const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] =
+    useState(false);
+  const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] =
+    useState(false);
   const [isTimelineDialogOpen, setIsTimelineDialogOpen] = useState(false);
-  const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] = useState(false);
+  const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] =
+    useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
-  const [isCabinCameraTransitionComplete, setIsCabinCameraTransitionComplete] = useState(false);
+  const [isCabinCameraTransitionComplete, setIsCabinCameraTransitionComplete] =
+    useState(false);
   const [isCabinDoorOpen, setIsCabinDoorOpen] = useState(false);
-  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<'idle' | 'fade-out' | 'black' | 'fade-in'>('idle');
+  const [cabinTransitionFadeState, setCabinTransitionFadeState] = useState<
+    "idle" | "fade-out" | "black" | "fade-in"
+  >("idle");
   const [isCabinFadePending, setIsCabinFadePending] = useState(false);
-  const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] = useState(false);
+  const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] =
+    useState(false);
   const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
   const initialRevealTimerRef = useRef<number | null>(null);
-  const { active: isSceneLoaderActive, total: sceneAssetsTotal } = useProgress();
-  const isCabinInteriorTarget = focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard';
+  const { active: isSceneLoaderActive, total: sceneAssetsTotal } =
+    useProgress();
+  const isCabinInteriorTarget =
+    focusTarget === "cabinInterior" || focusTarget === "cabinDartboard";
   const isCabinInteriorLoading =
     isCabinInteriorTarget &&
     !isCabinInteriorRevealed &&
-    (isCabinFadePending || !isCabinCameraTransitionComplete || isSceneLoaderActive);
-  const shouldShowCabinLoadingSpinner = isCabinInteriorLoading && cabinTransitionFadeState === 'black';
+    (isCabinFadePending ||
+      !isCabinCameraTransitionComplete ||
+      isSceneLoaderActive);
+  const shouldShowCabinLoadingSpinner =
+    isCabinInteriorLoading && cabinTransitionFadeState === "black";
 
   const [hasSceneLoadingStarted, setHasSceneLoadingStarted] = useState(false);
   const [isInitialSceneReady, setIsInitialSceneReady] = useState(false);
-  const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady ? undefined : { opacity: 0, pointerEvents: 'none' };
+  const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady
+    ? undefined
+    : { opacity: 0, pointerEvents: "none" };
   const shouldShowInitialLoadingOverlay = !isInitialSceneReady;
-  const shouldShowLoadingOverlay = shouldShowInitialLoadingOverlay || shouldShowCabinLoadingSpinner;
+  const shouldShowLoadingOverlay =
+    shouldShowInitialLoadingOverlay || shouldShowCabinLoadingSpinner;
   const initialSceneRevealDelayMs = 220;
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
@@ -201,12 +268,12 @@ export function AdventureScene() {
       window.clearTimeout(cabinFadeTimerRef.current);
     }
     cabinFadeTimerRef.current = window.setTimeout(() => {
-      setCabinTransitionFadeState('idle');
+      setCabinTransitionFadeState("idle");
       cabinFadeTimerRef.current = null;
     }, durationMs);
   }, []);
 
-  const isTransitioning = interactionState === 'transitioning';
+  const isTransitioning = interactionState === "transitioning";
   const isDetailDialogOpen =
     selectedNoteId !== null ||
     selectedExperienceId !== null ||
@@ -214,34 +281,37 @@ export function AdventureScene() {
     isIntroductionDialogOpen ||
     isTimelineDialogOpen;
   const isOverviewState =
-    interactionState === 'idleOverview' ||
-    interactionState === 'hoverBillboard' ||
-    interactionState === 'hoverCabin' ||
-    interactionState === 'hoverTablets' ||
-    interactionState === 'hoverIntroduction' ||
-    interactionState === 'hoverTimeline';
+    interactionState === "idleOverview" ||
+    interactionState === "hoverBillboard" ||
+    interactionState === "hoverCabin" ||
+    interactionState === "hoverTablets" ||
+    interactionState === "hoverIntroduction" ||
+    interactionState === "hoverTimeline";
   const canToggleFreeMode =
     !isDetailDialogOpen &&
     !isTransitioning &&
     !isCabinExitTransitionPending &&
-    (focusTarget === 'overview' || focusTarget === 'cabinInterior');
+    (focusTarget === "overview" || focusTarget === "cabinInterior");
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
   const selectedNote = activeNoteId ? PROJECT_NOTE_RECORD[activeNoteId] : null;
-  const selectedExperience = activeExperienceId ? EXPERIENCE_RECORD[activeExperienceId] : null;
+  const selectedExperience = activeExperienceId
+    ? EXPERIENCE_RECORD[activeExperienceId]
+    : null;
   const selectedGalleryPhoto = selectedGalleryPhotoId
-    ? [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find((photo) => photo.id === selectedGalleryPhotoId) ?? null
+    ? [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find(
+        (photo) => photo.id === selectedGalleryPhotoId
+      ) ?? null
     : null;
 
   useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReducedMotion(media.matches);
     update();
-    media.addEventListener('change', update);
-    return () => media.removeEventListener('change', update);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
   }, []);
-
 
   useEffect(() => {
     if (hasSceneLoadingStarted) return;
@@ -251,7 +321,8 @@ export function AdventureScene() {
   }, [hasSceneLoadingStarted, isSceneLoaderActive, sceneAssetsTotal]);
 
   useEffect(() => {
-    if (isInitialSceneReady || !hasSceneLoadingStarted || isSceneLoaderActive) return;
+    if (isInitialSceneReady || !hasSceneLoadingStarted || isSceneLoaderActive)
+      return;
     if (initialRevealTimerRef.current !== null) return;
 
     initialRevealTimerRef.current = window.setTimeout(() => {
@@ -262,7 +333,12 @@ export function AdventureScene() {
         });
       });
     }, initialSceneRevealDelayMs);
-  }, [hasSceneLoadingStarted, initialSceneRevealDelayMs, isInitialSceneReady, isSceneLoaderActive]);
+  }, [
+    hasSceneLoadingStarted,
+    initialSceneRevealDelayMs,
+    isInitialSceneReady,
+    isSceneLoaderActive,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -281,7 +357,10 @@ export function AdventureScene() {
     }
     setClosingNoteId(selectedNoteId);
     setSelectedNoteId(null);
-    window.setTimeout(() => setClosingNoteId(null), MOTION_TIERS.macro.overlayFadeDuration * 1000);
+    window.setTimeout(
+      () => setClosingNoteId(null),
+      MOTION_TIERS.macro.overlayFadeDuration * 1000
+    );
   }, [reducedMotion, selectedNoteId]);
 
   const closeExperienceDetail = useCallback(() => {
@@ -293,7 +372,10 @@ export function AdventureScene() {
     }
     setClosingExperienceId(selectedExperienceId);
     setSelectedExperienceId(null);
-    window.setTimeout(() => setClosingExperienceId(null), MOTION_TIERS.macro.overlayFadeDuration * 1000);
+    window.setTimeout(
+      () => setClosingExperienceId(null),
+      MOTION_TIERS.macro.overlayFadeDuration * 1000
+    );
   }, [reducedMotion, selectedExperienceId]);
 
   const closeIntroductionDialog = useCallback(() => {
@@ -312,20 +394,22 @@ export function AdventureScene() {
     if (!isDetailDialogOpen || !modalRef.current) return;
     const dialog = modalRef.current;
     const focusableSelectors = [
-      'button:not([disabled])',
-      '[href]',
-      'input:not([disabled])',
-      'select:not([disabled])',
-      'textarea:not([disabled])',
-      '[tabindex]:not([tabindex="-1"])'
-    ].join(',');
-    const focusableNodes = Array.from(dialog.querySelectorAll<HTMLElement>(focusableSelectors));
+      "button:not([disabled])",
+      "[href]",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      "textarea:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(",");
+    const focusableNodes = Array.from(
+      dialog.querySelectorAll<HTMLElement>(focusableSelectors)
+    );
     const firstFocusable = focusableNodes[0] ?? dialog;
     const lastFocusable = focusableNodes[focusableNodes.length - 1] ?? dialog;
     firstFocusable.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+      if (event.key !== "Tab") return;
       if (focusableNodes.length < 2) {
         event.preventDefault();
         firstFocusable.focus();
@@ -340,9 +424,9 @@ export function AdventureScene() {
       }
     };
 
-    dialog.addEventListener('keydown', onKeyDown);
+    dialog.addEventListener("keydown", onKeyDown);
     return () => {
-      dialog.removeEventListener('keydown', onKeyDown);
+      dialog.removeEventListener("keydown", onKeyDown);
     };
   }, [isDetailDialogOpen]);
 
@@ -351,58 +435,61 @@ export function AdventureScene() {
     lastTriggerRef.current?.focus();
   }, [isDetailDialogOpen]);
 
-  const updateHover = useCallback((target: InteractiveTarget, hovered: boolean) => {
-    setInteractionState((currentState) => {
-      const isCurrentOverviewState =
-        currentState === 'idleOverview' ||
-        currentState === 'hoverBillboard' ||
-        currentState === 'hoverCabin' ||
-        currentState === 'hoverTablets' ||
-        currentState === 'hoverIntroduction' ||
-        currentState === 'hoverTimeline';
+  const updateHover = useCallback(
+    (target: InteractiveTarget, hovered: boolean) => {
+      setInteractionState((currentState) => {
+        const isCurrentOverviewState =
+          currentState === "idleOverview" ||
+          currentState === "hoverBillboard" ||
+          currentState === "hoverCabin" ||
+          currentState === "hoverTablets" ||
+          currentState === "hoverIntroduction" ||
+          currentState === "hoverTimeline";
 
-      if (!isCurrentOverviewState) return currentState;
-      if (!hovered) return 'idleOverview';
+        if (!isCurrentOverviewState) return currentState;
+        if (!hovered) return "idleOverview";
 
-      return target === 'billboard'
-        ? 'hoverBillboard'
-        : target === 'cabin'
-          ? 'hoverCabin'
-          : target === 'tablets'
-            ? 'hoverTablets'
-            : target === 'introduction'
-              ? 'hoverIntroduction'
-              : 'hoverTimeline';
-    });
-  }, []);
+        return target === "billboard"
+          ? "hoverBillboard"
+          : target === "cabin"
+          ? "hoverCabin"
+          : target === "tablets"
+          ? "hoverTablets"
+          : target === "introduction"
+          ? "hoverIntroduction"
+          : "hoverTimeline";
+      });
+    },
+    []
+  );
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
 
       setIsFreeModeEnabled(false);
-      setInteractionState('transitioning');
-      setFocusTarget(target === 'cabin' ? 'cabinInterior' : target);
+      setInteractionState("transitioning");
+      setFocusTarget(target === "cabin" ? "cabinInterior" : target);
       setIsCabinInteriorRevealed(false);
       setIsCabinCameraTransitionComplete(false);
-      setIsCabinDoorOpen(target === 'cabin');
+      setIsCabinDoorOpen(target === "cabin");
       setSelectedNoteId(null);
       setSelectedExperienceId(null);
       setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
       setIsTimelineDialogOpen(false);
 
-      if (target === 'cabin') {
+      if (target === "cabin") {
         if (reducedMotion) {
-          setCabinTransitionFadeState('idle');
+          setCabinTransitionFadeState("idle");
           setIsCabinFadePending(false);
           setIsCabinCameraTransitionComplete(true);
         } else {
-          setCabinTransitionFadeState('idle');
+          setCabinTransitionFadeState("idle");
           setIsCabinFadePending(true);
         }
       } else {
-        setCabinTransitionFadeState('idle');
+        setCabinTransitionFadeState("idle");
         setIsCabinFadePending(false);
       }
     },
@@ -410,9 +497,14 @@ export function AdventureScene() {
   );
 
   const handleDartboardSelect = useCallback(() => {
-    if (interactionState !== 'cabinCloseup' || isTransitioning || isFreeModeEnabled) return;
-    setInteractionState('transitioning');
-    setFocusTarget('cabinDartboard');
+    if (
+      interactionState !== "cabinCloseup" ||
+      isTransitioning ||
+      isFreeModeEnabled
+    )
+      return;
+    setInteractionState("transitioning");
+    setFocusTarget("cabinDartboard");
     setSelectedGalleryPhotoId(null);
   }, [interactionState, isFreeModeEnabled, isTransitioning]);
 
@@ -424,33 +516,33 @@ export function AdventureScene() {
       if (cabinExitTimerRef.current !== null) {
         window.clearTimeout(cabinExitTimerRef.current);
       }
-      document.body.style.cursor = 'auto';
+      document.body.style.cursor = "auto";
     },
     []
   );
 
   useEffect(() => {
-    if (interactionState !== 'introductionCloseup') {
+    if (interactionState !== "introductionCloseup") {
       setIsIntroductionCloseupHovered(false);
     }
   }, [interactionState]);
 
   useEffect(() => {
-    if (interactionState !== 'timelineCloseup') {
+    if (interactionState !== "timelineCloseup") {
       setIsTimelineCloseupHovered(false);
     }
   }, [interactionState]);
 
   const detailCardStateClass = (isClosing: boolean) =>
-    reducedMotion ? 'motion-reduced' : isClosing ? 'anim-exit' : 'anim-enter';
+    reducedMotion ? "motion-reduced" : isClosing ? "anim-exit" : "anim-enter";
 
   const beginOverviewTransition = useCallback(() => {
     setIsFreeModeEnabled(false);
     setIsCabinDoorOpen(false);
     setIsCabinInteriorRevealed(false);
     setIsCabinCameraTransitionComplete(false);
-    setFocusTarget('overview');
-    setInteractionState('transitioning');
+    setFocusTarget("overview");
+    setInteractionState("transitioning");
     setSelectedNoteId(null);
     setSelectedExperienceId(null);
     setSelectedGalleryPhotoId(null);
@@ -459,44 +551,49 @@ export function AdventureScene() {
   }, []);
 
   const handleBackNavigation = useCallback(() => {
-    if (focusTarget === 'cabinDartboard') {
+    if (focusTarget === "cabinDartboard") {
       setIsFreeModeEnabled(false);
-      setInteractionState('transitioning');
-      setFocusTarget('cabinInterior');
+      setInteractionState("transitioning");
+      setFocusTarget("cabinInterior");
       setSelectedGalleryPhotoId(null);
       return;
     }
 
-    const exitingCabin = focusTarget === 'cabinInterior';
+    const exitingCabin = focusTarget === "cabinInterior";
     if (exitingCabin && !reducedMotion) {
       if (isCabinExitTransitionPending) return;
       setIsCabinExitTransitionPending(true);
-      setCabinTransitionFadeState('fade-out');
+      setCabinTransitionFadeState("fade-out");
       if (cabinExitTimerRef.current !== null) {
         window.clearTimeout(cabinExitTimerRef.current);
       }
       cabinExitTimerRef.current = window.setTimeout(() => {
-        setCabinTransitionFadeState('black');
+        setCabinTransitionFadeState("black");
         setIsCabinExitTransitionPending(false);
         beginOverviewTransition();
         cabinExitTimerRef.current = null;
       }, 240);
       return;
     }
-    setCabinTransitionFadeState('idle');
+    setCabinTransitionFadeState("idle");
     beginOverviewTransition();
-  }, [beginOverviewTransition, focusTarget, isCabinExitTransitionPending, reducedMotion]);
+  }, [
+    beginOverviewTransition,
+    focusTarget,
+    isCabinExitTransitionPending,
+    reducedMotion,
+  ]);
 
   useEffect(() => {
     if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
     if (!isCabinCameraTransitionComplete || isSceneLoaderActive) return;
     setIsCabinInteriorRevealed(true);
-    setInteractionState('cabinCloseup');
+    setInteractionState("cabinCloseup");
     if (!reducedMotion) {
-      setCabinTransitionFadeState('fade-in');
+      setCabinTransitionFadeState("fade-in");
       scheduleCabinFadeReset(320);
     } else {
-      setCabinTransitionFadeState('idle');
+      setCabinTransitionFadeState("idle");
     }
   }, [
     isCabinCameraTransitionComplete,
@@ -504,18 +601,30 @@ export function AdventureScene() {
     isCabinInteriorTarget,
     isSceneLoaderActive,
     reducedMotion,
-    scheduleCabinFadeReset
+    scheduleCabinFadeReset,
   ]);
 
   return (
     <main>
-      <div className={`scene-stage ${isDetailDialogOpen ? 'scene-stage--locked' : ''}`} aria-hidden={isDetailDialogOpen}>
-        {cabinTransitionFadeState !== 'idle' && (
-          <div className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`} aria-hidden="true" />
+      <div
+        className={`scene-stage ${
+          isDetailDialogOpen ? "scene-stage--locked" : ""
+        }`}
+        aria-hidden={isDetailDialogOpen}
+      >
+        {cabinTransitionFadeState !== "idle" && (
+          <div
+            className={`cabin-transition-fade cabin-transition-fade--${cabinTransitionFadeState}`}
+            aria-hidden="true"
+          />
         )}
         {shouldShowLoadingOverlay && (
           <div
-            className={`scene-loading-overlay ${shouldShowInitialLoadingOverlay ? 'scene-loading-overlay--solid' : ''}`.trim()}
+            className={`scene-loading-overlay ${
+              shouldShowInitialLoadingOverlay
+                ? "scene-loading-overlay--solid"
+                : ""
+            }`.trim()}
             role="status"
             aria-live="polite"
           >
@@ -523,191 +632,250 @@ export function AdventureScene() {
             <p>Loading Scene…</p>
           </div>
         )}
-        <div className="scene-canvas-shell" style={canvasVisibilityStyle} aria-hidden={!isInitialSceneReady}>
-        <Canvas
-          shadows
-          camera={{ position: CAMERA_PRESETS.overview.position, fov: CAMERA_PRESETS.overview.fov }}
-          dpr={[1, 1.7]}
-          gl={{ alpha: false }}
-          onCreated={({ camera }) => {
-            camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
-          }}
+        <div
+          className="scene-canvas-shell"
+          style={canvasVisibilityStyle}
+          aria-hidden={!isInitialSceneReady}
         >
-          <Suspense fallback={null}>
-          <CameraRig
-            targetKey={focusTarget}
-            isTransitioning={isTransitioning}
-            reducedMotion={reducedMotion}
-            onTransitionProgress={(target, progress) => {
-              if (reducedMotion) return;
-              if (target !== 'cabinInterior' || !isCabinFadePending) return;
-              if (progress < 0.99) return;
-              setCabinTransitionFadeState('fade-out');
-              setIsCabinFadePending(false);
+          <Canvas
+            shadows
+            camera={{
+              position: CAMERA_PRESETS.overview.position,
+              fov: CAMERA_PRESETS.overview.fov,
             }}
-            onTransitionEnd={(completedTarget) => {
-              if (completedTarget === 'cabinInterior') {
-                setIsCabinCameraTransitionComplete(true);
-                if (isSceneLoaderActive) {
-                  setCabinTransitionFadeState('black');
+            dpr={[1, 1.7]}
+            gl={{ alpha: false }}
+            onCreated={({ camera }) => {
+              camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
+            }}
+          >
+            <Suspense fallback={null}>
+              <CameraRig
+                targetKey={focusTarget}
+                isTransitioning={isTransitioning}
+                reducedMotion={reducedMotion}
+                onTransitionProgress={(target, progress) => {
+                  if (reducedMotion) return;
+                  if (target !== "cabinInterior" || !isCabinFadePending) return;
+                  if (progress < 0.99) return;
+                  setCabinTransitionFadeState("fade-out");
+                  setIsCabinFadePending(false);
+                }}
+                onTransitionEnd={(completedTarget) => {
+                  if (completedTarget === "cabinInterior") {
+                    setIsCabinCameraTransitionComplete(true);
+                    if (isSceneLoaderActive) {
+                      setCabinTransitionFadeState("black");
+                    }
+                    return;
+                  }
+                  if (completedTarget === "overview") {
+                    if (
+                      !reducedMotion &&
+                      (cabinTransitionFadeState === "fade-out" ||
+                        cabinTransitionFadeState === "black")
+                    ) {
+                      setCabinTransitionFadeState("fade-in");
+                      scheduleCabinFadeReset(320);
+                    } else {
+                      setCabinTransitionFadeState("idle");
+                    }
+                    setIsCabinFadePending(false);
+                    setInteractionState("idleOverview");
+                    return;
+                  }
+                  setInteractionState(
+                    completedTarget === "billboard"
+                      ? "billboardCloseup"
+                      : completedTarget === "cabinDartboard"
+                      ? "dartboardCloseup"
+                      : completedTarget === "tablets"
+                      ? "tabletsCloseup"
+                      : completedTarget === "introduction"
+                      ? "introductionCloseup"
+                      : "timelineCloseup"
+                  );
+                }}
+              />
+              <FreeModeCameraPositioner
+                enabled={isFreeModeEnabled}
+                focusTarget={focusTarget}
+              />
+              <FreeModeKeyboardPan
+                enabled={isFreeModeEnabled}
+                controlsRef={freeModeControlsRef}
+              />
+              {isFreeModeEnabled && (
+                <OrbitControls
+                  ref={freeModeControlsRef}
+                  enableDamping
+                  dampingFactor={0.08}
+                  minDistance={1.4}
+                  maxDistance={42}
+                  enablePan
+                  panSpeed={0.9}
+                  zoomSpeed={0.85}
+                  screenSpacePanning={false}
+                  maxPolarAngle={Math.PI * 0.47}
+                  minPolarAngle={Math.PI * 0.14}
+                  target={
+                    focusTarget === "cabinInterior"
+                      ? [0.35, 1.15, -1.4]
+                      : [0.2, 0.9, 0.5]
+                  }
+                />
+              )}
+              <LightingAtmosphere
+                backgroundColor={
+                  (focusTarget === "cabinInterior" ||
+                    focusTarget === "cabinDartboard") &&
+                  !isCabinInteriorRevealed
+                    ? "#060709"
+                    : undefined
                 }
-                return;
-              }
-              if (completedTarget === 'overview') {
-                if (!reducedMotion && (cabinTransitionFadeState === 'fade-out' || cabinTransitionFadeState === 'black')) {
-                  setCabinTransitionFadeState('fade-in');
-                  scheduleCabinFadeReset(320);
-                } else {
-                  setCabinTransitionFadeState('idle');
+              />
+              <LowPolyEnvironment
+                tabletsInteractiveEnabled={
+                  isOverviewState && !isFreeModeEnabled
                 }
-                setIsCabinFadePending(false);
-                setInteractionState('idleOverview');
-                return;
-              }
-              setInteractionState(
-                completedTarget === 'billboard'
-                  ? 'billboardCloseup'
-                  : completedTarget === 'cabinDartboard'
-                      ? 'dartboardCloseup'
-                    : completedTarget === 'tablets'
-                      ? 'tabletsCloseup'
-                      : completedTarget === 'introduction'
-                        ? 'introductionCloseup'
-                        : 'timelineCloseup'
-              );
-            }}
-          />
-          <FreeModeCameraPositioner enabled={isFreeModeEnabled} focusTarget={focusTarget} />
-          <FreeModeKeyboardPan enabled={isFreeModeEnabled} controlsRef={freeModeControlsRef} />
-          {isFreeModeEnabled && (
-            <OrbitControls
-              ref={freeModeControlsRef}
-              enableDamping
-              dampingFactor={0.08}
-              minDistance={1.4}
-              maxDistance={42}
-              enablePan
-              panSpeed={0.9}
-              zoomSpeed={0.85}
-              screenSpacePanning={false}
-              maxPolarAngle={Math.PI * 0.47}
-              minPolarAngle={Math.PI * 0.14}
-              target={
-                focusTarget === 'cabinInterior'
-                  ? [0.35, 1.15, -1.4]
-                  : [0.2, 0.9, 0.5]
-              }
-            />
-          )}
-          <LightingAtmosphere
-            backgroundColor={
-              (focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && !isCabinInteriorRevealed ? '#060709' : undefined
-            }
-          />
-          <LowPolyEnvironment
-            tabletsInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
-            tabletsDetailInteractiveEnabled={interactionState === 'tabletsCloseup'}
-            tabletsHovered={interactionState === 'hoverTablets' || interactionState === 'tabletsCloseup'}
-            onTabletsHoverChange={(hovered) => updateHover('tablets', hovered)}
-            onTabletsClick={handleFocusClick}
-            onTabletDetailSelect={(entryId) => setSelectedExperienceId(entryId)}
-            tabletsRef={tabletsRef}
-            timelineSignRef={timelineSignRef}
-            timelineInteractiveEnabled={!isFreeModeEnabled && (isOverviewState || interactionState === 'timelineCloseup')}
-            timelineHovered={interactionState === 'hoverTimeline' || isTimelineCloseupHovered}
-            onTimelineHoverChange={(hovered) => {
-              if (interactionState === 'timelineCloseup') {
-                setIsTimelineCloseupHovered(hovered);
-                return;
-              }
-              updateHover('timeline', hovered);
-            }}
-            onTimelineClick={(target) => {
-              if (interactionState === 'timelineCloseup') {
-                setIsTimelineDialogOpen(true);
-                return;
-              }
-              handleFocusClick(target);
-            }}
-            reducedMotion={reducedMotion}
-          />
-          <IntroductionLandmark
-            landmarkRef={introductionRef}
-            interactiveEnabled={!isFreeModeEnabled && isOverviewState}
-            detailInteractiveEnabled={!isFreeModeEnabled && interactionState === 'introductionCloseup'}
-            hoverEnabled={!isFreeModeEnabled && isOverviewState}
-            hovered={interactionState === 'hoverIntroduction' || isIntroductionCloseupHovered}
-            onHoverChange={(hovered) => {
-              if (interactionState === 'introductionCloseup') {
-                setIsIntroductionCloseupHovered(hovered);
-                return;
-              }
-              updateHover('introduction', hovered);
-            }}
-            onClick={() => {
-              if (interactionState === 'introductionCloseup') {
-                setIsIntroductionDialogOpen(true);
-                return;
-              }
-              handleFocusClick('introduction');
-            }}
-            reducedMotion={reducedMotion}
-          />
-          <Billboard
-            billboardRef={billboardRef}
-            interactiveEnabled={isOverviewState && !isFreeModeEnabled}
-            notesInteractive={interactionState === 'billboardCloseup'}
-            hovered={interactionState === 'hoverBillboard'}
-            onHoverChange={(hovered) => updateHover('billboard', hovered)}
-            onClick={() => handleFocusClick('billboard')}
-            onNoteClick={(noteId) => setSelectedNoteId(noteId)}
-            detailOpen={selectedNoteId !== null}
-            hideThumbnails={cabinTransitionFadeState !== 'idle'}
-            reducedMotion={reducedMotion}
-          />
-          {!isCabinInteriorRevealed && (
-            <Cabin
-              cabinRef={cabinRef}
-              interactiveEnabled={isOverviewState && !isFreeModeEnabled}
-              hovered={interactionState === 'hoverCabin'}
-              isDoorOpen={isCabinDoorOpen}
-              onHoverChange={(hovered) => updateHover('cabin', hovered)}
-              onClick={() => handleFocusClick('cabin')}
-            />
-          )}
-          {(focusTarget === 'cabinInterior' || focusTarget === 'cabinDartboard') && isCabinInteriorRevealed && (
-            <CabinInterior
-              photosInteractive={interactionState === 'cabinCloseup' && !isFreeModeEnabled}
-              onPhotoSelect={(photoId) => setSelectedGalleryPhotoId(photoId)}
-              onDartboardSelect={handleDartboardSelect}
-            />
-          )}
-          </Suspense>
-        </Canvas>
+                tabletsDetailInteractiveEnabled={
+                  interactionState === "tabletsCloseup"
+                }
+                tabletsHovered={
+                  interactionState === "hoverTablets" ||
+                  interactionState === "tabletsCloseup"
+                }
+                onTabletsHoverChange={(hovered) =>
+                  updateHover("tablets", hovered)
+                }
+                onTabletsClick={handleFocusClick}
+                onTabletDetailSelect={(entryId) =>
+                  setSelectedExperienceId(entryId)
+                }
+                tabletsRef={tabletsRef}
+                timelineSignRef={timelineSignRef}
+                timelineInteractiveEnabled={
+                  !isFreeModeEnabled &&
+                  (isOverviewState || interactionState === "timelineCloseup")
+                }
+                timelineHovered={
+                  interactionState === "hoverTimeline" ||
+                  isTimelineCloseupHovered
+                }
+                onTimelineHoverChange={(hovered) => {
+                  if (interactionState === "timelineCloseup") {
+                    setIsTimelineCloseupHovered(hovered);
+                    return;
+                  }
+                  updateHover("timeline", hovered);
+                }}
+                onTimelineClick={(target) => {
+                  if (interactionState === "timelineCloseup") {
+                    setIsTimelineDialogOpen(true);
+                    return;
+                  }
+                  handleFocusClick(target);
+                }}
+                reducedMotion={reducedMotion}
+              />
+              <IntroductionLandmark
+                landmarkRef={introductionRef}
+                interactiveEnabled={!isFreeModeEnabled && isOverviewState}
+                detailInteractiveEnabled={
+                  !isFreeModeEnabled &&
+                  interactionState === "introductionCloseup"
+                }
+                hoverEnabled={!isFreeModeEnabled && isOverviewState}
+                hovered={
+                  interactionState === "hoverIntroduction" ||
+                  isIntroductionCloseupHovered
+                }
+                onHoverChange={(hovered) => {
+                  if (interactionState === "introductionCloseup") {
+                    setIsIntroductionCloseupHovered(hovered);
+                    return;
+                  }
+                  updateHover("introduction", hovered);
+                }}
+                onClick={() => {
+                  if (interactionState === "introductionCloseup") {
+                    setIsIntroductionDialogOpen(true);
+                    return;
+                  }
+                  handleFocusClick("introduction");
+                }}
+                reducedMotion={reducedMotion}
+              />
+              <Billboard
+                billboardRef={billboardRef}
+                interactiveEnabled={isOverviewState && !isFreeModeEnabled}
+                notesInteractive={interactionState === "billboardCloseup"}
+                hovered={interactionState === "hoverBillboard"}
+                onHoverChange={(hovered) => updateHover("billboard", hovered)}
+                onClick={() => handleFocusClick("billboard")}
+                onNoteClick={(noteId) => setSelectedNoteId(noteId)}
+                detailOpen={selectedNoteId !== null}
+                hideThumbnails={cabinTransitionFadeState !== "idle"}
+                reducedMotion={reducedMotion}
+              />
+              {!isCabinInteriorRevealed && (
+                <Cabin
+                  cabinRef={cabinRef}
+                  interactiveEnabled={isOverviewState && !isFreeModeEnabled}
+                  hovered={interactionState === "hoverCabin"}
+                  isDoorOpen={isCabinDoorOpen}
+                  onHoverChange={(hovered) => updateHover("cabin", hovered)}
+                  onClick={() => handleFocusClick("cabin")}
+                />
+              )}
+              {(focusTarget === "cabinInterior" ||
+                focusTarget === "cabinDartboard") &&
+                isCabinInteriorRevealed && (
+                  <CabinInterior
+                    photosInteractive={
+                      interactionState === "cabinCloseup" && !isFreeModeEnabled
+                    }
+                    onPhotoSelect={(photoId) =>
+                      setSelectedGalleryPhotoId(photoId)
+                    }
+                    onDartboardSelect={handleDartboardSelect}
+                  />
+                )}
+            </Suspense>
+          </Canvas>
         </div>
       </div>
 
-      <header className={`scene-brand ${reducedMotion ? 'motion-reduced' : 'anim-enter'}`} aria-label="Site title">
+      <header
+        className={`scene-brand ${
+          reducedMotion ? "motion-reduced" : "anim-enter"
+        }`}
+        aria-label="Site title"
+      >
         <h1>Ben Goulet</h1>
         <p>an interactive portfolio</p>
       </header>
 
-      {interactionState === 'billboardCloseup' && selectedNote && (
+      {interactionState === "billboardCloseup" && selectedNote && (
         <article
-          className={`note-detail ${detailCardStateClass(Boolean(closingNoteId))}`}
+          className={`note-detail ${detailCardStateClass(
+            Boolean(closingNoteId)
+          )}`}
           aria-live="polite"
           onClick={closeNoteDetail}
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
               event.preventDefault();
               closeNoteDetail();
             }
           }}
         >
           <div
-            className={`note-detail-card detail-content-card project-detail-card ${detailCardStateClass(Boolean(closingNoteId))}`}
+            className={`note-detail-card detail-content-card project-detail-card ${detailCardStateClass(
+              Boolean(closingNoteId)
+            )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -715,7 +883,12 @@ export function AdventureScene() {
             aria-labelledby={noteTitleId}
             tabIndex={-1}
           >
-            <Image src={selectedNote.detailImageSrc} alt={`${selectedNote.title} thumbnail`} width={720} height={380} />
+            <Image
+              src={selectedNote.detailImageSrc}
+              alt={`${selectedNote.title} thumbnail`}
+              width={720}
+              height={380}
+            />
             <h2 id={noteTitleId}>{selectedNote.title}</h2>
             <p className="detail-summary">{selectedNote.detail}</p>
             {selectedNote.resumeMeta && (
@@ -740,22 +913,26 @@ export function AdventureScene() {
         </article>
       )}
 
-      {interactionState === 'tabletsCloseup' && selectedExperience && (
+      {interactionState === "tabletsCloseup" && selectedExperience && (
         <article
-          className={`note-detail ${detailCardStateClass(Boolean(closingExperienceId))}`}
+          className={`note-detail ${detailCardStateClass(
+            Boolean(closingExperienceId)
+          )}`}
           aria-live="polite"
           onClick={closeExperienceDetail}
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
               event.preventDefault();
               closeExperienceDetail();
             }
           }}
         >
           <div
-            className={`detail-content-card experience-detail-card ${detailCardStateClass(Boolean(closingExperienceId))}`}
+            className={`detail-content-card experience-detail-card ${detailCardStateClass(
+              Boolean(closingExperienceId)
+            )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -763,7 +940,12 @@ export function AdventureScene() {
             aria-labelledby={experienceTitleId}
             tabIndex={-1}
           >
-            <Image src={selectedExperience.detailImageSrc} alt={`${selectedExperience.company} thumbnail`} width={720} height={380} />
+            <Image
+              src={selectedExperience.detailImageSrc}
+              alt={`${selectedExperience.company} thumbnail`}
+              width={720}
+              height={380}
+            />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
             <p className="detail-meta">{selectedExperience.company}</p>
             <p className="detail-meta">{selectedExperience.dateLocation}</p>
@@ -781,49 +963,63 @@ export function AdventureScene() {
         </article>
       )}
 
-      {interactionState === 'introductionCloseup' && isIntroductionDialogOpen && (
-        <article
-          className={`note-detail ${detailCardStateClass(false)}`}
-          aria-live="polite"
-          onClick={closeIntroductionDialog}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              closeIntroductionDialog();
-            }
-          }}
-        >
-          <div
-            className={`detail-content-card introduction-detail-card ${detailCardStateClass(false)}`}
-            ref={modalRef}
-            onClick={(event) => event.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="introduction-title"
-            tabIndex={-1}
+      {interactionState === "introductionCloseup" &&
+        isIntroductionDialogOpen && (
+          <article
+            className={`note-detail ${detailCardStateClass(false)}`}
+            aria-live="polite"
+            onClick={closeIntroductionDialog}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                closeIntroductionDialog();
+              }
+            }}
           >
-            <div className="introduction-detail-layout">
-              <Image src="/introimage.png" alt="Introduction thumbnail" width={520} height={460} />
-              <section className="introduction-detail-copy">
-                <h2 id="introduction-title">Introduction</h2>
-                <p>
-                  I&apos;m Ben Goulet, a software engineer focused on building thoughtful, user-facing software across
-                  product, backend, and creative technical work.
-                </p>
-                <p>
-                  Currently, I&apos;m focused on building interactive web experiences, pursuing strong engineering
-                  opportunities, and creating projects that blend technical depth with personality and design.
-                </p>
-                <p>Explore the island to view projects, experience, and more about me.</p>
-              </section>
+            <div
+              className={`detail-content-card introduction-detail-card ${detailCardStateClass(
+                false
+              )}`}
+              ref={modalRef}
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="introduction-title"
+              tabIndex={-1}
+            >
+              <div className="introduction-detail-layout">
+                <Image
+                  src="/introimage.png"
+                  alt="Introduction thumbnail"
+                  width={520}
+                  height={460}
+                />
+                <section className="introduction-detail-copy">
+                  <h2 id="introduction-title">Introduction</h2>
+                  <p>
+                    I&apos;m Ben Goulet, a software engineer focused on building
+                    thoughtful, user-facing software across product, backend,
+                    and creative technical work.
+                  </p>
+                  <p>
+                    Currently, I&apos;m focused on building interactive web
+                    experiences, pursuing strong engineering opportunities, and
+                    creating projects that blend technical depth with
+                    personality and design.
+                  </p>
+                  <p>
+                    Explore the island to view projects, experience, and more
+                    about me.
+                  </p>
+                </section>
+              </div>
             </div>
-          </div>
-        </article>
-      )}
+          </article>
+        )}
 
-      {interactionState === 'timelineCloseup' && isTimelineDialogOpen && (
+      {interactionState === "timelineCloseup" && isTimelineDialogOpen && (
         <article
           className={`note-detail ${detailCardStateClass(false)}`}
           aria-live="polite"
@@ -831,14 +1027,16 @@ export function AdventureScene() {
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
               event.preventDefault();
               closeTimelineDialog();
             }
           }}
         >
           <div
-            className={`detail-content-card introduction-detail-card ${detailCardStateClass(false)}`}
+            className={`detail-content-card introduction-detail-card ${detailCardStateClass(
+              false
+            )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -847,25 +1045,27 @@ export function AdventureScene() {
             tabIndex={-1}
           >
             <div className="introduction-detail-layout">
-              <Image src="/projects/timeline.png" alt="Timeline thumbnail" width={520} height={460} />
+              <Image
+                src="/projects/timeline.png"
+                alt="Timeline thumbnail"
+                width={520}
+                height={460}
+              />
               <section className="introduction-detail-copy">
                 <h2 id="timeline-title">Timeline</h2>
                 <p>
-                  This trail marks key chapters of my journey as a builder, from early curiosity to internships,
-                  leadership roles, and personal projects.
+                  This trail marks key chapters of my personal journey -
+                  timeline feature coming soon!
                 </p>
-                <p>
-                  I designed this section to show how each experience built on the last one and shaped the way I
-                  approach engineering today.
-                </p>
-                <p>More timeline milestones and stories are coming soon.</p>
+                <p></p>
+                <p></p>
               </section>
             </div>
           </div>
         </article>
       )}
 
-      {interactionState === 'cabinCloseup' && selectedGalleryPhoto && (
+      {interactionState === "cabinCloseup" && selectedGalleryPhoto && (
         <article
           className={`note-detail ${detailCardStateClass(false)}`}
           aria-live="polite"
@@ -873,14 +1073,16 @@ export function AdventureScene() {
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
               event.preventDefault();
               closeGalleryDetail();
             }
           }}
         >
           <div
-            className={`detail-content-card gallery-detail-card ${detailCardStateClass(false)}`}
+            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+              false
+            )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
             role="dialog"
@@ -888,15 +1090,24 @@ export function AdventureScene() {
             aria-labelledby="gallery-title"
             tabIndex={-1}
           >
-            <Image src={selectedGalleryPhoto.imageSrc} alt={selectedGalleryPhoto.title} width={720} height={480} />
+            <Image
+              src={selectedGalleryPhoto.imageSrc}
+              alt={selectedGalleryPhoto.title}
+              width={720}
+              height={480}
+            />
             <h2 id="gallery-title">{selectedGalleryPhoto.title}</h2>
             <p>{selectedGalleryPhoto.description}</p>
           </div>
         </article>
       )}
 
-      {interactionState === 'dartboardCloseup' && (
-        <section className="scene-inline-prompt" aria-live="polite" role="status">
+      {interactionState === "dartboardCloseup" && (
+        <section
+          className="scene-inline-prompt"
+          aria-live="polite"
+          role="status"
+        >
           <div className="scene-inline-prompt__card">
             <h2>Play Darts?</h2>
             <p>The darts minigame is coming soon.</p>
@@ -904,26 +1115,27 @@ export function AdventureScene() {
         </section>
       )}
 
-      {!isOverviewState && !isTransitioning && !isCabinExitTransitionPending && (
-        <button
-          className="scene-back"
-          aria-label="Return to overview"
-          onClick={handleBackNavigation}
-        >
-          ←
-        </button>
-      )}
+      {!isOverviewState &&
+        !isTransitioning &&
+        !isCabinExitTransitionPending && (
+          <button
+            className="scene-back"
+            aria-label="Return to overview"
+            onClick={handleBackNavigation}
+          >
+            ←
+          </button>
+        )}
       {canToggleFreeMode && (
         <button
-          className={`scene-free-mode ${isFreeModeEnabled ? 'is-enabled' : ''}`}
+          className={`scene-free-mode ${isFreeModeEnabled ? "is-enabled" : ""}`}
           type="button"
           aria-pressed={isFreeModeEnabled}
           onClick={() => setIsFreeModeEnabled((current) => !current)}
         >
-          Free Mode: {isFreeModeEnabled ? 'On' : 'Off'}
+          Free Mode: {isFreeModeEnabled ? "On" : "Off"}
         </button>
       )}
-
     </main>
   );
 }
