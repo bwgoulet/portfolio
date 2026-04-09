@@ -55,3 +55,15 @@ lib/
 - Animation timing/easing: `ANIMATION_CONFIG` in `config/sceneConfig.ts`.
 - Replace placeholders with glTF: swap `LowPolyEnvironment` for a Drei `useGLTF` model component.
 - Expand navigation: add landmark metadata + target preset pairs, then reuse current click/hover pattern.
+
+## Texture downscaling helper
+
+Use the built-in script to batch downscale textures for runtime performance:
+
+```bash
+npm run textures:downscale -- --dry-run
+npm run textures:downscale -- --max-color 2048 --max-data 1024
+```
+
+Default behavior writes optimized files to `public/textures-optimized`.
+Use `--in-place` to overwrite `public/textures` once you've reviewed output quality.
