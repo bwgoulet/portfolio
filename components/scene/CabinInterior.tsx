@@ -132,7 +132,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.06,
     pinOffsetX: 0.015,
     imageSrc: "/gallery/acting.jpg",
-    title: "test deployment",
+    title: "Gratitude",
     description: "",
   },
 ];
