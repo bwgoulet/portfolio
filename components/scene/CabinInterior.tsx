@@ -383,11 +383,11 @@ export const CabinInterior = memo(function CabinInterior({
     return desiredControllerWidth / gameCubeControllerModel.size.x;
   }, [gameCubeControllerModel.size.x]);
   const gameCubeControllerPosition = useMemo<[number, number, number]>(
-    () => [-0.59, 0.2, 0.4],
+    () => [-0.3, -0.11, 0],
     []
   );
   const gameCubeControllerRotation = useMemo<[number, number, number]>(
-    () => [Math.PI / 2, 1.5, -Math.PI / 2],
+    () => [Math.PI / 2, 2, -Math.PI / 2],
     []
   );
   const galleryTextureSources = useMemo(
