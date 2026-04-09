@@ -247,9 +247,8 @@ main {
   width: 54px;
   height: 42px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   pointer-events: none;
 }
 
@@ -309,30 +308,12 @@ main {
 }
 
 .note-preview img {
-  width: 44px;
-  height: 26px;
+  width: 50px;
+  height: 32px;
   object-fit: cover;
   border-radius: var(--vt-overlay-radius-sm);
   border: 1px solid var(--vt-note-border);
   box-shadow: var(--vt-overlay-shadow-note);
-}
-
-.note-scribbles {
-  margin-top: 3px;
-  width: 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.note-scribbles span {
-  height: 2px;
-  border-radius: var(--vt-overlay-radius-pill);
-  background: var(--vt-note-scribble);
-}
-
-.note-scribbles span:nth-child(2) {
-  width: 82%;
 }
 
 .note-detail {
