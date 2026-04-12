@@ -6,7 +6,7 @@ import {
   SCENE_ANCHORS,
 } from "@/config/sceneConfig";
 import { VISUAL_TOKENS } from "@/config/visualTokens";
-import { Text, useGLTF, useTexture } from "@react-three/drei";
+import { Clone, Text, useGLTF, useTexture } from "@react-three/drei";
 import type { RefObject } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -117,10 +117,59 @@ function StoneTablets({
   onDetailSelect,
 }: StoneTabletsProps) {
   const [hoveredTabletId, setHoveredTabletId] = useState<string | null>(null);
+  const bonfireGltf = useGLTF("/models/Bonfire.glb");
+  const treeStumpGltf = useGLTF("/models/Tree stump.glb");
   const tabletTextures = useTexture(
     EXPERIENCE_ENTRIES.map((entry) => entry.placeholderImageSrc)
   );
   const gl = useThree((state) => state.gl);
+
+  const bonfireModel = useMemo(() => {
+    const bonfireScene = bonfireGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(bonfireScene);
+    bonfireScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    bonfireScene.updateMatrixWorld(true);
+    const bonfireBounds = new THREE.Box3().setFromObject(bonfireScene);
+    const bonfireCenter = bonfireBounds.getCenter(new THREE.Vector3());
+    bonfireScene.position.x -= bonfireCenter.x;
+    bonfireScene.position.z -= bonfireCenter.z;
+    bonfireScene.position.y -= bonfireBounds.min.y;
+    return bonfireScene;
+  }, [bonfireGltf.scene]);
+
+  const treeStumpModel = useMemo(() => {
+    const stumpScene = treeStumpGltf.scene.clone(true);
+    forceDiffuseOnlyOnSceneMaterials(stumpScene);
+    stumpScene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    stumpScene.updateMatrixWorld(true);
+    const stumpBounds = new THREE.Box3().setFromObject(stumpScene);
+    const stumpCenter = stumpBounds.getCenter(new THREE.Vector3());
+    stumpScene.position.x -= stumpCenter.x;
+    stumpScene.position.z -= stumpCenter.z;
+    stumpScene.position.y -= stumpBounds.min.y;
+    return stumpScene;
+  }, [treeStumpGltf.scene]);
+
+  const stumpPositions = useMemo<[number, number, number][]>(
+    () => [
+      [2.14, 1.12, 3.66],
+      [1.9, 1.12, 2.93],
+      [2.5, 1.12, 2.62],
+      [3.08, 1.12, 3.08],
+      [2.73, 1.12, 3.78],
+    ],
+    []
+  );
 
   const tabletImageDimensions = useMemo(
     () =>
@@ -149,52 +198,38 @@ function StoneTablets({
 
   return (
     <group>
-      {EXPERIENCE_ENTRIES.map((entry, index) => {
-        const x = SCENE_ANCHORS.tabletsStart[0] + index * 0.62;
-        const z = SCENE_ANCHORS.tabletsStart[2] + index * 0.14;
-        const width = 0.24;
-        const height = 1.36;
-        const rotationY = index === 3 ? 0.1 : -0.11 + index * 0.09;
-        const logoFrameHeight = 0.42;
-        const logoAspectRatio =
-          tabletImageDimensions[index].width /
-          tabletImageDimensions[index].height;
-        const logoFrameWidth = Math.min(
-          0.28,
-          logoFrameHeight * logoAspectRatio
-        );
-        const logoPlaqueWidth = Math.min(0.32, logoFrameWidth + 0.04);
+      <group
+        position={[2.47, 1.12, 3.16]}
+        rotation={[0, -0.12, 0]}
+        scale={0.52}
+      >
+        <Clone object={bonfireModel} />
+      </group>
+      {stumpPositions.map((stumpPosition, index) => {
+        const entry = EXPERIENCE_ENTRIES[index % EXPERIENCE_ENTRIES.length];
+        const hasLogoImage = index < EXPERIENCE_ENTRIES.length;
+        const logoFrameHeight = 0.26;
+        const logoAspectRatio = hasLogoImage
+          ? tabletImageDimensions[index].width / tabletImageDimensions[index].height
+          : 1;
+        const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
+        const logoPlaqueWidth = Math.min(0.3, logoFrameWidth + 0.04);
         const logoPlaqueHeight = logoFrameHeight + 0.032;
-        const logoY = height * 0.39;
-        const logoPlaqueZ = width - 0.004;
-        const logoZ = logoPlaqueZ + 0.007;
+        const logoY = 0.29;
+        const logoZ = 0.16;
+        const stumpHovered = hoveredTabletId === entry.id;
+        const stumpRotation = -0.34 + index * 0.18;
 
         return (
           <group
-            key={index}
-            position={[x, SCENE_ANCHORS.tabletsStart[1], z]}
-            rotation={[0, rotationY, 0]}
+            key={`stump-${index}`}
+            position={stumpPosition}
+            rotation={[0, stumpRotation, 0]}
           >
-            <mesh position={[0, -0.15, -0.02]} castShadow receiveShadow>
-              <cylinderGeometry args={[0.31, 0.37, 0.12, 6]} />
-              <meshStandardMaterial
-                color={environmentPalette.tabletBase}
-                flatShading
-              />
-            </mesh>
-            <mesh
-              castShadow
-              receiveShadow
+            <group
+              scale={0.22}
               onPointerEnter={(event) => {
                 event.stopPropagation();
-                if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) =>
-                    current === entry.id ? null : current
-                  );
-                  onHoverChange(false);
-                  setInteractiveCursor(false);
-                  return;
-                }
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -203,14 +238,6 @@ function StoneTablets({
               }}
               onPointerMove={(event) => {
                 event.stopPropagation();
-                if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) =>
-                    current === entry.id ? null : current
-                  );
-                  onHoverChange(false);
-                  setInteractiveCursor(false);
-                  return;
-                }
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -227,57 +254,62 @@ function StoneTablets({
               }}
               onClick={(event) => {
                 event.stopPropagation();
-                if (!isAboveIslandGround(event.point.y)) return;
                 if (interactiveEnabled) onClick("tablets");
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
-              <capsuleGeometry args={[width, height, 4, 6]} />
+              <Clone object={treeStumpModel} />
+            </group>
+            {hasLogoImage && (
+              <>
+                <mesh position={[0, logoY, logoZ]} receiveShadow>
+                  <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
+                  <meshStandardMaterial
+                    color="#ece8de"
+                    roughness={0.84}
+                    metalness={0.02}
+                  />
+                </mesh>
+                <mesh position={[0, logoY, logoZ + 0.008]}>
+                  <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
+                  <meshBasicMaterial
+                    map={tabletTextures[index]}
+                    color={
+                      stumpHovered
+                        ? environmentPalette.tabletImageHover
+                        : environmentPalette.tabletImageIdle
+                    }
+                    transparent
+                    opacity={stumpHovered ? 0.95 : 0.82}
+                    polygonOffset
+                    polygonOffsetFactor={-1}
+                  />
+                </mesh>
+                <mesh
+                  position={[0, 0.26, 0.11]}
+                  rotation={[-Math.PI / 2.6, 0, 0]}
+                  visible={stumpHovered || hovered}
+                >
+                  <ringGeometry args={[0.2, 0.24, 6]} />
+                  <meshStandardMaterial
+                    color={environmentPalette.tabletHover}
+                    emissive={environmentPalette.tabletEmissiveHover}
+                    emissiveIntensity={0.32}
+                    transparent
+                    opacity={0.8}
+                  />
+                </mesh>
+              </>
+            )}
+            <mesh
+              position={[0, 0.12, 0]}
+              castShadow
+              receiveShadow
+            >
+              <cylinderGeometry args={[0.21, 0.29, 0.24, 6]} />
               <meshStandardMaterial
-                color={
-                  hoveredTabletId === entry.id
-                    ? environmentPalette.tabletHover
-                    : PALETTE.tablet
-                }
-                emissive={
-                  hoveredTabletId === entry.id || hovered
-                    ? environmentPalette.tabletEmissiveHover
-                    : environmentPalette.tabletEmissiveIdle
-                }
-                emissiveIntensity={
-                  hoveredTabletId === entry.id || hovered ? 0.28 : 0.08
-                }
+                color={environmentPalette.tabletBase}
                 flatShading
-              />
-            </mesh>
-            <mesh position={[0, height * 0.58, 0]} castShadow>
-              <cylinderGeometry args={[0.16, 0.2, 0.09, 6]} />
-              <meshStandardMaterial
-                color={environmentPalette.tabletCap}
-                flatShading
-              />
-            </mesh>
-            <mesh position={[0, logoY, logoPlaqueZ]} receiveShadow>
-              <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
-              <meshStandardMaterial
-                color="#ece8de"
-                roughness={0.84}
-                metalness={0.02}
-              />
-            </mesh>
-            <mesh position={[0, logoY, logoZ]}>
-              <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
-              <meshBasicMaterial
-                map={tabletTextures[index]}
-                color={
-                  hoveredTabletId === entry.id
-                    ? environmentPalette.tabletImageHover
-                    : environmentPalette.tabletImageIdle
-                }
-                transparent
-                opacity={hoveredTabletId === entry.id ? 0.95 : 0.82}
-                polygonOffset
-                polygonOffsetFactor={-1}
               />
             </mesh>
           </group>
@@ -290,6 +322,8 @@ function StoneTablets({
 useGLTF.preload("/models/Pine.glb");
 useGLTF.preload("/models/Wooden Sign.glb");
 useGLTF.preload("/models/Mountain.glb");
+useGLTF.preload("/models/Bonfire.glb");
+useGLTF.preload("/models/Tree stump.glb");
 
 function MountainRopeBridge() {
   const bridgeGltf = useGLTF("/models/rope bridge.glb");
