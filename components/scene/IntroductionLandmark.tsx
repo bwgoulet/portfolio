@@ -47,6 +47,19 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
   });
 };
 
+const updateBackpackHoverState = (scene: THREE.Object3D, hovered: boolean) => {
+  scene.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    materials.forEach((material) => {
+      if (!(material instanceof THREE.MeshStandardMaterial)) return;
+      material.emissive.set(hovered ? '#2d3742' : '#171d24');
+      material.emissiveIntensity = hovered ? 0.16 : 0.04;
+      material.needsUpdate = true;
+    });
+  });
+};
+
 type IntroductionLandmarkProps = {
   interactiveEnabled: boolean;
   detailInteractiveEnabled?: boolean;
@@ -117,6 +130,10 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   }, [keyCardGltf.scene]);
 
   useEffect(() => {
+    updateBackpackHoverState(backpackModel, hovered);
+  }, [backpackModel, hovered]);
+
+  useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
     introTexture.colorSpace = SRGBColorSpace;
     introTexture.minFilter = LinearMipmapLinearFilter;
@@ -133,7 +150,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
   return (
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
-      <group position={[-.15, 0, 1]} scale={1}>
+      <group position={[-.15, 0, 1]} scale={hovered ? 1.03 : 1}>
         <primitive object={backpackModel} />
         <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
           <primitive object={keyCardModel.clone(true)} />
@@ -189,12 +206,12 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         <Text
           position={[-.17, -0.45, 0.9]}
           rotation={[0, 0, 0]}
-          fontSize={0.078}
+          fontSize={hovered ? 0.088 : 0.078}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#f7fafc' : '#dce2e9'}
-          outlineWidth={0.008}
-          outlineColor={hovered ? '#243140' : '#324353'}
+          color={hovered ? '#ffffff' : '#dce2e9'}
+          outlineWidth={hovered ? 0.01 : 0.008}
+          outlineColor={hovered ? '#1a2430' : '#324353'}
           fontWeight="700"
         >
           Introduction
