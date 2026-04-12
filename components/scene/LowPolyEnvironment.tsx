@@ -207,6 +207,7 @@ function StoneTablets({
       </group>
       {stumpPositions.map((stumpPosition, index) => {
         const entry = EXPERIENCE_ENTRIES[index % EXPERIENCE_ENTRIES.length];
+        const hasExperience = Boolean(entry);
         const hasLogoImage = index < EXPERIENCE_ENTRIES.length;
         const logoFrameHeight = 0.26;
         const logoAspectRatio = hasLogoImage
@@ -230,6 +231,7 @@ function StoneTablets({
               scale={0.12}
               onPointerEnter={(event) => {
                 event.stopPropagation();
+                if (!hasExperience) return;
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -238,6 +240,7 @@ function StoneTablets({
               }}
               onPointerMove={(event) => {
                 event.stopPropagation();
+                if (!hasExperience) return;
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -255,6 +258,7 @@ function StoneTablets({
               }}
               onClick={(event) => {
                 event.stopPropagation();
+                if (!hasExperience) return;
                 if (interactiveEnabled) onClick("tablets");
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
