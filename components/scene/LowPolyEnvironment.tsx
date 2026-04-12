@@ -162,11 +162,11 @@ function StoneTablets({
 
   const stumpPositions = useMemo<[number, number, number][]>(
     () => [
-      [2.1, 1.12, 3.44],
-      [2.07, 1.12, 2.9],
-      [2.55, 1.12, 2.66],
-      [2.98, 1.12, 3.06],
-      [2.74, 1.12, 3.53],
+      [2.1, 1.12, 4.5],
+      [2.07, 1.12, 4],
+      [2.55, 1.12, 3],
+      [2.98, 1.12, 4],
+      [2.74, 1.12, 4.5],
     ],
     []
   );
@@ -479,7 +479,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
 
   return (
     <group
-      position={[2.75, 1.37, 4.4]}
+      position={[1, 1.37, 6]}
       rotation={[0, -0.16, 0]}
       scale={baseScale}
     >
