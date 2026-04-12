@@ -714,6 +714,11 @@ export function AdventureScene() {
                     if (isSceneLoaderActive) {
                       setCabinTransitionFadeState("black");
                     }
+                    if (isCabinInteriorRevealed) {
+                      setIsCabinFadePending(false);
+                      setCabinTransitionFadeState("idle");
+                      setInteractionState("cabinCloseup");
+                    }
                     return;
                   }
                   if (completedTarget === "overview") {
