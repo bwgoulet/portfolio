@@ -22,6 +22,14 @@ import type { InteractiveTarget } from "./types";
 import { EXPERIENCE_ENTRIES } from "./experienceData";
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
+const STUMP_LOGO_TINTS: Partial<
+  Record<string, { idle: THREE.ColorRepresentation; hover: THREE.ColorRepresentation }>
+> = {
+  "unc-cs": {
+    idle: "#1f3b63",
+    hover: "#2f5d9c",
+  },
+};
 const setInteractiveCursor = (isPointer: boolean) => {
   document.body.style.cursor = isPointer ? "pointer" : "auto";
 };
@@ -301,6 +309,14 @@ function StoneTablets({
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
         const logoHorizontalRotation = logoRotationOffsets[index] ?? 0;
+        const logoTint = STUMP_LOGO_TINTS[entry.id];
+        const logoColor = logoTint
+          ? stumpHovered
+            ? logoTint.hover
+            : logoTint.idle
+          : stumpHovered
+          ? environmentPalette.tabletImageHover
+          : environmentPalette.tabletImageIdle;
         const handleStumpPointerEnter = (event: ThreeEvent<PointerEvent>) => {
           event.stopPropagation();
           if (!hasExperience) return;
@@ -357,11 +373,7 @@ function StoneTablets({
                     <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
                     <meshBasicMaterial
                       map={tabletTextures[index]}
-                      color={
-                        stumpHovered
-                          ? environmentPalette.tabletImageHover
-                          : environmentPalette.tabletImageIdle
-                      }
+                      color={logoColor}
                       transparent
                       opacity={stumpHovered ? 0.95 : 0.82}
                       polygonOffset
