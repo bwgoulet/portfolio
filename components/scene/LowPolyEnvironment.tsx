@@ -295,8 +295,7 @@ function StoneTablets({
         const logoZ = 0;
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
-        const logoRotationY =
-          -stumpRotation + (logoRotationOffsets[index] ?? 0);
+        const logoHorizontalRotation = logoRotationOffsets[index] ?? 0;
         const handleStumpPointerEnter = (event: ThreeEvent<PointerEvent>) => {
           event.stopPropagation();
           if (!hasExperience) return;
@@ -335,36 +334,36 @@ function StoneTablets({
             </group>
             {hasLogoImage && (
               <>
-                <mesh
+                <group
                   position={[0, logoY, logoZ]}
-                  rotation={[-Math.PI / 2, logoRotationY, 0]}
-                  receiveShadow
+                  rotation={[0, logoHorizontalRotation, 0]}
                 >
-                  <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
-                  <meshStandardMaterial
-                    color="#ece8de"
-                    roughness={0.84}
-                    metalness={0.02}
-                  />
-                </mesh>
-                <mesh
-                  position={[0, logoY + 0.008, logoZ]}
-                  rotation={[-Math.PI / 2, logoRotationY, 0]}
-                >
-                  <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
-                  <meshBasicMaterial
-                    map={tabletTextures[index]}
-                    color={
-                      stumpHovered
-                        ? environmentPalette.tabletImageHover
-                        : environmentPalette.tabletImageIdle
-                    }
-                    transparent
-                    opacity={stumpHovered ? 0.95 : 0.82}
-                    polygonOffset
-                    polygonOffsetFactor={-1}
-                  />
-                </mesh>
+                  <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+                    <boxGeometry
+                      args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]}
+                    />
+                    <meshStandardMaterial
+                      color="#ece8de"
+                      roughness={0.84}
+                      metalness={0.02}
+                    />
+                  </mesh>
+                  <mesh position={[0, 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
+                    <meshBasicMaterial
+                      map={tabletTextures[index]}
+                      color={
+                        stumpHovered
+                          ? environmentPalette.tabletImageHover
+                          : environmentPalette.tabletImageIdle
+                      }
+                      transparent
+                      opacity={stumpHovered ? 0.95 : 0.82}
+                      polygonOffset
+                      polygonOffsetFactor={-1}
+                    />
+                  </mesh>
+                </group>
                 <mesh
                   position={[0, 0.18, 0.08]}
                   rotation={[-Math.PI / 2.6, 0, 0]}
