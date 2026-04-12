@@ -238,7 +238,10 @@ function StoneTablets({
         const logoFrameWidth = Math.min(0.2, logoFrameHeight * logoAspectRatio);
         const logoPlaqueWidth = Math.min(0.24, logoFrameWidth + 0.038);
         const logoPlaqueHeight = logoFrameHeight + 0.028;
-        const logoY = 0.192;
+        // Tree stump mesh is normalized then rendered at scale 0.12, which places
+        // the visible top surface notably above the stump group's origin.
+        // Keep the thumbnail plaque anchored just above that top surface.
+        const logoY = 0.34;
         const logoZ = 0;
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
@@ -293,7 +296,7 @@ function StoneTablets({
                   />
                 </mesh>
                 <mesh
-                  position={[0, logoY + 0.007, logoZ]}
+                  position={[0, logoY + 0.008, logoZ]}
                   rotation={[-Math.PI / 2, 0, 0]}
                 >
                   <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
