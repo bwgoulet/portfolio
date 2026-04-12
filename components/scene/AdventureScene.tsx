@@ -741,10 +741,7 @@ export function AdventureScene() {
                 tabletsDetailInteractiveEnabled={
                   interactionState === "tabletsCloseup"
                 }
-                tabletsHovered={
-                  interactionState === "hoverTablets" ||
-                  interactionState === "tabletsCloseup"
-                }
+                tabletsHovered={interactionState === "hoverTablets"}
                 onTabletsHoverChange={(hovered) =>
                   updateHover("tablets", hovered)
                 }

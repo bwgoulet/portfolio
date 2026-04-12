@@ -224,6 +224,11 @@ function StoneTablets({
     hovered && (interactiveEnabled || detailInteractiveEnabled);
 
   useEffect(() => {
+    if (hovered) return;
+    setHoveredTabletId(null);
+  }, [hovered]);
+
+  useEffect(() => {
     updateModelHoverState(
       bonfireModel,
       isExperienceHovered,
