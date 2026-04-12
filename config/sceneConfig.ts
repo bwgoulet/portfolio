@@ -37,9 +37,9 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     fov: 70
   },
   tablets: {
-    position: [2.54, 1.86, 7.12],
-    lookAt: [1.74, 1.3, 4.9],
-    fov: 34
+    position: [1.3, 4, 6.1],
+    lookAt: [1.5, 2, 4.9],
+    fov: 50
   },
   introduction: {
     position: [-3.1, 1.8, 5.25],

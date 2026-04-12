@@ -162,11 +162,11 @@ function StoneTablets({
 
   const stumpPositions = useMemo<[number, number, number][]>(
     () => [
-      [2.1, 1.12, 4.5],
-      [2.07, 1.12, 4],
-      [2.55, 1.12, 3],
-      [2.98, 1.12, 4],
-      [2.74, 1.12, 4.5],
+      [0.2, 1.12, 4.5],
+      [0.6, 1.12, 3.7],
+      [1.45, 1.12, 3.1],
+      [2.1, 1.12, 3.95],
+      [2.35, 1.12, 4.85],
     ],
     []
   );
@@ -217,9 +217,9 @@ function StoneTablets({
   return (
     <group>
       <group
-        position={[2.47, 1.12, 3.16]}
-        rotation={[0, -0.12, 0]}
-        scale={0.52}
+        position={[1.3, 1.25, 4.5]}
+        rotation={[0., -0.12, 0]}
+        scale={2}
         onPointerEnter={handleSectionPointerEnter}
         onPointerMove={handleSectionPointerEnter}
         onPointerLeave={handleSectionPointerLeave}
@@ -501,7 +501,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
 
   return (
     <group
-      position={[1, 1.37, 6]}
+      position={[1.15, 1.37, 5.5]}
       rotation={[0, -0.16, 0]}
       scale={baseScale}
     >
