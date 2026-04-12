@@ -66,6 +66,30 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
   });
 };
 
+const updateModelHoverState = (
+  scene: THREE.Object3D,
+  hovered: boolean,
+  hoveredEmissiveIntensity: number,
+  idleEmissiveIntensity: number,
+  hoveredEmissiveColor: string,
+  idleEmissiveColor: string
+) => {
+  scene.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material];
+    materials.forEach((material) => {
+      if (!(material instanceof THREE.MeshStandardMaterial)) return;
+      material.emissive.set(hovered ? hoveredEmissiveColor : idleEmissiveColor);
+      material.emissiveIntensity = hovered
+        ? hoveredEmissiveIntensity
+        : idleEmissiveIntensity;
+      material.needsUpdate = true;
+    });
+  });
+};
+
 function Tree({
   position,
   scale = 1,
@@ -196,6 +220,28 @@ function StoneTablets({
     });
   }, [gl, tabletTextures]);
 
+  const isExperienceHovered =
+    hovered && (interactiveEnabled || detailInteractiveEnabled);
+
+  useEffect(() => {
+    updateModelHoverState(
+      bonfireModel,
+      isExperienceHovered,
+      0.13,
+      0.03,
+      "#4a3f33",
+      "#14100d"
+    );
+    updateModelHoverState(
+      treeStumpModel,
+      isExperienceHovered,
+      0.09,
+      0.02,
+      "#40372d",
+      "#110d0a"
+    );
+  }, [bonfireModel, isExperienceHovered, treeStumpModel]);
+
   const handleSectionPointerEnter = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation();
     if (!(interactiveEnabled || detailInteractiveEnabled)) return;
@@ -219,7 +265,7 @@ function StoneTablets({
       <group
         position={[1.3, 1.25, 4.5]}
         rotation={[0., -0.12, 0]}
-        scale={2}
+        scale={isExperienceHovered ? 2.08 : 2}
         onPointerEnter={handleSectionPointerEnter}
         onPointerMove={handleSectionPointerEnter}
         onPointerLeave={handleSectionPointerLeave}
@@ -273,6 +319,7 @@ function StoneTablets({
             key={`stump-${index}`}
             position={stumpPosition}
             rotation={[0, stumpRotation, 0]}
+            scale={isExperienceHovered ? 1.05 : 1}
             onPointerEnter={handleStumpPointerEnter}
             onPointerMove={handleStumpPointerEnter}
             onPointerLeave={handleStumpPointerLeave}
