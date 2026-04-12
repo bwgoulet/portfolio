@@ -246,6 +246,7 @@ function StoneTablets({
               }}
               onPointerLeave={(event) => {
                 event.stopPropagation();
+                if (!hasExperience) return;
                 setHoveredTabletId((current) =>
                   current === entry.id ? null : current
                 );
