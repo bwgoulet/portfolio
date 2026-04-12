@@ -227,18 +227,18 @@ function StoneTablets({
     updateModelHoverState(
       bonfireModel,
       isExperienceHovered,
-      0.2,
-      0.05,
-      "#7a3b17",
-      "#2b150b"
+      0.13,
+      0.03,
+      "#4a3f33",
+      "#14100d"
     );
     updateModelHoverState(
       treeStumpModel,
       isExperienceHovered,
-      0.14,
-      0.03,
-      "#5e2d17",
-      "#24130b"
+      0.09,
+      0.02,
+      "#40372d",
+      "#110d0a"
     );
   }, [bonfireModel, isExperienceHovered, treeStumpModel]);
 
