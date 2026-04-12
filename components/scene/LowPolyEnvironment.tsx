@@ -194,6 +194,10 @@ function StoneTablets({
     ],
     []
   );
+  const logoRotationOffsets = useMemo<number[]>(
+    () => [0.2, -0.5, 0.18, -0.26, 0],
+    []
+  );
 
   const tabletImageDimensions = useMemo(
     () =>
@@ -291,6 +295,8 @@ function StoneTablets({
         const logoZ = 0;
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
+        const logoRotationY =
+          -stumpRotation + (logoRotationOffsets[index] ?? 0);
         const handleStumpPointerEnter = (event: ThreeEvent<PointerEvent>) => {
           event.stopPropagation();
           if (!hasExperience) return;
@@ -319,7 +325,6 @@ function StoneTablets({
             key={`stump-${index}`}
             position={stumpPosition}
             rotation={[0, stumpRotation, 0]}
-            scale={isExperienceHovered ? 1.05 : 1}
             onPointerEnter={handleStumpPointerEnter}
             onPointerMove={handleStumpPointerEnter}
             onPointerLeave={handleStumpPointerLeave}
@@ -332,7 +337,7 @@ function StoneTablets({
               <>
                 <mesh
                   position={[0, logoY, logoZ]}
-                  rotation={[-Math.PI / 2, 0, 0]}
+                  rotation={[-Math.PI / 2, logoRotationY, 0]}
                   receiveShadow
                 >
                   <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
@@ -344,7 +349,7 @@ function StoneTablets({
                 </mesh>
                 <mesh
                   position={[0, logoY + 0.008, logoZ]}
-                  rotation={[-Math.PI / 2, 0, 0]}
+                  rotation={[-Math.PI / 2, logoRotationY, 0]}
                 >
                   <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
                   <meshBasicMaterial
