@@ -292,8 +292,14 @@ export function AdventureScene() {
     !isTransitioning &&
     !isCabinExitTransitionPending &&
     (focusTarget === "overview" || focusTarget === "cabinInterior");
+  const canDismissViaBackgroundClick =
+    interactionState === "billboardCloseup" ||
+    interactionState === "tabletsCloseup" ||
+    interactionState === "introductionCloseup" ||
+    interactionState === "timelineCloseup" ||
+    interactionState === "dartboardCloseup";
   const canDismissSceneSelection =
-    !isDetailDialogOpen && !isOverviewState && !isTransitioning;
+    canDismissViaBackgroundClick && !isDetailDialogOpen && !isTransitioning;
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
