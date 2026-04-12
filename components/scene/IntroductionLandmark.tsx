@@ -94,6 +94,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const gl = useThree((state) => state.gl);
   const imageWidth = 0.4;
   const imageHeight = imageWidth / (858 / 1356);
+  const isBackpackHovered = hovered && !detailInteractiveEnabled;
 
   const backpackModel = useMemo(() => {
     const model = backpackGltf.scene.clone(true);
@@ -130,8 +131,8 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   }, [keyCardGltf.scene]);
 
   useEffect(() => {
-    updateBackpackHoverState(backpackModel, hovered);
-  }, [backpackModel, hovered]);
+    updateBackpackHoverState(backpackModel, isBackpackHovered);
+  }, [backpackModel, isBackpackHovered]);
 
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
@@ -150,7 +151,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
 
   return (
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
-      <group position={[-.15, 0, 1]} scale={hovered ? 1.03 : 1}>
+      <group position={[-.15, 0, 1]} scale={isBackpackHovered ? 1.03 : 1}>
         <primitive object={backpackModel} />
         <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
           <primitive object={keyCardModel.clone(true)} />
@@ -193,6 +194,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
               setInteractiveCursor(false);
               return;
             }
+            onHoverChange(false);
             setInteractiveCursor(false);
             if (interactiveEnabled) onClick('introduction');
           }}
@@ -206,12 +208,12 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         <Text
           position={[-.17, -0.45, 0.9]}
           rotation={[0, 0, 0]}
-          fontSize={hovered ? 0.088 : 0.078}
+          fontSize={isBackpackHovered ? 0.088 : 0.078}
           anchorX="center"
           anchorY="middle"
-          color={hovered ? '#ffffff' : '#dce2e9'}
-          outlineWidth={hovered ? 0.01 : 0.008}
-          outlineColor={hovered ? '#1a2430' : '#324353'}
+          color={isBackpackHovered ? '#ffffff' : '#dce2e9'}
+          outlineWidth={isBackpackHovered ? 0.01 : 0.008}
+          outlineColor={isBackpackHovered ? '#1a2430' : '#324353'}
           fontWeight="700"
         >
           Introduction
