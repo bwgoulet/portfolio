@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { getVisualTokenCssVariables } from '@/config/visualTokens';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Ben Goulet',
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <style>{`:root{${cssVariables}}`}</style>
         {children}
+        <Analytics />
       </body>
     </html>
   );
