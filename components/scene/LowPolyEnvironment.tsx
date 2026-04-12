@@ -6,7 +6,7 @@ import {
   SCENE_ANCHORS,
 } from "@/config/sceneConfig";
 import { VISUAL_TOKENS } from "@/config/visualTokens";
-import { Text, useGLTF, useTexture } from "@react-three/drei";
+import { Clone, Text, useGLTF, useTexture } from "@react-three/drei";
 import type { RefObject } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
@@ -162,11 +162,11 @@ function StoneTablets({
 
   const stumpPositions = useMemo<[number, number, number][]>(
     () => [
-      [SCENE_ANCHORS.tabletsStart[0] - 0.65, SCENE_ANCHORS.tabletsStart[1], 3.25],
-      [SCENE_ANCHORS.tabletsStart[0] - 0.15, SCENE_ANCHORS.tabletsStart[1], 2.72],
-      [SCENE_ANCHORS.tabletsStart[0] + 0.48, SCENE_ANCHORS.tabletsStart[1], 2.8],
-      [SCENE_ANCHORS.tabletsStart[0] + 0.84, SCENE_ANCHORS.tabletsStart[1], 3.38],
-      [SCENE_ANCHORS.tabletsStart[0] + 0.16, SCENE_ANCHORS.tabletsStart[1], 3.72],
+      [2.14, 1.12, 3.66],
+      [1.9, 1.12, 2.93],
+      [2.5, 1.12, 2.62],
+      [3.08, 1.12, 3.08],
+      [2.73, 1.12, 3.78],
     ],
     []
   );
@@ -199,17 +199,17 @@ function StoneTablets({
   return (
     <group>
       <group
-        position={[SCENE_ANCHORS.tabletsStart[0] + 0.18, SCENE_ANCHORS.tabletsStart[1], 3.25]}
+        position={[2.47, 1.12, 3.16]}
         rotation={[0, -0.12, 0]}
-        scale={0.42}
+        scale={0.52}
       >
-        <primitive object={bonfireModel} />
+        <Clone object={bonfireModel} />
       </group>
       {stumpPositions.map((stumpPosition, index) => {
-        const entry = EXPERIENCE_ENTRIES[index];
-        const hasExperience = Boolean(entry);
+        const entry = EXPERIENCE_ENTRIES[index % EXPERIENCE_ENTRIES.length];
+        const hasLogoImage = index < EXPERIENCE_ENTRIES.length;
         const logoFrameHeight = 0.26;
-        const logoAspectRatio = hasExperience
+        const logoAspectRatio = hasLogoImage
           ? tabletImageDimensions[index].width / tabletImageDimensions[index].height
           : 1;
         const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
@@ -217,7 +217,7 @@ function StoneTablets({
         const logoPlaqueHeight = logoFrameHeight + 0.032;
         const logoY = 0.29;
         const logoZ = 0.16;
-        const stumpHovered = hasExperience && hoveredTabletId === entry.id;
+        const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.34 + index * 0.18;
 
         return (
@@ -230,15 +230,6 @@ function StoneTablets({
               scale={0.22}
               onPointerEnter={(event) => {
                 event.stopPropagation();
-                if (!hasExperience) return;
-                if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) =>
-                    current === entry.id ? null : current
-                  );
-                  onHoverChange(false);
-                  setInteractiveCursor(false);
-                  return;
-                }
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -247,15 +238,6 @@ function StoneTablets({
               }}
               onPointerMove={(event) => {
                 event.stopPropagation();
-                if (!hasExperience) return;
-                if (!isAboveIslandGround(event.point.y)) {
-                  setHoveredTabletId((current) =>
-                    current === entry.id ? null : current
-                  );
-                  onHoverChange(false);
-                  setInteractiveCursor(false);
-                  return;
-                }
                 if (interactiveEnabled || detailInteractiveEnabled) {
                   setHoveredTabletId(entry.id);
                   onHoverChange(true);
@@ -273,14 +255,13 @@ function StoneTablets({
               }}
               onClick={(event) => {
                 event.stopPropagation();
-                if (!hasExperience || !isAboveIslandGround(event.point.y)) return;
                 if (interactiveEnabled) onClick("tablets");
                 if (detailInteractiveEnabled) onDetailSelect(entry.id);
               }}
             >
-              <primitive object={treeStumpModel} />
+              <Clone object={treeStumpModel} />
             </group>
-            {hasExperience && (
+            {hasLogoImage && (
               <>
                 <mesh position={[0, logoY, logoZ]} receiveShadow>
                   <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
