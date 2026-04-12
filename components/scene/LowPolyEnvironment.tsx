@@ -195,7 +195,7 @@ function StoneTablets({
     []
   );
   const logoRotationOffsets = useMemo<number[]>(
-    () => [0.2, -0.5, 0.18, -0.26, 0],
+    () => [0.45, 0, -.4, -0.8, 0],
     []
   );
 
