@@ -292,6 +292,8 @@ export function AdventureScene() {
     !isTransitioning &&
     !isCabinExitTransitionPending &&
     (focusTarget === "overview" || focusTarget === "cabinInterior");
+  const canDismissSceneSelection =
+    !isDetailDialogOpen && !isOverviewState && !isTransitioning;
 
   const activeNoteId = selectedNoteId ?? closingNoteId;
   const activeExperienceId = selectedExperienceId ?? closingExperienceId;
@@ -584,6 +586,44 @@ export function AdventureScene() {
     reducedMotion,
   ]);
 
+  const handleSceneBackgroundDismiss = useCallback(() => {
+    if (!canDismissSceneSelection || isCabinExitTransitionPending) return;
+    handleBackNavigation();
+  }, [
+    canDismissSceneSelection,
+    handleBackNavigation,
+    isCabinExitTransitionPending,
+  ]);
+
+  useEffect(() => {
+    if (!canDismissSceneSelection || isCabinExitTransitionPending) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      if (
+        target.closest(".scene-canvas-shell") ||
+        target.closest(".scene-back") ||
+        target.closest(".scene-free-mode") ||
+        target.closest(".note-detail")
+      ) {
+        return;
+      }
+
+      handleBackNavigation();
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [
+    canDismissSceneSelection,
+    handleBackNavigation,
+    isCabinExitTransitionPending,
+  ]);
+
   useEffect(() => {
     if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
     if (!isCabinCameraTransitionComplete || isSceneLoaderActive) return;
@@ -645,6 +685,7 @@ export function AdventureScene() {
             }}
             dpr={[1, 1.7]}
             gl={{ alpha: false }}
+            onPointerMissed={handleSceneBackgroundDismiss}
             onCreated={({ camera }) => {
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
             }}
