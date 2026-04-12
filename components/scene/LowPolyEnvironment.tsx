@@ -231,65 +231,60 @@ function StoneTablets({
         const entry = EXPERIENCE_ENTRIES[index % EXPERIENCE_ENTRIES.length];
         const hasExperience = Boolean(entry);
         const hasLogoImage = index < EXPERIENCE_ENTRIES.length;
-        const logoFrameHeight = 0.26;
+        const logoFrameHeight = 0.17;
         const logoAspectRatio = hasLogoImage
           ? tabletImageDimensions[index].width / tabletImageDimensions[index].height
           : 1;
-        const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
-        const logoPlaqueWidth = Math.min(0.3, logoFrameWidth + 0.04);
-        const logoPlaqueHeight = logoFrameHeight + 0.032;
-        const logoY = 0.17;
-        const logoZ = 0.095;
+        const logoFrameWidth = Math.min(0.2, logoFrameHeight * logoAspectRatio);
+        const logoPlaqueWidth = Math.min(0.24, logoFrameWidth + 0.038);
+        const logoPlaqueHeight = logoFrameHeight + 0.028;
+        const logoY = 0.192;
+        const logoZ = 0;
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
+        const handleStumpPointerEnter = (event: ThreeEvent<PointerEvent>) => {
+          event.stopPropagation();
+          if (!hasExperience) return;
+          if (interactiveEnabled || detailInteractiveEnabled) {
+            setHoveredTabletId(entry.id);
+            onHoverChange(true);
+            setInteractiveCursor(true);
+          }
+        };
+        const handleStumpPointerLeave = (event: ThreeEvent<PointerEvent>) => {
+          event.stopPropagation();
+          if (!hasExperience) return;
+          setHoveredTabletId((current) => (current === entry.id ? null : current));
+          onHoverChange(false);
+          setInteractiveCursor(false);
+        };
+        const handleStumpClick = (event: ThreeEvent<MouseEvent>) => {
+          event.stopPropagation();
+          if (!hasExperience) return;
+          if (interactiveEnabled) onClick("tablets");
+          if (detailInteractiveEnabled) onDetailSelect(entry.id);
+        };
 
         return (
           <group
             key={`stump-${index}`}
             position={stumpPosition}
             rotation={[0, stumpRotation, 0]}
+            onPointerEnter={handleStumpPointerEnter}
+            onPointerMove={handleStumpPointerEnter}
+            onPointerLeave={handleStumpPointerLeave}
+            onClick={handleStumpClick}
           >
-            <group
-              scale={0.12}
-              onPointerEnter={(event) => {
-                event.stopPropagation();
-                if (!hasExperience) return;
-                if (interactiveEnabled || detailInteractiveEnabled) {
-                  setHoveredTabletId(entry.id);
-                  onHoverChange(true);
-                  setInteractiveCursor(true);
-                }
-              }}
-              onPointerMove={(event) => {
-                event.stopPropagation();
-                if (!hasExperience) return;
-                if (interactiveEnabled || detailInteractiveEnabled) {
-                  setHoveredTabletId(entry.id);
-                  onHoverChange(true);
-                  setInteractiveCursor(true);
-                }
-              }}
-              onPointerLeave={(event) => {
-                event.stopPropagation();
-                if (!hasExperience) return;
-                setHoveredTabletId((current) =>
-                  current === entry.id ? null : current
-                );
-                onHoverChange(false);
-                setInteractiveCursor(false);
-              }}
-              onClick={(event) => {
-                event.stopPropagation();
-                if (!hasExperience) return;
-                if (interactiveEnabled) onClick("tablets");
-                if (detailInteractiveEnabled) onDetailSelect(entry.id);
-              }}
-            >
+            <group scale={0.12}>
               <Clone object={treeStumpModel} />
             </group>
             {hasLogoImage && (
               <>
-                <mesh position={[0, logoY, logoZ]} receiveShadow>
+                <mesh
+                  position={[0, logoY, logoZ]}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                  receiveShadow
+                >
                   <boxGeometry args={[logoPlaqueWidth, logoPlaqueHeight, 0.012]} />
                   <meshStandardMaterial
                     color="#ece8de"
@@ -297,7 +292,10 @@ function StoneTablets({
                     metalness={0.02}
                   />
                 </mesh>
-                <mesh position={[0, logoY, logoZ + 0.008]}>
+                <mesh
+                  position={[0, logoY + 0.007, logoZ]}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                >
                   <planeGeometry args={[logoFrameWidth, logoFrameHeight]} />
                   <meshBasicMaterial
                     map={tabletTextures[index]}
