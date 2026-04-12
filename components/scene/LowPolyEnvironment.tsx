@@ -287,7 +287,7 @@ function StoneTablets({
         // Tree stump mesh is normalized then rendered at scale 0.12, which places
         // the visible top surface notably above the stump group's origin.
         // Keep the thumbnail plaque anchored just above that top surface.
-        const logoY = 0.34;
+        const logoY = 0.48;
         const logoZ = 0;
         const stumpHovered = hoveredTabletId === entry.id;
         const stumpRotation = -0.6 + index * 0.42;
