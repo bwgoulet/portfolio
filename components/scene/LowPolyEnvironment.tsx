@@ -342,6 +342,7 @@ function StoneTablets({
                 <group
                   position={[0, logoY, logoZ]}
                   rotation={[0, logoHorizontalRotation, 0]}
+                  scale={1.4}
                 >
                   <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
                     <boxGeometry
