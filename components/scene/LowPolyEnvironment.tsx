@@ -8,8 +8,8 @@ import {
 import { VISUAL_TOKENS } from "@/config/visualTokens";
 import { Clone, Text, useGLTF, useTexture } from "@react-three/drei";
 import type { RefObject } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 import {
   ClampToEdgeWrapping,
@@ -196,12 +196,34 @@ function StoneTablets({
     });
   }, [gl, tabletTextures]);
 
+  const handleSectionPointerEnter = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
+    if (!(interactiveEnabled || detailInteractiveEnabled)) return;
+    onHoverChange(true);
+    setInteractiveCursor(true);
+  };
+
+  const handleSectionPointerLeave = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
+    onHoverChange(false);
+    setInteractiveCursor(false);
+  };
+
+  const handleSectionClick = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    if (interactiveEnabled) onClick("tablets");
+  };
+
   return (
     <group>
       <group
         position={[2.47, 1.12, 3.16]}
         rotation={[0, -0.12, 0]}
         scale={0.52}
+        onPointerEnter={handleSectionPointerEnter}
+        onPointerMove={handleSectionPointerEnter}
+        onPointerLeave={handleSectionPointerLeave}
+        onClick={handleSectionClick}
       >
         <Clone object={bonfireModel} />
       </group>
@@ -510,6 +532,13 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
       >
         Experience
       </Text>
+      <mesh
+        position={[0, -0.12, 0.1]}
+        renderOrder={-1}
+      >
+        <boxGeometry args={[1.34, 0.32, 0.28]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
     </group>
   );
 }
@@ -720,6 +749,37 @@ export function LowPolyEnvironment({
   onTimelineClick,
   reducedMotion,
 }: LowPolyEnvironmentProps) {
+  const handleExperienceSectionHover = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      event.stopPropagation();
+      if (!(tabletsInteractiveEnabled || tabletsDetailInteractiveEnabled)) return;
+      onTabletsHoverChange(true);
+      setInteractiveCursor(true);
+    },
+    [
+      onTabletsHoverChange,
+      tabletsDetailInteractiveEnabled,
+      tabletsInteractiveEnabled,
+    ]
+  );
+
+  const handleExperienceSectionLeave = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      event.stopPropagation();
+      onTabletsHoverChange(false);
+      setInteractiveCursor(false);
+    },
+    [onTabletsHoverChange]
+  );
+
+  const handleExperienceSectionClick = useCallback(
+    (event: ThreeEvent<MouseEvent>) => {
+      event.stopPropagation();
+      if (tabletsInteractiveEnabled) onTabletsClick("tablets");
+    },
+    [onTabletsClick, tabletsInteractiveEnabled]
+  );
+
   return (
     <group>
       <SceneFloor />
@@ -739,9 +799,16 @@ export function LowPolyEnvironment({
 
       <MountainRopeBridge />
 
-      <ExperienceEngraving
-        hovered={tabletsHovered && tabletsInteractiveEnabled}
-      />
+      <group
+        onPointerEnter={handleExperienceSectionHover}
+        onPointerMove={handleExperienceSectionHover}
+        onPointerLeave={handleExperienceSectionLeave}
+        onClick={handleExperienceSectionClick}
+      >
+        <ExperienceEngraving
+          hovered={tabletsHovered && tabletsInteractiveEnabled}
+        />
+      </group>
       <TrailheadTimelineSign
         reducedMotion={reducedMotion}
         signRef={timelineSignRef}
