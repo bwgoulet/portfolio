@@ -162,11 +162,11 @@ function StoneTablets({
 
   const stumpPositions = useMemo<[number, number, number][]>(
     () => [
-      [2.14, 1.12, 3.66],
-      [1.9, 1.12, 2.93],
-      [2.5, 1.12, 2.62],
-      [3.08, 1.12, 3.08],
-      [2.73, 1.12, 3.78],
+      [2.1, 1.12, 3.44],
+      [2.07, 1.12, 2.9],
+      [2.55, 1.12, 2.66],
+      [2.98, 1.12, 3.06],
+      [2.74, 1.12, 3.53],
     ],
     []
   );
@@ -215,10 +215,10 @@ function StoneTablets({
         const logoFrameWidth = Math.min(0.26, logoFrameHeight * logoAspectRatio);
         const logoPlaqueWidth = Math.min(0.3, logoFrameWidth + 0.04);
         const logoPlaqueHeight = logoFrameHeight + 0.032;
-        const logoY = 0.29;
-        const logoZ = 0.16;
+        const logoY = 0.17;
+        const logoZ = 0.095;
         const stumpHovered = hoveredTabletId === entry.id;
-        const stumpRotation = -0.34 + index * 0.18;
+        const stumpRotation = -0.6 + index * 0.42;
 
         return (
           <group
@@ -227,7 +227,7 @@ function StoneTablets({
             rotation={[0, stumpRotation, 0]}
           >
             <group
-              scale={0.22}
+              scale={0.12}
               onPointerEnter={(event) => {
                 event.stopPropagation();
                 if (interactiveEnabled || detailInteractiveEnabled) {
@@ -287,11 +287,11 @@ function StoneTablets({
                   />
                 </mesh>
                 <mesh
-                  position={[0, 0.26, 0.11]}
+                  position={[0, 0.18, 0.08]}
                   rotation={[-Math.PI / 2.6, 0, 0]}
                   visible={stumpHovered || hovered}
                 >
-                  <ringGeometry args={[0.2, 0.24, 6]} />
+                  <ringGeometry args={[0.11, 0.135, 6]} />
                   <meshStandardMaterial
                     color={environmentPalette.tabletHover}
                     emissive={environmentPalette.tabletEmissiveHover}
@@ -303,11 +303,11 @@ function StoneTablets({
               </>
             )}
             <mesh
-              position={[0, 0.12, 0]}
+              position={[0, 0.07, 0]}
               castShadow
               receiveShadow
             >
-              <cylinderGeometry args={[0.21, 0.29, 0.24, 6]} />
+              <cylinderGeometry args={[0.12, 0.18, 0.14, 6]} />
               <meshStandardMaterial
                 color={environmentPalette.tabletBase}
                 flatShading
