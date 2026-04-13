@@ -821,7 +821,7 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale * 0.94}
         />
-        <mesh position={[0, 0, 0.084]}>
+        <mesh position={[0, 0, 0.079]}>
           <planeGeometry args={[0.16, 0.16]} />
           <meshStandardMaterial
             color="#ffffff"
