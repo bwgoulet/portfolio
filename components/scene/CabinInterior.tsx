@@ -154,7 +154,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   },
   {
     id: "artwork-mirror-cube-upper",
-    imageSrc: "/gallery/hgod.jpg",
+    imageSrc: "/gallery/album9.png",
     title: "Mirror Cube — Upper",
     description:
       "A closer look at one of the reflective mirror cubes suspended along the cabin wall.",
@@ -183,6 +183,7 @@ export const CABIN_INTERIOR_TEXTURE_ASSETS = [
   "/textures-optimized/oak_veneer_01_diff_4k.jpg",
   "/gallery/prs25.jpg",
   "/gallery/prf25.png",
+  "/gallery/album9.png",
   ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
 ] as const;
 
@@ -416,6 +417,7 @@ export const CabinInterior = memo(function CabinInterior({
     "/gallery/prs25.jpg",
     "/gallery/prf25.png",
   ]);
+  const mirrorCubeUpperTexture = useTexture("/gallery/album9.png");
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -429,6 +431,13 @@ export const CabinInterior = memo(function CabinInterior({
       configureTexture(secondaryPaintingTexture),
     ];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
+  const configuredMirrorCubeUpperTexture = useMemo(() => {
+    if (!mirrorCubeUpperTexture) return null;
+    mirrorCubeUpperTexture.colorSpace = THREE.SRGBColorSpace;
+    mirrorCubeUpperTexture.anisotropy = 4;
+    mirrorCubeUpperTexture.needsUpdate = true;
+    return mirrorCubeUpperTexture;
+  }, [mirrorCubeUpperTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
@@ -605,7 +614,7 @@ export const CabinInterior = memo(function CabinInterior({
       ref={cabinInteriorRef}
     >
       <mesh position={[0, 0.02, 0]} receiveShadow>
-        <boxGeometry args={[1.86, 0.22, 1.52]} />
+        <boxGeometry args={[1.86, 0.22, 3]} />
         <meshStandardMaterial
           color="#ffffff"
           map={woodFloorTexture}
@@ -615,16 +624,6 @@ export const CabinInterior = memo(function CabinInterior({
       </mesh>
 
       <mesh position={[0, 0.94, -0.8]} receiveShadow>
-        <boxGeometry args={[1.86, 1.8, 0.08]} />
-        <meshStandardMaterial
-          color="#ffffff"
-          map={wallTexture}
-          roughness={1}
-          metalness={0.01}
-        />
-      </mesh>
-
-      <mesh position={[0, 0.94, 0.68]} receiveShadow>
         <boxGeometry args={[1.86, 1.8, 0.08]} />
         <meshStandardMaterial
           color="#ffffff"
@@ -645,7 +644,7 @@ export const CabinInterior = memo(function CabinInterior({
       </mesh>
 
       <mesh position={[0.89, 0.94, -0.08]} receiveShadow>
-        <boxGeometry args={[0.08, 1.8, 1.52]} />
+        <boxGeometry args={[0.08, 1.8, 4]} />
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
@@ -748,6 +747,16 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale}
         />
+        <mesh position={[0, 0, 0.091]}>
+          <planeGeometry args={[0.16, 0.16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            map={configuredMirrorCubeUpperTexture ?? undefined}
+            roughness={0.7}
+            metalness={0.2}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;

@@ -66,7 +66,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       "Developed community, admin, and operations tooling spanning live events, RSVP/reminder flows, content publishing, user management, and lifecycle automation for non-technical teammates.",
     ],
     placeholderImageSrc: "/experience/pyw-icon-logo.png",
-    detailImageSrc: "/experience/pyw-icon-logo.png",
+    detailImageSrc: "/experience/pyw-bg.png",
     whyItMattered: "[Coming Soon!]",
   },
 ];
