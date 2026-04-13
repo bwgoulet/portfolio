@@ -17,6 +17,7 @@ export type GalleryPhoto = {
   imageSrc: string;
   title: string;
   description: string;
+  descriptionList?: string[];
 };
 
 export type GalleryDetail = Pick<
