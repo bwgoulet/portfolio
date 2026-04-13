@@ -1426,13 +1426,10 @@ export function AdventureScene() {
             aria-label="Darts minigame"
             tabIndex={-1}
           >
-            <h2 style={{ marginTop: 0 }}>Cabin Darts — Round {dartRound}</h2>
+            <h2 style={{ marginTop: 0 }}>Darts — Round {dartRound}</h2>
             <p>
               Score: <strong>{dartScore}</strong> · Throws left:{" "}
               <strong>{dartThrowsLeft}</strong>
-            </p>
-            <p style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "0.9rem" }}>
-              Aim with your cursor—reticle sway is calmer when still and wilder while moving.
             </p>
             <div
               role="button"
@@ -1515,11 +1512,6 @@ export function AdventureScene() {
                 />
               )}
             </div>
-            <p style={{ minHeight: 24 }}>
-              {lastDartHit
-                ? `Last throw: ${lastDartHit.label} (+${lastDartHit.points})`
-                : "Click the board to throw your first dart."}
-            </p>
             <div
               style={{
                 display: "flex",
