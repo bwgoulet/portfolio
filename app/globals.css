@@ -488,7 +488,8 @@ main {
 }
 
 .gallery-detail-card h2,
-.gallery-detail-card p {
+.gallery-detail-card p,
+.gallery-detail-card ul {
   width: min(100%, 720px);
   margin-left: auto;
   margin-right: auto;
