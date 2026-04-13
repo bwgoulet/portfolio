@@ -154,7 +154,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   },
   {
     id: "artwork-mirror-cube-upper",
-    imageSrc: "/gallery/hgod.jpg",
+    imageSrc: "/gallery/album9.png",
     title: "Mirror Cube — Upper",
     description:
       "A closer look at one of the reflective mirror cubes suspended along the cabin wall.",
@@ -183,6 +183,7 @@ export const CABIN_INTERIOR_TEXTURE_ASSETS = [
   "/textures-optimized/oak_veneer_01_diff_4k.jpg",
   "/gallery/prs25.jpg",
   "/gallery/prf25.png",
+  "/gallery/album9.png",
   ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
 ] as const;
 
@@ -416,6 +417,7 @@ export const CabinInterior = memo(function CabinInterior({
     "/gallery/prs25.jpg",
     "/gallery/prf25.png",
   ]);
+  const mirrorCubeUpperTexture = useTexture("/gallery/album9.png");
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -429,6 +431,13 @@ export const CabinInterior = memo(function CabinInterior({
       configureTexture(secondaryPaintingTexture),
     ];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
+  const configuredMirrorCubeUpperTexture = useMemo(() => {
+    if (!mirrorCubeUpperTexture) return null;
+    mirrorCubeUpperTexture.colorSpace = THREE.SRGBColorSpace;
+    mirrorCubeUpperTexture.anisotropy = 4;
+    mirrorCubeUpperTexture.needsUpdate = true;
+    return mirrorCubeUpperTexture;
+  }, [mirrorCubeUpperTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
@@ -738,6 +747,16 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale}
         />
+        <mesh position={[0, 0, 0.091]}>
+          <planeGeometry args={[0.16, 0.16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            map={configuredMirrorCubeUpperTexture ?? undefined}
+            roughness={0.7}
+            metalness={0.2}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
