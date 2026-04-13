@@ -25,6 +25,7 @@ export type GalleryDetail = Pick<
   "id" | "imageSrc" | "title" | "description"
 > & {
   descriptionList?: string[];
+  videoEmbedUrl?: string;
 };
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
@@ -190,6 +191,14 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
       "Omori",
       "Sid Meier's Civilization V"
     ],
+  },
+  {
+    id: "artwork-crt-video",
+    imageSrc: "/gallery/mayhem.jpg",
+    title: "CRT Highlight Reel",
+    description:
+      "A video clip that plays in the same cabin detail card format as the rest of the interactive artworks.",
+    videoEmbedUrl: "https://www.youtube.com/embed/LED7Pzxuee8",
   },
 ];
 
@@ -479,6 +488,7 @@ export const CabinInterior = memo(function CabinInterior({
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const wallMountedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
   const dartboardInteractiveRef = useRef<THREE.Group | null>(null);
+  const crtInteractiveRef = useRef<THREE.Group | null>(null);
   const mirrorCubeUpperInteractiveRef = useRef<THREE.Group | null>(null);
   const mirrorCubeLowerInteractiveRef = useRef<THREE.Group | null>(null);
   const hoveredPhotoIdRef = useRef<string | null>(null);
@@ -734,7 +744,31 @@ export const CabinInterior = memo(function CabinInterior({
         scale={0.05}
       />
 
-      <group position={[-0.98, -0.02, -0.5]} rotation={[0, -Math.PI / 1.6, 0]}>
+      <group
+        position={[-0.98, -0.02, -0.5]}
+        rotation={[0, -Math.PI / 1.6, 0]}
+        ref={crtInteractiveRef}
+        onPointerEnter={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          startArtworkHover(crtInteractiveRef, 1);
+        }}
+        onPointerMove={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          startArtworkHover(crtInteractiveRef, 1);
+        }}
+        onPointerLeave={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          endArtworkHover(crtInteractiveRef, 1);
+        }}
+        onClick={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          onPhotoSelect("artwork-crt-video");
+        }}
+      >
         <primitive object={crtModel.scene} scale={crtScale} />
       </group>
 
