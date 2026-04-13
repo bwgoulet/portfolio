@@ -1382,7 +1382,7 @@ export function AdventureScene() {
           }}
         >
           <div
-            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+            className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
               false
             )}`}
             ref={modalRef}
@@ -1445,7 +1445,7 @@ export function AdventureScene() {
           aria-live="polite"
         >
           <div
-            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+            className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
               false
             )}`}
             ref={modalRef}
@@ -1454,12 +1454,19 @@ export function AdventureScene() {
             aria-label="Darts minigame"
             tabIndex={-1}
           >
-            <h2 style={{ marginTop: 0 }}>Darts — Round {dartRound}</h2>
-            <p>
-              Score: <strong>{dartScore}</strong> · Throws left:{" "}
-              <strong>{dartThrowsLeft}</strong>
-            </p>
+            <div className="darts-header">
+              <h2>Darts — Round {dartRound}</h2>
+              <p>
+                <span>
+                  Score <strong>{dartScore}</strong>
+                </span>
+                <span>
+                  Throws left <strong>{dartThrowsLeft}</strong>
+                </span>
+              </p>
+            </div>
             <div
+              className="darts-board"
               role="button"
               tabIndex={0}
               aria-label="Dartboard target"
@@ -1468,17 +1475,7 @@ export function AdventureScene() {
               onPointerDown={handleDartboardThrow}
               onKeyDown={handleDartboardKeyboardThrow}
               style={{
-                width: 320,
-                height: 320,
-                maxWidth: "min(86vw, 320px)",
-                maxHeight: "min(86vw, 320px)",
-                borderRadius: "50%",
-                border: "8px solid #ece6d3",
-                margin: "0.3rem auto 1rem",
-                position: "relative",
                 cursor: dartThrowsLeft > 0 ? "crosshair" : "default",
-                background:
-                  "radial-gradient(circle at center, #b31217 0 6%, #1f7a35 6% 12%, #f4f0e6 12% 45%, #1f7a35 45% 53%, #f4f0e6 53% 75%, #2f2f2f 75% 100%)",
               }}
             >
               <span
@@ -1540,23 +1537,9 @@ export function AdventureScene() {
                 />
               )}
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "0.6rem",
-                flexWrap: "wrap",
-              }}
-            >
+            <div className="darts-actions">
               <button
-                className="detail-close"
-                type="button"
-                onClick={resetDartsRound}
-              >
-                Replay Round
-              </button>
-              <button
-                className="detail-close"
+                className="detail-close darts-action-button"
                 type="button"
                 onClick={startNewDartsRound}
               >
