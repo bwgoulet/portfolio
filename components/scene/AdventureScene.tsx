@@ -1398,6 +1398,13 @@ export function AdventureScene() {
             />
             <h2 id="gallery-title">{selectedGalleryPhoto.title}</h2>
             <p>{selectedGalleryPhoto.description}</p>
+            {selectedGalleryPhoto.descriptionList?.length ? (
+              <ul>
+                {selectedGalleryPhoto.descriptionList.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </article>
       )}

@@ -22,7 +22,9 @@ export type GalleryPhoto = {
 export type GalleryDetail = Pick<
   GalleryPhoto,
   "id" | "imageSrc" | "title" | "description"
->;
+> & {
+  descriptionList?: string[];
+};
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
@@ -157,7 +159,18 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     imageSrc: "/gallery/album9.png",
     title: "Album 3x3",
     description:
-      "A collection of some of my favorite albums! From top-left to bottom-right: Joey Bada$$ - 1999, Kendrick Lamar - To Pimp A Butterfly, Tyler, The Creator - Chromakopia, Men I Trust - Oncle Jazz, Magdalena Bay - Imaginal Disk, George Clanton - Ooh Rap I Ya, Steely Dan - Can't Buy A Thrill, Gorillaz - Demon Days, Beach Fossils - Somersault",
+      "A collection of some of my favorite albums! From top-left to bottom-right:",
+    descriptionList: [
+      "Joey Bada$$ - 1999",
+      "Kendrick Lamar - To Pimp A Butterfly",
+      "Tyler, The Creator - Chromakopia",
+      "Men I Trust - Oncle Jazz",
+      "Magdalena Bay - Imaginal Disk",
+      "George Clanton - Ooh Rap I Ya",
+      "Steely Dan - Can't Buy A Thrill",
+      "Gorillaz - Demon Days",
+      "Beach Fossils - Somersault",
+    ],
   },
   {
     id: "artwork-mirror-cube-lower",
