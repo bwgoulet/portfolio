@@ -178,7 +178,17 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     title: "Game 3x3",
     description:
       "A collection of some of my favorite games! From top-left to bottom-right:",
-    descriptionList: ["Item1 - 1"],
+    descriptionList: [
+      "Celeste",
+      "Cairn",
+      "Super Metroid",
+      "Final Fantasy VII",
+      "Super Smash Bros. Melee",
+      "Super Monkey Ball 2",
+      "The Legend of Zelda: Ocarina of Time",
+      "Omori",
+      "Sid Meier's Civilization V"
+    ],
   },
 ];
 
