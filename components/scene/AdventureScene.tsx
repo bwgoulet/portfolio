@@ -505,7 +505,7 @@ export function AdventureScene() {
   const registerDartThrow = useCallback(
     (normalizedX: number, normalizedY: number) => {
       if (dartThrowsLeft <= 0) return;
-      const spread = 0.045;
+      const spread = 0.06;
       const inaccurateX = normalizedX + (Math.random() - 0.5) * spread;
       const inaccurateY = normalizedY + (Math.random() - 0.5) * spread;
       const result = scoreDartThrow(inaccurateX, inaccurateY);
@@ -598,35 +598,35 @@ export function AdventureScene() {
 
     const reticlePosition = { x: 0, y: 0 };
     const jitterOffset = { x: 0, y: 0 };
-    let jitterTarget = randomPointInCircle(0.06);
-    let nextJitterChangeAt = performance.now() + 260 + Math.random() * 260;
+    let jitterTarget = randomPointInCircle(0.12);
+    let nextJitterChangeAt = performance.now() + 180 + Math.random() * 180;
     let animationFrameId = 0;
 
     const updateReticle = (timestamp: number) => {
       dartAimActivityRef.current *= 0.94;
       const movementActivity = clamp(dartAimActivityRef.current, 0, 1);
-      const jitterRadius = 0.03 + movementActivity * 0.24;
+      const jitterRadius = 0.08 + movementActivity * 0.3;
 
       if (timestamp >= nextJitterChangeAt) {
         jitterTarget = randomPointInCircle(jitterRadius);
         nextJitterChangeAt =
           timestamp +
-          (260 - movementActivity * 170) +
-          Math.random() * (240 - movementActivity * 150);
+          (180 - movementActivity * 110) +
+          Math.random() * (180 - movementActivity * 110);
       }
 
-      const jitterAttraction = 0.04 + movementActivity * 0.13;
+      const jitterAttraction = 0.08 + movementActivity * 0.16;
       jitterOffset.x += (jitterTarget.x - jitterOffset.x) * jitterAttraction;
       jitterOffset.y += (jitterTarget.y - jitterOffset.y) * jitterAttraction;
 
       const aimTarget = dartAimTargetRef.current;
-      const wobbleStrength = 0.003 + movementActivity * 0.016;
+      const wobbleStrength = 0.008 + movementActivity * 0.02;
       const wobbleX = Math.sin(timestamp * 0.011) * wobbleStrength;
       const wobbleY = Math.cos(timestamp * 0.009) * wobbleStrength;
       const targetX = aimTarget.x + jitterOffset.x + wobbleX;
       const targetY = aimTarget.y + jitterOffset.y + wobbleY;
 
-      const reticleAttraction = 0.22;
+      const reticleAttraction = 0.16;
       reticlePosition.x += (targetX - reticlePosition.x) * reticleAttraction;
       reticlePosition.y += (targetY - reticlePosition.y) * reticleAttraction;
 
