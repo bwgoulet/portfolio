@@ -178,7 +178,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     title: "Game 3x3",
     description:
       "A collection of some of my favorite games! From top-left to bottom-right:",
-    descriptionList: [],
+    descriptionList: ["Item1 - 1"],
   },
 ];
 
