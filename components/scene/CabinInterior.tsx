@@ -174,7 +174,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   },
   {
     id: "artwork-mirror-cube-lower",
-    imageSrc: "/gallery/hellopio.jpg",
+    imageSrc: "/gallery/game9.png",
     title: "Game 3x3",
     description:
       "A collection of some of my favorite games! From top-left to bottom-right:",
@@ -198,6 +198,7 @@ export const CABIN_INTERIOR_TEXTURE_ASSETS = [
   "/gallery/prs25.jpg",
   "/gallery/prf25.png",
   "/gallery/album9.png",
+  "/gallery/game9.png",
   ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
 ] as const;
 
@@ -431,7 +432,10 @@ export const CabinInterior = memo(function CabinInterior({
     "/gallery/prs25.jpg",
     "/gallery/prf25.png",
   ]);
-  const mirrorCubeUpperTexture = useTexture("/gallery/album9.png");
+  const [mirrorCubeUpperTexture, mirrorCubeLowerTexture] = useTexture([
+    "/gallery/album9.png",
+    "/gallery/game9.png",
+  ]);
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -445,13 +449,20 @@ export const CabinInterior = memo(function CabinInterior({
       configureTexture(secondaryPaintingTexture),
     ];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
-  const configuredMirrorCubeUpperTexture = useMemo(() => {
-    if (!mirrorCubeUpperTexture) return null;
-    mirrorCubeUpperTexture.colorSpace = THREE.SRGBColorSpace;
-    mirrorCubeUpperTexture.anisotropy = 4;
-    mirrorCubeUpperTexture.needsUpdate = true;
-    return mirrorCubeUpperTexture;
-  }, [mirrorCubeUpperTexture]);
+  const [configuredMirrorCubeUpperTexture, configuredMirrorCubeLowerTexture] =
+    useMemo(() => {
+      const configureTexture = (texture: THREE.Texture | undefined) => {
+        if (!texture) return null;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = 4;
+        texture.needsUpdate = true;
+        return texture;
+      };
+      return [
+        configureTexture(mirrorCubeUpperTexture),
+        configureTexture(mirrorCubeLowerTexture),
+      ];
+    }, [mirrorCubeLowerTexture, mirrorCubeUpperTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
@@ -810,6 +821,16 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale * 0.94}
         />
+        <mesh position={[0, 0, 0.084]}>
+          <planeGeometry args={[0.16, 0.16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            map={configuredMirrorCubeLowerTexture ?? undefined}
+            roughness={0.7}
+            metalness={0.2}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
