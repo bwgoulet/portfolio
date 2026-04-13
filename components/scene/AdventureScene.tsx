@@ -322,6 +322,7 @@ export function AdventureScene() {
   const [lastDartHit, setLastDartHit] = useState<DartHit | null>(null);
   const [dartReticle, setDartReticle] = useState<DartReticle>({ x: 0, y: 0 });
   const dartReticleRef = useRef<DartReticle>({ x: 0, y: 0 });
+  const dartAimTargetRef = useRef<DartReticle>({ x: 0, y: 0 });
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
@@ -520,6 +521,14 @@ export function AdventureScene() {
   const handleDartboardThrow = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       event.preventDefault();
+      const board = event.currentTarget;
+      const rect = board.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      dartAimTargetRef.current = {
+        x: clamp((event.clientX - centerX) / (rect.width / 2), -1, 1),
+        y: clamp((centerY - event.clientY) / (rect.height / 2), -1, 1),
+      };
       registerDartThrow(dartReticle.x, dartReticle.y);
     },
     [dartReticle.x, dartReticle.y, registerDartThrow]
@@ -534,6 +543,22 @@ export function AdventureScene() {
     [dartReticle.x, dartReticle.y, registerDartThrow]
   );
 
+  const handleDartboardAimMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const board = event.currentTarget;
+      const rect = board.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const intendedX = (event.clientX - centerX) / (rect.width / 2);
+      const intendedY = (centerY - event.clientY) / (rect.height / 2);
+      dartAimTargetRef.current = {
+        x: clamp(intendedX, -1, 1),
+        y: clamp(intendedY, -1, 1),
+      };
+    },
+    []
+  );
+
   useEffect(() => {
     dartReticleRef.current = dartReticle;
   }, [dartReticle]);
@@ -541,25 +566,38 @@ export function AdventureScene() {
   useEffect(() => {
     if (interactionState !== "dartboardCloseup") return;
 
-    const reticlePosition = { ...dartReticleRef.current };
-    let targetPosition = randomPointInCircle(0.88);
-    let nextTargetChangeAt = performance.now() + 220 + Math.random() * 420;
+    dartAimTargetRef.current = { x: 0, y: 0 };
+    dartReticleRef.current = { x: 0, y: 0 };
+    setDartReticle({ x: 0, y: 0 });
+
+    const reticlePosition = { x: 0, y: 0 };
+    const jitterOffset = { x: 0, y: 0 };
+    let jitterTarget = randomPointInCircle(0.16);
+    let nextJitterChangeAt = performance.now() + 140 + Math.random() * 220;
     let animationFrameId = 0;
 
     const updateReticle = (timestamp: number) => {
-      if (timestamp >= nextTargetChangeAt) {
-        targetPosition = randomPointInCircle(0.9);
-        nextTargetChangeAt = timestamp + 180 + Math.random() * 380;
+      if (timestamp >= nextJitterChangeAt) {
+        jitterTarget = randomPointInCircle(0.2);
+        nextJitterChangeAt = timestamp + 120 + Math.random() * 240;
       }
 
-      const attraction = 0.16;
-      reticlePosition.x += (targetPosition.x - reticlePosition.x) * attraction;
-      reticlePosition.y += (targetPosition.y - reticlePosition.y) * attraction;
+      const jitterAttraction = 0.08;
+      jitterOffset.x += (jitterTarget.x - jitterOffset.x) * jitterAttraction;
+      jitterOffset.y += (jitterTarget.y - jitterOffset.y) * jitterAttraction;
 
-      const wobbleX = Math.sin(timestamp * 0.0125) * 0.03;
-      const wobbleY = Math.cos(timestamp * 0.0105) * 0.03;
-      const nextX = reticlePosition.x + wobbleX;
-      const nextY = reticlePosition.y + wobbleY;
+      const aimTarget = dartAimTargetRef.current;
+      const wobbleX = Math.sin(timestamp * 0.011) * 0.012;
+      const wobbleY = Math.cos(timestamp * 0.009) * 0.012;
+      const targetX = aimTarget.x + jitterOffset.x + wobbleX;
+      const targetY = aimTarget.y + jitterOffset.y + wobbleY;
+
+      const reticleAttraction = 0.22;
+      reticlePosition.x += (targetX - reticlePosition.x) * reticleAttraction;
+      reticlePosition.y += (targetY - reticlePosition.y) * reticleAttraction;
+
+      const nextX = reticlePosition.x;
+      const nextY = reticlePosition.y;
       const radius = Math.sqrt(nextX * nextX + nextY * nextY);
       if (radius > 0.94) {
         reticlePosition.x = (nextX / radius) * 0.94;
@@ -1353,12 +1391,14 @@ export function AdventureScene() {
               <strong>{dartThrowsLeft}</strong>
             </p>
             <p style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "0.9rem" }}>
-              The reticle moves unpredictably—throw when it crosses the bullseye.
+              Aim with your cursor—the reticle jitters around it, so time the throw.
             </p>
             <div
               role="button"
               tabIndex={0}
               aria-label="Dartboard target"
+              onPointerEnter={handleDartboardAimMove}
+              onPointerMove={handleDartboardAimMove}
               onPointerDown={handleDartboardThrow}
               onKeyDown={handleDartboardKeyboardThrow}
               style={{
