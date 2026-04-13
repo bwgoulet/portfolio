@@ -11,6 +11,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
 import type { Group } from "three";
@@ -35,6 +37,71 @@ import {
   MOTION_TIERS,
 } from "@/config/sceneConfig";
 import { IntroductionLandmark } from "./IntroductionLandmark";
+
+type DartHit = {
+  x: number;
+  y: number;
+  points: number;
+  label: string;
+};
+
+type DartReticle = {
+  x: number;
+  y: number;
+};
+
+const DARTBOARD_SECTORS = [
+  20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
+] as const;
+
+const DARTS_PER_ROUND = 3;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+const randomPointInCircle = (maxRadius: number): DartReticle => {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = Math.sqrt(Math.random()) * maxRadius;
+  return {
+    x: Math.cos(angle) * radius,
+    y: Math.sin(angle) * radius,
+  };
+};
+
+const scoreDartThrow = (normalizedX: number, normalizedY: number) => {
+  const x = clamp(normalizedX, -1, 1);
+  const y = clamp(normalizedY, -1, 1);
+  const radius = Math.sqrt(x * x + y * y);
+
+  if (radius > 1) {
+    return { points: 0, label: "Miss" };
+  }
+
+  if (radius <= 0.06) {
+    return { points: 50, label: "Bullseye (50)" };
+  }
+
+  if (radius <= 0.12) {
+    return { points: 25, label: "Outer Bull (25)" };
+  }
+
+  const angleRadians = Math.atan2(y, x);
+  const normalizedAngle =
+    (Math.PI / 2 - angleRadians + Math.PI * 2) % (Math.PI * 2);
+  const sectorIndex =
+    Math.floor(normalizedAngle / (Math.PI / 10)) % DARTBOARD_SECTORS.length;
+  const baseValue = DARTBOARD_SECTORS[sectorIndex];
+
+  if (radius >= 0.75 && radius <= 0.84) {
+    return { points: baseValue * 2, label: `Double ${baseValue}` };
+  }
+
+  if (radius >= 0.45 && radius <= 0.53) {
+    return { points: baseValue * 3, label: `Triple ${baseValue}` };
+  }
+
+  return { points: baseValue, label: `Single ${baseValue}` };
+};
 
 const FREE_MODE_VIEW_PRESETS: Record<
   "overview" | "cabinInterior",
@@ -236,6 +303,17 @@ export function AdventureScene() {
   const [isCabinExitTransitionPending, setIsCabinExitTransitionPending] =
     useState(false);
   const [isFreeModeEnabled, setIsFreeModeEnabled] = useState(false);
+  const [dartScore, setDartScore] = useState(0);
+  const [dartThrowsLeft, setDartThrowsLeft] = useState(DARTS_PER_ROUND);
+  const [dartRound, setDartRound] = useState(1);
+  const [lastDartHit, setLastDartHit] = useState<DartHit | null>(null);
+  const [dartReticle, setDartReticle] = useState<DartReticle>({ x: 0, y: 0 });
+  const dartReticleRef = useRef<DartReticle>({ x: 0, y: 0 });
+  const dartAimTargetRef = useRef<DartReticle>({ x: 0, y: 0 });
+  const dartAimActivityRef = useRef(0);
+  const lastAimSampleRef = useRef<{ x: number; y: number; at: number } | null>(
+    null
+  );
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
@@ -397,6 +475,166 @@ export function AdventureScene() {
   const closeTimelineDialog = useCallback(() => {
     setIsTimelineDialogOpen(false);
   }, []);
+
+  const resetDartsRound = useCallback(() => {
+    setDartScore(0);
+    setDartThrowsLeft(DARTS_PER_ROUND);
+    setLastDartHit(null);
+  }, []);
+
+  const startNewDartsRound = useCallback(() => {
+    setDartRound((currentRound) => currentRound + 1);
+    resetDartsRound();
+  }, [resetDartsRound]);
+
+  const registerDartThrow = useCallback(
+    (normalizedX: number, normalizedY: number) => {
+      if (dartThrowsLeft <= 0) return;
+      const spread = 0.06;
+      const inaccurateX = normalizedX + (Math.random() - 0.5) * spread;
+      const inaccurateY = normalizedY + (Math.random() - 0.5) * spread;
+      const result = scoreDartThrow(inaccurateX, inaccurateY);
+      const markerX = clamp(inaccurateX, -1, 1);
+      const markerY = clamp(inaccurateY, -1, 1);
+
+      setDartScore((currentScore) => currentScore + result.points);
+      setDartThrowsLeft((remainingThrows) => Math.max(remainingThrows - 1, 0));
+      setLastDartHit({
+        x: markerX,
+        y: markerY,
+        points: result.points,
+        label: result.label,
+      });
+    },
+    [dartThrowsLeft]
+  );
+
+  const handleDartboardThrow = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const board = event.currentTarget;
+      const rect = board.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      dartAimTargetRef.current = {
+        x: clamp((event.clientX - centerX) / (rect.width / 2), -1, 1),
+        y: clamp((centerY - event.clientY) / (rect.height / 2), -1, 1),
+      };
+      registerDartThrow(dartReticle.x, dartReticle.y);
+    },
+    [dartReticle.x, dartReticle.y, registerDartThrow]
+  );
+
+  const handleDartboardKeyboardThrow = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      registerDartThrow(dartReticle.x, dartReticle.y);
+    },
+    [dartReticle.x, dartReticle.y, registerDartThrow]
+  );
+
+  const handleDartboardAimMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const board = event.currentTarget;
+      const rect = board.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const intendedX = (event.clientX - centerX) / (rect.width / 2);
+      const intendedY = (centerY - event.clientY) / (rect.height / 2);
+      const nextAimTarget = {
+        x: clamp(intendedX, -1, 1),
+        y: clamp(intendedY, -1, 1),
+      };
+      const now = performance.now();
+      const previousSample = lastAimSampleRef.current;
+      if (previousSample) {
+        const deltaX = nextAimTarget.x - previousSample.x;
+        const deltaY = nextAimTarget.y - previousSample.y;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const deltaMs = Math.max(now - previousSample.at, 16);
+        const speedPerMs = distance / deltaMs;
+        const normalizedActivity = clamp(speedPerMs * 22, 0, 1);
+        dartAimActivityRef.current =
+          dartAimActivityRef.current * 0.72 + normalizedActivity * 0.28;
+      }
+
+      dartAimTargetRef.current = {
+        x: nextAimTarget.x,
+        y: nextAimTarget.y,
+      };
+      lastAimSampleRef.current = { ...nextAimTarget, at: now };
+    },
+    []
+  );
+
+  useEffect(() => {
+    dartReticleRef.current = dartReticle;
+  }, [dartReticle]);
+
+  useEffect(() => {
+    if (interactionState !== "dartboardCloseup") return;
+
+    dartAimTargetRef.current = { x: 0, y: 0 };
+    dartReticleRef.current = { x: 0, y: 0 };
+    dartAimActivityRef.current = 0;
+    lastAimSampleRef.current = null;
+    setDartReticle({ x: 0, y: 0 });
+
+    const reticlePosition = { x: 0, y: 0 };
+    const jitterOffset = { x: 0, y: 0 };
+    let jitterTarget = randomPointInCircle(0.12);
+    let nextJitterChangeAt = performance.now() + 180 + Math.random() * 180;
+    let animationFrameId = 0;
+
+    const updateReticle = (timestamp: number) => {
+      dartAimActivityRef.current *= 0.94;
+      const movementActivity = clamp(dartAimActivityRef.current, 0, 1);
+      const jitterRadius = 0.08 + movementActivity * 0.3;
+
+      if (timestamp >= nextJitterChangeAt) {
+        jitterTarget = randomPointInCircle(jitterRadius);
+        nextJitterChangeAt =
+          timestamp +
+          (180 - movementActivity * 110) +
+          Math.random() * (180 - movementActivity * 110);
+      }
+
+      const jitterAttraction = 0.08 + movementActivity * 0.16;
+      jitterOffset.x += (jitterTarget.x - jitterOffset.x) * jitterAttraction;
+      jitterOffset.y += (jitterTarget.y - jitterOffset.y) * jitterAttraction;
+
+      const aimTarget = dartAimTargetRef.current;
+      const wobbleStrength = 0.008 + movementActivity * 0.02;
+      const wobbleX = Math.sin(timestamp * 0.011) * wobbleStrength;
+      const wobbleY = Math.cos(timestamp * 0.009) * wobbleStrength;
+      const targetX = aimTarget.x + jitterOffset.x + wobbleX;
+      const targetY = aimTarget.y + jitterOffset.y + wobbleY;
+
+      const reticleAttraction = 0.16;
+      reticlePosition.x += (targetX - reticlePosition.x) * reticleAttraction;
+      reticlePosition.y += (targetY - reticlePosition.y) * reticleAttraction;
+
+      const nextX = reticlePosition.x;
+      const nextY = reticlePosition.y;
+      const radius = Math.sqrt(nextX * nextX + nextY * nextY);
+      if (radius > 0.94) {
+        reticlePosition.x = (nextX / radius) * 0.94;
+        reticlePosition.y = (nextY / radius) * 0.94;
+      } else {
+        reticlePosition.x = nextX;
+        reticlePosition.y = nextY;
+      }
+
+      setDartReticle({ x: reticlePosition.x, y: reticlePosition.y });
+      animationFrameId = window.requestAnimationFrame(updateReticle);
+    };
+
+    animationFrameId = window.requestAnimationFrame(updateReticle);
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+    };
+  }, [interactionState]);
 
   useEffect(() => {
     if (!isDetailDialogOpen || !modalRef.current) return;
@@ -1152,16 +1390,139 @@ export function AdventureScene() {
       )}
 
       {interactionState === "dartboardCloseup" && (
-        <section
-          className="scene-inline-prompt"
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
           aria-live="polite"
-          role="status"
         >
-          <div className="scene-inline-prompt__card">
-            <h2>Play Darts?</h2>
-            <p>The darts minigame is coming soon.</p>
+          <div
+            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+              false
+            )}`}
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Darts minigame"
+            tabIndex={-1}
+          >
+            <h2 style={{ marginTop: 0 }}>Cabin Darts — Round {dartRound}</h2>
+            <p>
+              Score: <strong>{dartScore}</strong> · Throws left:{" "}
+              <strong>{dartThrowsLeft}</strong>
+            </p>
+            <p style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "0.9rem" }}>
+              Aim with your cursor—reticle sway is calmer when still and wilder while moving.
+            </p>
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Dartboard target"
+              onPointerEnter={handleDartboardAimMove}
+              onPointerMove={handleDartboardAimMove}
+              onPointerDown={handleDartboardThrow}
+              onKeyDown={handleDartboardKeyboardThrow}
+              style={{
+                width: 320,
+                height: 320,
+                maxWidth: "min(86vw, 320px)",
+                maxHeight: "min(86vw, 320px)",
+                borderRadius: "50%",
+                border: "8px solid #ece6d3",
+                margin: "0.3rem auto 1rem",
+                position: "relative",
+                cursor: dartThrowsLeft > 0 ? "crosshair" : "default",
+                background:
+                  "radial-gradient(circle at center, #b31217 0 6%, #1f7a35 6% 12%, #f4f0e6 12% 45%, #1f7a35 45% 53%, #f4f0e6 53% 75%, #2f2f2f 75% 100%)",
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: `${((dartReticle.x + 1) / 2) * 100}%`,
+                  top: `${(50 - dartReticle.y * 50).toFixed(2)}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  border: "2px solid rgba(255, 255, 255, 0.95)",
+                  boxShadow: "0 0 0 2px rgba(0, 0, 0, 0.35)",
+                  pointerEvents: "none",
+                }}
+              />
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: `${((dartReticle.x + 1) / 2) * 100}%`,
+                  top: `${(50 - dartReticle.y * 50).toFixed(2)}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 4,
+                  height: 24,
+                  background: "rgba(255, 255, 255, 0.92)",
+                  pointerEvents: "none",
+                }}
+              />
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: `${((dartReticle.x + 1) / 2) * 100}%`,
+                  top: `${(50 - dartReticle.y * 50).toFixed(2)}%`,
+                  transform: "translate(-50%, -50%)",
+                  width: 24,
+                  height: 4,
+                  background: "rgba(255, 255, 255, 0.92)",
+                  pointerEvents: "none",
+                }}
+              />
+              {lastDartHit && (
+                <span
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    left: `${((lastDartHit.x + 1) / 2) * 100}%`,
+                    top: `${(50 - lastDartHit.y * 50).toFixed(2)}%`,
+                    transform: "translate(-50%, -50%)",
+                    width: 12,
+                    height: 12,
+                    borderRadius: "50%",
+                    border: "2px solid #fff",
+                    background: "#0f172a",
+                    boxShadow: "0 0 0 2px rgba(15, 23, 42, 0.35)",
+                  }}
+                />
+              )}
+            </div>
+            <p style={{ minHeight: 24 }}>
+              {lastDartHit
+                ? `Last throw: ${lastDartHit.label} (+${lastDartHit.points})`
+                : "Click the board to throw your first dart."}
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "0.6rem",
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                className="detail-close"
+                type="button"
+                onClick={resetDartsRound}
+              >
+                Replay Round
+              </button>
+              <button
+                className="detail-close"
+                type="button"
+                onClick={startNewDartsRound}
+              >
+                New Round
+              </button>
+            </div>
           </div>
-        </section>
+        </article>
       )}
 
       {!isOverviewState &&
