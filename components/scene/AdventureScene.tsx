@@ -1392,7 +1392,8 @@ export function AdventureScene() {
             aria-labelledby="gallery-title"
             tabIndex={-1}
           >
-            {selectedGalleryPhoto.videoEmbedUrl ? (
+            {"videoEmbedUrl" in selectedGalleryPhoto &&
+            selectedGalleryPhoto.videoEmbedUrl ? (
               <div
                 style={{
                   position: "relative",
