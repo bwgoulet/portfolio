@@ -748,6 +748,26 @@ export const CabinInterior = memo(function CabinInterior({
         position={[-0.98, -0.02, -0.5]}
         rotation={[0, -Math.PI / 1.6, 0]}
         ref={crtInteractiveRef}
+        onPointerEnter={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          startArtworkHover(crtInteractiveRef, 1);
+        }}
+        onPointerMove={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          startArtworkHover(crtInteractiveRef, 1);
+        }}
+        onPointerLeave={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          endArtworkHover(crtInteractiveRef, 1);
+        }}
+        onClick={(event) => {
+          if (!photosInteractive) return;
+          event.stopPropagation();
+          onPhotoSelect("artwork-crt-video");
+        }}
       >
         <primitive object={crtModel.scene} scale={crtScale} />
         <mesh
