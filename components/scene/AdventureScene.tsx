@@ -16,7 +16,7 @@ import {
   type RefObject,
 } from "react";
 import type { Group } from "three";
-import { Vector3 } from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Billboard } from "./Billboard";
 import { Cabin } from "./Cabin";
@@ -147,7 +147,9 @@ function FreeModeCameraPositioner({
       const preset = CAMERA_PRESETS[focusTarget];
       camera.position.set(...preset.position);
       camera.lookAt(...preset.lookAt);
-      camera.fov = preset.fov;
+      if (camera instanceof PerspectiveCamera) {
+        camera.fov = preset.fov;
+      }
       camera.updateProjectionMatrix();
     }
 
