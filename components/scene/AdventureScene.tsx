@@ -1382,7 +1382,7 @@ export function AdventureScene() {
           }}
         >
           <div
-            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+            className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
               false
             )}`}
             ref={modalRef}
@@ -1445,7 +1445,7 @@ export function AdventureScene() {
           aria-live="polite"
         >
           <div
-            className={`detail-content-card gallery-detail-card ${detailCardStateClass(
+            className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
               false
             )}`}
             ref={modalRef}
@@ -1538,13 +1538,6 @@ export function AdventureScene() {
               )}
             </div>
             <div className="darts-actions">
-              <button
-                className="detail-close darts-action-button"
-                type="button"
-                onClick={resetDartsRound}
-              >
-                Replay Round
-              </button>
               <button
                 className="detail-close darts-action-button"
                 type="button"

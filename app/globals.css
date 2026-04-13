@@ -715,9 +715,15 @@ main {
   }
 }
 
+.darts-detail-card {
+  width: min(560px, 92vw);
+  padding: clamp(1rem, 2.1vw, 1.35rem);
+}
+
 .darts-header {
-  width: min(100%, 560px);
+  width: min(100%, 320px);
   margin: 0 auto 0.4rem;
+  text-align: center;
 }
 
 .darts-header h2 {
@@ -727,6 +733,7 @@ main {
 
 .darts-header p {
   display: flex;
+  justify-content: center;
   gap: 0.6rem;
   flex-wrap: wrap;
 }
