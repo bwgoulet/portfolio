@@ -17,12 +17,15 @@ export type GalleryPhoto = {
   imageSrc: string;
   title: string;
   description: string;
+  descriptionList?: string[];
 };
 
 export type GalleryDetail = Pick<
   GalleryPhoto,
   "id" | "imageSrc" | "title" | "description"
->;
+> & {
+  descriptionList?: string[];
+};
 
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
@@ -141,30 +144,52 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-framed-painting",
     imageSrc: "/gallery/prs25.jpg",
-    title: "Framed Wall Painting",
+    title: "UNCCH Ultimate Pr (Spring '25)",
     description:
       "A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.",
   },
   {
     id: "artwork-wall-mounted-painting",
     imageSrc: "/gallery/prf25.png",
-    title: "Wall Mounted Painting",
+    title: "UNCCH Ultimate Pr (Fall '25)",
     description:
       "A larger wall piece that opens in a focused detail view with context text below the image.",
   },
   {
     id: "artwork-mirror-cube-upper",
-    imageSrc: "/gallery/hgod.jpg",
-    title: "Mirror Cube — Upper",
+    imageSrc: "/gallery/album9.png",
+    title: "Album 3x3",
     description:
-      "A closer look at one of the reflective mirror cubes suspended along the cabin wall.",
+      "A collection of some of my favorite albums! From top-left to bottom-right:",
+    descriptionList: [
+      "Joey Bada$$ - 1999",
+      "Kendrick Lamar - To Pimp A Butterfly",
+      "Tyler, The Creator - Chromakopia",
+      "Men I Trust - Oncle Jazz",
+      "Magdalena Bay - Imaginal Disk",
+      "George Clanton - Ooh Rap I Ya",
+      "Steely Dan - Can't Buy A Thrill",
+      "Gorillaz - Demon Days",
+      "Beach Fossils - Somersault",
+    ],
   },
   {
     id: "artwork-mirror-cube-lower",
-    imageSrc: "/gallery/hellopio.jpg",
-    title: "Mirror Cube — Lower",
+    imageSrc: "/gallery/game9.png",
+    title: "Game 3x3",
     description:
-      "The second mirror cube detail view with supporting context shown beneath the enlarged image.",
+      "A collection of some of my favorite games! From top-left to bottom-right:",
+    descriptionList: [
+      "Celeste",
+      "Cairn",
+      "Super Metroid",
+      "Final Fantasy VII",
+      "Super Smash Bros. Melee",
+      "Super Monkey Ball 2",
+      "The Legend of Zelda: Ocarina of Time",
+      "Omori",
+      "Sid Meier's Civilization V"
+    ],
   },
 ];
 
@@ -183,6 +208,8 @@ export const CABIN_INTERIOR_TEXTURE_ASSETS = [
   "/textures-optimized/oak_veneer_01_diff_4k.jpg",
   "/gallery/prs25.jpg",
   "/gallery/prf25.png",
+  "/gallery/album9.png",
+  "/gallery/game9.png",
   ...Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.imageSrc))),
 ] as const;
 
@@ -416,6 +443,10 @@ export const CabinInterior = memo(function CabinInterior({
     "/gallery/prs25.jpg",
     "/gallery/prf25.png",
   ]);
+  const [mirrorCubeUpperTexture, mirrorCubeLowerTexture] = useTexture([
+    "/gallery/album9.png",
+    "/gallery/game9.png",
+  ]);
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -429,6 +460,20 @@ export const CabinInterior = memo(function CabinInterior({
       configureTexture(secondaryPaintingTexture),
     ];
   }, [primaryPaintingTexture, secondaryPaintingTexture]);
+  const [configuredMirrorCubeUpperTexture, configuredMirrorCubeLowerTexture] =
+    useMemo(() => {
+      const configureTexture = (texture: THREE.Texture | undefined) => {
+        if (!texture) return null;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = 4;
+        texture.needsUpdate = true;
+        return texture;
+      };
+      return [
+        configureTexture(mirrorCubeUpperTexture),
+        configureTexture(mirrorCubeLowerTexture),
+      ];
+    }, [mirrorCubeLowerTexture, mirrorCubeUpperTexture]);
   const photoRefs = useRef<Record<string, THREE.Group | null>>({});
   const cabinInteriorRef = useRef<THREE.Group | null>(null);
   const framedPaintingInteractiveRef = useRef<THREE.Group | null>(null);
@@ -605,7 +650,7 @@ export const CabinInterior = memo(function CabinInterior({
       ref={cabinInteriorRef}
     >
       <mesh position={[0, 0.02, 0]} receiveShadow>
-        <boxGeometry args={[1.86, 0.22, 1.52]} />
+        <boxGeometry args={[1.86, 0.22, 3]} />
         <meshStandardMaterial
           color="#ffffff"
           map={woodFloorTexture}
@@ -615,16 +660,6 @@ export const CabinInterior = memo(function CabinInterior({
       </mesh>
 
       <mesh position={[0, 0.94, -0.8]} receiveShadow>
-        <boxGeometry args={[1.86, 1.8, 0.08]} />
-        <meshStandardMaterial
-          color="#ffffff"
-          map={wallTexture}
-          roughness={1}
-          metalness={0.01}
-        />
-      </mesh>
-
-      <mesh position={[0, 0.94, 0.68]} receiveShadow>
         <boxGeometry args={[1.86, 1.8, 0.08]} />
         <meshStandardMaterial
           color="#ffffff"
@@ -645,7 +680,7 @@ export const CabinInterior = memo(function CabinInterior({
       </mesh>
 
       <mesh position={[0.89, 0.94, -0.08]} receiveShadow>
-        <boxGeometry args={[0.08, 1.8, 1.52]} />
+        <boxGeometry args={[0.08, 1.8, 4]} />
         <meshStandardMaterial
           color="#ffffff"
           map={wallTexture}
@@ -748,6 +783,16 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale}
         />
+        <mesh position={[0, 0, 0.084]}>
+          <planeGeometry args={[0.16, 0.16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            map={configuredMirrorCubeUpperTexture ?? undefined}
+            roughness={0.7}
+            metalness={0.2}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;
@@ -787,6 +832,16 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale * 0.94}
         />
+        <mesh position={[0, 0, 0.079]}>
+          <planeGeometry args={[0.16, 0.16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            map={configuredMirrorCubeLowerTexture ?? undefined}
+            roughness={0.7}
+            metalness={0.2}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
         <mesh
           onPointerEnter={(event) => {
             if (!isMirrorCubeHoverAllowed(event)) return;

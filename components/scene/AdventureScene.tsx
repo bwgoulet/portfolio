@@ -16,7 +16,7 @@ import {
   type RefObject,
 } from "react";
 import type { Group } from "three";
-import { Vector3 } from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { Billboard } from "./Billboard";
 import { Cabin } from "./Cabin";
@@ -138,6 +138,21 @@ function FreeModeCameraPositioner({
       camera.lookAt(...preset.lookAt);
       camera.updateProjectionMatrix();
     }
+
+    if (
+      !enabled &&
+      wasEnabledRef.current &&
+      (focusTarget === "overview" || focusTarget === "cabinInterior")
+    ) {
+      const preset = CAMERA_PRESETS[focusTarget];
+      camera.position.set(...preset.position);
+      camera.lookAt(...preset.lookAt);
+      if (camera instanceof PerspectiveCamera) {
+        camera.fov = preset.fov;
+      }
+      camera.updateProjectionMatrix();
+    }
+
     wasEnabledRef.current = enabled;
   }, [camera, enabled, focusTarget]);
 
@@ -1385,6 +1400,13 @@ export function AdventureScene() {
             />
             <h2 id="gallery-title">{selectedGalleryPhoto.title}</h2>
             <p>{selectedGalleryPhoto.description}</p>
+            {selectedGalleryPhoto.descriptionList?.length ? (
+              <ul>
+                {selectedGalleryPhoto.descriptionList.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </article>
       )}
