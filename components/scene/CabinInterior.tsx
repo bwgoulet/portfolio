@@ -141,30 +141,30 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-framed-painting",
     imageSrc: "/gallery/prs25.jpg",
-    title: "Framed Wall Painting",
+    title: "UNCCH Ultimate Pr (Spring '25)",
     description:
       "A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.",
   },
   {
     id: "artwork-wall-mounted-painting",
     imageSrc: "/gallery/prf25.png",
-    title: "Wall Mounted Painting",
+    title: "UNCCH Ultimate Pr (Fall '25)",
     description:
       "A larger wall piece that opens in a focused detail view with context text below the image.",
   },
   {
     id: "artwork-mirror-cube-upper",
     imageSrc: "/gallery/album9.png",
-    title: "Mirror Cube — Upper",
+    title: "Album 3x3",
     description:
-      "A closer look at one of the reflective mirror cubes suspended along the cabin wall.",
+      "A collection of some of my favorite albums! From top-left to bottom-right: Joey Bada$$ - 1999, Kendrick Lamar - To Pimp A Butterfly, Tyler, The Creator - Chromakopia, Men I Trust - Oncle Jazz, Magdalena Bay - Imaginal Disk, George Clanton - Ooh Rap I Ya, Steely Dan - Can't Buy A Thrill, Gorillaz - Demon Days, Beach Fossils - Somersault",
   },
   {
     id: "artwork-mirror-cube-lower",
     imageSrc: "/gallery/hellopio.jpg",
-    title: "Mirror Cube — Lower",
+    title: "Game 3x3",
     description:
-      "The second mirror cube detail view with supporting context shown beneath the enlarged image.",
+      "A collection of some of my favorite games! From top-left to bottom-right:",
   },
 ];
 
@@ -747,7 +747,7 @@ export const CabinInterior = memo(function CabinInterior({
           object={mirrorCubeModel.scene.clone()}
           scale={mirrorCubeScale}
         />
-        <mesh position={[0, 0, 0.091]}>
+        <mesh position={[0, 0, 0.084]}>
           <planeGeometry args={[0.16, 0.16]} />
           <meshStandardMaterial
             color="#ffffff"
