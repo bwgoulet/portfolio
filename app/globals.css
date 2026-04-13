@@ -714,3 +714,63 @@ main {
     animation: none;
   }
 }
+
+.darts-detail-card {
+  width: min(560px, 92vw);
+  padding: clamp(1rem, 2.1vw, 1.35rem);
+}
+
+.darts-header {
+  width: min(100%, 320px);
+  margin: 0 auto 0.4rem;
+  text-align: center;
+}
+
+.darts-header h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.darts-header p {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.darts-header p span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 226, 238, 0.35);
+  background: rgba(11, 19, 28, 0.74);
+  color: #d5e2ef;
+}
+
+.darts-board {
+  width: 320px;
+  height: 320px;
+  max-width: min(86vw, 320px);
+  max-height: min(86vw, 320px);
+  border-radius: 50%;
+  border: 8px solid #ece6d3;
+  margin: 0.3rem auto 1rem;
+  position: relative;
+  box-shadow: 0 18px 40px rgba(4, 8, 14, 0.4);
+  background:
+    radial-gradient(circle at center, #b31217 0 6%, #1f7a35 6% 12%, #f4f0e6 12% 45%, #1f7a35 45% 53%, #f4f0e6 53% 75%, #2f2f2f 75% 100%);
+}
+
+.darts-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.darts-action-button {
+  margin-left: 0;
+  margin-bottom: 0;
+}
