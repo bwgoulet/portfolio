@@ -323,6 +323,10 @@ export function AdventureScene() {
   const [dartReticle, setDartReticle] = useState<DartReticle>({ x: 0, y: 0 });
   const dartReticleRef = useRef<DartReticle>({ x: 0, y: 0 });
   const dartAimTargetRef = useRef<DartReticle>({ x: 0, y: 0 });
+  const dartAimActivityRef = useRef(0);
+  const lastAimSampleRef = useRef<{ x: number; y: number; at: number } | null>(
+    null
+  );
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
@@ -551,10 +555,28 @@ export function AdventureScene() {
       const centerY = rect.top + rect.height / 2;
       const intendedX = (event.clientX - centerX) / (rect.width / 2);
       const intendedY = (centerY - event.clientY) / (rect.height / 2);
-      dartAimTargetRef.current = {
+      const nextAimTarget = {
         x: clamp(intendedX, -1, 1),
         y: clamp(intendedY, -1, 1),
       };
+      const now = performance.now();
+      const previousSample = lastAimSampleRef.current;
+      if (previousSample) {
+        const deltaX = nextAimTarget.x - previousSample.x;
+        const deltaY = nextAimTarget.y - previousSample.y;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const deltaMs = Math.max(now - previousSample.at, 16);
+        const speedPerMs = distance / deltaMs;
+        const normalizedActivity = clamp(speedPerMs * 22, 0, 1);
+        dartAimActivityRef.current =
+          dartAimActivityRef.current * 0.72 + normalizedActivity * 0.28;
+      }
+
+      dartAimTargetRef.current = {
+        x: nextAimTarget.x,
+        y: nextAimTarget.y,
+      };
+      lastAimSampleRef.current = { ...nextAimTarget, at: now };
     },
     []
   );
@@ -568,27 +590,37 @@ export function AdventureScene() {
 
     dartAimTargetRef.current = { x: 0, y: 0 };
     dartReticleRef.current = { x: 0, y: 0 };
+    dartAimActivityRef.current = 0;
+    lastAimSampleRef.current = null;
     setDartReticle({ x: 0, y: 0 });
 
     const reticlePosition = { x: 0, y: 0 };
     const jitterOffset = { x: 0, y: 0 };
-    let jitterTarget = randomPointInCircle(0.16);
-    let nextJitterChangeAt = performance.now() + 140 + Math.random() * 220;
+    let jitterTarget = randomPointInCircle(0.06);
+    let nextJitterChangeAt = performance.now() + 260 + Math.random() * 260;
     let animationFrameId = 0;
 
     const updateReticle = (timestamp: number) => {
+      dartAimActivityRef.current *= 0.94;
+      const movementActivity = clamp(dartAimActivityRef.current, 0, 1);
+      const jitterRadius = 0.03 + movementActivity * 0.24;
+
       if (timestamp >= nextJitterChangeAt) {
-        jitterTarget = randomPointInCircle(0.2);
-        nextJitterChangeAt = timestamp + 120 + Math.random() * 240;
+        jitterTarget = randomPointInCircle(jitterRadius);
+        nextJitterChangeAt =
+          timestamp +
+          (260 - movementActivity * 170) +
+          Math.random() * (240 - movementActivity * 150);
       }
 
-      const jitterAttraction = 0.08;
+      const jitterAttraction = 0.04 + movementActivity * 0.13;
       jitterOffset.x += (jitterTarget.x - jitterOffset.x) * jitterAttraction;
       jitterOffset.y += (jitterTarget.y - jitterOffset.y) * jitterAttraction;
 
       const aimTarget = dartAimTargetRef.current;
-      const wobbleX = Math.sin(timestamp * 0.011) * 0.012;
-      const wobbleY = Math.cos(timestamp * 0.009) * 0.012;
+      const wobbleStrength = 0.003 + movementActivity * 0.016;
+      const wobbleX = Math.sin(timestamp * 0.011) * wobbleStrength;
+      const wobbleY = Math.cos(timestamp * 0.009) * wobbleStrength;
       const targetX = aimTarget.x + jitterOffset.x + wobbleX;
       const targetY = aimTarget.y + jitterOffset.y + wobbleY;
 
@@ -1391,7 +1423,7 @@ export function AdventureScene() {
               <strong>{dartThrowsLeft}</strong>
             </p>
             <p style={{ marginTop: 0, marginBottom: "0.6rem", fontSize: "0.9rem" }}>
-              Aim with your cursor—the reticle jitters around it, so time the throw.
+              Aim with your cursor—reticle sway is calmer when still and wilder while moving.
             </p>
             <div
               role="button"
