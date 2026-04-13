@@ -71,6 +71,19 @@ function FreeModeCameraPositioner({
       camera.lookAt(...preset.lookAt);
       camera.updateProjectionMatrix();
     }
+
+    if (
+      !enabled &&
+      wasEnabledRef.current &&
+      (focusTarget === "overview" || focusTarget === "cabinInterior")
+    ) {
+      const preset = CAMERA_PRESETS[focusTarget];
+      camera.position.set(...preset.position);
+      camera.lookAt(...preset.lookAt);
+      camera.fov = preset.fov;
+      camera.updateProjectionMatrix();
+    }
+
     wasEnabledRef.current = enabled;
   }, [camera, enabled, focusTarget]);
 
