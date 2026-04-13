@@ -624,7 +624,7 @@ export const CabinInterior = memo(function CabinInterior({
         />
       </mesh>
 
-      <mesh position={[0, 0.94, 0.68]} receiveShadow>
+      <mesh position={[0, 0.94, 0.9]} receiveShadow>
         <boxGeometry args={[1.86, 1.8, 0.08]} />
         <meshStandardMaterial
           color="#ffffff"
