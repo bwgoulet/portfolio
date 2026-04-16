@@ -186,6 +186,7 @@ export const Billboard = memo(function Billboard({
                 transform
                 position={[0, -0.01, 0.015]}
                 distanceFactor={1.2}
+                zIndexRange={[2, 0]}
                 pointerEvents="none"
                 style={{ opacity: hideThumbnails ? 0 : 1 }}
               >
