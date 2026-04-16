@@ -1116,7 +1116,7 @@ export function AdventureScene() {
                 onHoverChange={(hovered) => updateHover("billboard", hovered)}
                 onClick={() => handleFocusClick("billboard")}
                 onNoteClick={(noteId) => setSelectedNoteId(noteId)}
-                detailOpen={selectedNoteId !== null}
+                detailOpen={selectedNoteId !== null || closingNoteId !== null}
                 hideThumbnails={cabinTransitionFadeState !== "idle"}
                 reducedMotion={reducedMotion}
               />
