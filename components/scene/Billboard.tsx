@@ -188,7 +188,7 @@ export const Billboard = memo(function Billboard({
                 distanceFactor={1.2}
                 zIndexRange={[2, 0]}
                 pointerEvents="none"
-                style={{ opacity: hideThumbnails ? 0 : 1 }}
+                style={{ opacity: hideThumbnails || detailOpen ? 0 : 1 }}
               >
               <div className="note-preview" aria-hidden>
                 <Image
