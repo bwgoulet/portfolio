@@ -1117,9 +1117,7 @@ export function AdventureScene() {
                 onClick={() => handleFocusClick("billboard")}
                 onNoteClick={(noteId) => setSelectedNoteId(noteId)}
                 detailOpen={selectedNoteId !== null || closingNoteId !== null}
-                hideThumbnails={
-                  isTransitioning || cabinTransitionFadeState !== "idle"
-                }
+                hideThumbnails={cabinTransitionFadeState !== "idle"}
                 reducedMotion={reducedMotion}
               />
               {!isCabinInteriorRevealed && (
