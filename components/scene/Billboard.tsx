@@ -159,10 +159,10 @@ export const Billboard = memo(function Billboard({
           Projects
         </Text>
       </group>
-      {!detailOpen &&
-        PROJECT_NOTES.map((note) => (
+      {PROJECT_NOTES.map((note) => (
           <group
             key={note.id}
+            visible={!detailOpen}
             position={note.position}
             rotation={[0, 0, note.rotation]}
             ref={(group) => {
@@ -182,13 +182,13 @@ export const Billboard = memo(function Billboard({
               <sphereGeometry args={[0.017, 6, 6]} />
               <meshStandardMaterial color={billboard.notePin} flatShading />
             </mesh>
-            <Html
-              transform
-              position={[0, -0.01, 0.015]}
-              distanceFactor={1.2}
-              pointerEvents="none"
-              style={{ opacity: hideThumbnails ? 0 : 1 }}
-            >
+              <Html
+                transform
+                position={[0, -0.01, 0.015]}
+                distanceFactor={1.2}
+                pointerEvents="none"
+                style={{ opacity: hideThumbnails || detailOpen ? 0 : 1 }}
+              >
               <div className="note-preview" aria-hidden>
                 <Image
                   src={note.imageSrc}
