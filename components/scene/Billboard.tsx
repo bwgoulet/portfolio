@@ -162,6 +162,7 @@ export const Billboard = memo(function Billboard({
       {PROJECT_NOTES.map((note) => (
           <group
             key={note.id}
+            visible={!detailOpen}
             position={note.position}
             rotation={[0, 0, note.rotation]}
             ref={(group) => {
