@@ -69,6 +69,22 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     detailImageSrc: "/experience/pyw-bg.png",
     whyItMattered: "[Coming Soon!]",
   },
+  {
+    id: "the-nexus",
+    role: "Full-Stack Software Engineer (Contract)",
+    company: "The Nexus",
+    dateLocation: "March 2026 - Present Remote",
+    bullets: [
+      "Developing The Nexus, a Next.js + Supabase web platform for SSBU crew leagues, unifying user onboarding, match management, and stats publishing in one product surface.",
+      "Architected a role-aware league system for directors, players, moderators, and admins, with route-level flows for dashboarding, match operations, and shared stat pages.",
+      "Implemented a SQL-first data model and migration workflow (schema, seeds, prod push scripts) to support reliable environment promotion and data consistency.",
+      "Roadmapped advanced competition features—including real-time match coordination, subscription-gated enrollment, and searchable player/team leaderboards—to scale league operations.",
+    ],
+    placeholderImageSrc: "/projects/uncsmash.jpg",
+    detailImageSrc: "/projects/uncsmash.jpg",
+    whyItMattered:
+      "My latest project. The Smash community has been a large part of my life for over a decade, and it's truly a full circle moment to pursue real work in this hobby that I love. I'll be working on this contract until the beginning of August - if you think I'd be a good fit for your project or team, don't hesitate to reach out!",
+  },
 ];
 
 export const EXPERIENCE_RECORD = Object.fromEntries(
