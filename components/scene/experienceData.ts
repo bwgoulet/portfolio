@@ -80,8 +80,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       "Implemented a SQL-first data model and migration workflow (schema, seeds, prod push scripts) to support reliable environment promotion and data consistency.",
       "Roadmapped advanced competition features—including real-time match coordination, subscription-gated enrollment, and searchable player/team leaderboards—to scale league operations.",
     ],
-    placeholderImageSrc: "/experience/Nexus Logotype Emerald Large.png",
-    detailImageSrc: "/experience/Nexus Emerald Big.png",
+    placeholderImageSrc: "/experience/Nexus Emerald Big.png",
+    detailImageSrc: "/experience/Nexus Logotype Emerald Large.png",
     whyItMattered:
       "My latest project. The Smash community has been a large part of my life for over a decade, and it's truly a full circle moment to pursue real work in this hobby that I love. I'll be working on this contract until the beginning of August - if you think I'd be a good fit for your project or team, don't hesitate to reach out!",
   },
