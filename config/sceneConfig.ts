@@ -67,7 +67,7 @@ export const MOTION_TIERS = {
   },
   macro: {
     cameraDuration: 2.35,
-    overlayFadeDuration: 0.42,
+    overlayFadeDuration: 0.24,
     cameraEase: 'power2.inOut',
     settleDelay: 0.18
   }
