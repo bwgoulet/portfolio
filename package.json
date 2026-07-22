@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run gallery:thumbs && next dev",
+    "build": "npm run gallery:thumbs && next build",
     "start": "next start",
     "lint": "next lint",
-    "textures:downscale": "node scripts/downscale-textures.mjs"
+    "textures:downscale": "node scripts/downscale-textures.mjs",
+    "gallery:thumbs": "node scripts/generate-gallery-thumbs.mjs",
+    "postinstall": "npm run gallery:thumbs"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.7",
