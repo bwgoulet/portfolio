@@ -1307,7 +1307,7 @@ export function AdventureScene() {
                   </p>
                   <p>
                     Currently, I&apos;m focused on pursuing strong engineering opportunities in the Triangle or remote while finding my next big project.
-                    If you think I'd be a good fit for your project or team, feel free to reach out!
+                    If you think I&apos;d be a good fit for your project or team, feel free to reach out!
                   </p>
                   <p>
                     Explore the island to view projects, experience, and more
