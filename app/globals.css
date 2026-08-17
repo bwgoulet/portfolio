@@ -568,6 +568,80 @@ main {
   margin-top: 0.7rem;
 }
 
+.resume-contact-card {
+  width: min(92vw, 620px);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: radial-gradient(circle at top right, rgba(76, 116, 111, 0.24), transparent 42%), #0f1217;
+}
+
+.resume-contact-eyebrow {
+  margin: 0 0 0.45rem;
+  color: #a9cfc7;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.resume-contact-card h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+}
+
+.resume-contact-intro {
+  max-width: 52ch;
+  margin: 0.8rem 0 1.5rem;
+  color: rgba(231, 239, 247, 0.78);
+  line-height: 1.65;
+}
+
+.resume-contact-actions {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.resume-contact-actions a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 58px;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(214, 226, 238, 0.25);
+  border-radius: 10px;
+  color: #e7eff7;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.resume-contact-actions a:hover,
+.resume-contact-actions a:focus-visible {
+  border-color: rgba(200, 239, 231, 0.8);
+  background: rgba(108, 170, 157, 0.13);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.resume-contact-actions a span {
+  color: rgba(231, 239, 247, 0.62);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.resume-contact-actions .resume-primary-action {
+  justify-content: center;
+  background: #dcefe9;
+  border-color: #dcefe9;
+  color: #14231f;
+  font-weight: 800;
+}
+
+.resume-contact-actions .resume-primary-action span {
+  color: inherit;
+  font-size: 1rem;
+}
+
 @media (max-width: 900px) {
   .scene-brand {
     right: 0.7rem;

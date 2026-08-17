@@ -303,6 +303,8 @@ export function AdventureScene() {
     useState(false);
   const [isIntroductionCloseupHovered, setIsIntroductionCloseupHovered] =
     useState(false);
+  const [isKeyCardHovered, setIsKeyCardHovered] = useState(false);
+  const [isResumeDialogOpen, setIsResumeDialogOpen] = useState(false);
   const [isTimelineDialogOpen, setIsTimelineDialogOpen] = useState(false);
   const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] =
     useState(false);
@@ -372,6 +374,7 @@ export function AdventureScene() {
     selectedExperienceId !== null ||
     selectedGalleryPhotoId !== null ||
     isIntroductionDialogOpen ||
+    isResumeDialogOpen ||
     isTimelineDialogOpen;
   const isOverviewState =
     interactionState === "idleOverview" ||
@@ -481,6 +484,10 @@ export function AdventureScene() {
 
   const closeIntroductionDialog = useCallback(() => {
     setIsIntroductionDialogOpen(false);
+  }, []);
+
+  const closeResumeDialog = useCallback(() => {
+    setIsResumeDialogOpen(false);
   }, []);
 
   const closeGalleryDetail = useCallback(() => {
@@ -738,6 +745,7 @@ export function AdventureScene() {
       setSelectedExperienceId(null);
       setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
+      setIsResumeDialogOpen(false);
       setIsTimelineDialogOpen(false);
 
       if (target === "cabin") {
@@ -808,6 +816,7 @@ export function AdventureScene() {
     setSelectedExperienceId(null);
     setSelectedGalleryPhotoId(null);
     setIsIntroductionDialogOpen(false);
+    setIsResumeDialogOpen(false);
     setIsTimelineDialogOpen(false);
   }, []);
 
@@ -1092,6 +1101,7 @@ export function AdventureScene() {
                   interactionState === "hoverIntroduction" ||
                   isIntroductionCloseupHovered
                 }
+                keyCardHovered={isKeyCardHovered}
                 onHoverChange={(hovered) => {
                   if (interactionState === "introductionCloseup") {
                     setIsIntroductionCloseupHovered(hovered);
@@ -1106,6 +1116,8 @@ export function AdventureScene() {
                   }
                   handleFocusClick("introduction");
                 }}
+                onKeyCardHoverChange={setIsKeyCardHovered}
+                onKeyCardClick={() => setIsResumeDialogOpen(true)}
                 reducedMotion={reducedMotion}
               />
               <Billboard
@@ -1318,6 +1330,57 @@ export function AdventureScene() {
             </div>
           </article>
         )}
+
+      {isResumeDialogOpen && (
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
+          aria-live="polite"
+          onClick={closeResumeDialog}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              closeResumeDialog();
+            }
+          }}
+        >
+          <div
+            className={`detail-content-card introduction-detail-card resume-contact-card ${detailCardStateClass(false)}`}
+            ref={modalRef}
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="resume-contact-title"
+            tabIndex={-1}
+          >
+            <p className="resume-contact-eyebrow">Resume &amp; contact</p>
+            <h2 id="resume-contact-title">Let&apos;s connect.</h2>
+            <p className="resume-contact-intro">
+              View my official resume or reach out directly. I&apos;m always happy
+              to talk about engineering opportunities and interesting projects.
+            </p>
+            <div className="resume-contact-actions">
+              <a
+                className="resume-primary-action"
+                href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View official resume <span aria-hidden="true">↗</span>
+              </a>
+              <a href="mailto:bengoulet02@gmail.com">
+                <span>Email</span>
+                <strong>bengoulet02@gmail.com</strong>
+              </a>
+              <a href="tel:+19197709551">
+                <span>Phone</span>
+                <strong>(919) 770-9551</strong>
+              </a>
+            </div>
+          </div>
+        </article>
+      )}
 
       {interactionState === "timelineCloseup" && isTimelineDialogOpen && (
         <article
