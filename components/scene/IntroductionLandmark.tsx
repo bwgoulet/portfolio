@@ -65,7 +65,10 @@ type IntroductionLandmarkProps = {
   detailInteractiveEnabled?: boolean;
   hoverEnabled?: boolean;
   hovered: boolean;
+  keyCardHovered: boolean;
   onHoverChange: (hovered: boolean) => void;
+  onKeyCardHoverChange: (hovered: boolean) => void;
+  onKeyCardClick: () => void;
   onClick: (target: InteractiveTarget) => void;
   landmarkRef: RefObject<Group | null>;
   position?: [number, number, number];
@@ -79,7 +82,10 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   detailInteractiveEnabled = false,
   hoverEnabled = interactiveEnabled,
   hovered,
+  keyCardHovered,
   onHoverChange,
+  onKeyCardHoverChange,
+  onKeyCardClick,
   onClick,
   landmarkRef,
   position = SCENE_ANCHORS.introductionLandmark,
@@ -95,6 +101,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const imageWidth = 0.4;
   const imageHeight = imageWidth / (858 / 1356);
   const isBackpackHovered = hovered && !detailInteractiveEnabled;
+  const isKeyCardInteractive = interactiveEnabled || detailInteractiveEnabled;
 
   const backpackModel = useMemo(() => {
     const model = backpackGltf.scene.clone(true);
@@ -135,6 +142,10 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   }, [backpackModel, isBackpackHovered]);
 
   useEffect(() => {
+    updateBackpackHoverState(keyCardModel, keyCardHovered);
+  }, [keyCardHovered, keyCardModel]);
+
+  useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
     introTexture.colorSpace = SRGBColorSpace;
     introTexture.minFilter = LinearMipmapLinearFilter;
@@ -153,7 +164,36 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     <group ref={landmarkRef} position={position} rotation={rotation} scale={scale}>
       <group position={[-.15, 0, 1]} scale={isBackpackHovered ? 1.03 : 1}>
         <primitive object={backpackModel} />
-        <group position={[0.07, 0.32, 0.4]} rotation={[0, 0, -1.55]} scale={0.25}>
+        <group
+          position={[0.07, 0.32, 0.4]}
+          rotation={[0, 0, -1.55]}
+          scale={keyCardHovered ? 0.275 : 0.25}
+          onPointerEnter={(event) => {
+            event.stopPropagation();
+            if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            onHoverChange(false);
+            onKeyCardHoverChange(true);
+            setInteractiveCursor(true);
+          }}
+          onPointerMove={(event) => {
+            event.stopPropagation();
+            if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            onKeyCardHoverChange(true);
+            setInteractiveCursor(true);
+          }}
+          onPointerLeave={(event) => {
+            event.stopPropagation();
+            onKeyCardHoverChange(false);
+            setInteractiveCursor(false);
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            onKeyCardHoverChange(false);
+            setInteractiveCursor(false);
+            onKeyCardClick();
+          }}
+        >
           <primitive object={keyCardModel.clone(true)} />
         </group>
       </group>
@@ -219,6 +259,21 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           Introduction
         </Text>
       </group>
+
+      {keyCardHovered && (
+        <Text
+          position={[-0.08, 0.69, 1.48]}
+          fontSize={0.075}
+          anchorX="center"
+          anchorY="middle"
+          color="#ffffff"
+          outlineWidth={0.009}
+          outlineColor="#1a2430"
+          fontWeight="700"
+        >
+          Resume &amp; Contact
+        </Text>
+      )}
 
       <group position={[-.35, 0.32, 1.4]} rotation={[0.06, 0, 0]} scale={0.5}>
         <mesh
