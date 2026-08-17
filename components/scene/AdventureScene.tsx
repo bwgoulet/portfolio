@@ -1301,15 +1301,13 @@ export function AdventureScene() {
                 <section className="introduction-detail-copy">
                   <h2 id="introduction-title">Introduction</h2>
                   <p>
-                    I&apos;m Ben Goulet, a software engineer focused on building
-                    thoughtful, user-facing software across product, backend,
-                    and creative technical work.
+                    Hi, I&apos;m Ben Goulet, a full-stack software engineer based in the Triangle with a strong focus in small team and startup environments. I have ~5 years of 
+                    total experience and graduated from UNC Chapel Hill this last May. My work ranges from full-stack web development, DevOps and internal tooling, game dev, and
+                    various non-technical work.
                   </p>
                   <p>
-                    Currently, I&apos;m focused on building interactive web
-                    experiences, pursuing strong engineering opportunities, and
-                    creating projects that blend technical depth with
-                    personality and design.
+                    Currently, I&apos;m focused on pursuing strong engineering opportunities in the Triangle or remote while finding my next big project.
+                    If you think I'd be a good fit for your project or team, feel free to reach out!
                   </p>
                   <p>
                     Explore the island to view projects, experience, and more

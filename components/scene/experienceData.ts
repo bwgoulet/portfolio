@@ -23,7 +23,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     ],
     placeholderImageSrc: "/experience/3cinstitute_logo.jpg",
     detailImageSrc: "/experience/3cdetails.png",
-    whyItMattered: "[Coming Soon!]",
+    whyItMattered: "This was my first real SWE opportunity - many of the foundational skills I have today were formed through my experience at 3C. My first technical project was this library of e-games built in Godot for children in various US schools. It was a great introdution to the world of SWE and working on a project with all",
   },
   {
     id: "unc-cs",
