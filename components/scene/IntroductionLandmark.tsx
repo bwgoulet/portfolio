@@ -127,6 +127,9 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
       if (!(child instanceof THREE.Mesh)) return;
       child.castShadow = true;
       child.receiveShadow = true;
+      // A GLTF can contain several overlapping meshes. Let the single, stable
+      // hit area below own pointer events instead of firing once per mesh.
+      child.raycast = () => undefined;
     });
     model.updateMatrixWorld(true);
     const bounds = new THREE.Box3().setFromObject(model);
@@ -136,6 +139,15 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
     model.position.y -= bounds.min.y;
     return model;
   }, [keyCardGltf.scene]);
+
+  const keyCardHitArea = useMemo(() => {
+    keyCardModel.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(keyCardModel);
+    return {
+      center: bounds.getCenter(new THREE.Vector3()),
+      size: bounds.getSize(new THREE.Vector3()).multiplyScalar(1.1)
+    };
+  }, [keyCardModel]);
 
   useEffect(() => {
     updateBackpackHoverState(backpackModel, isBackpackHovered);
@@ -167,7 +179,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
         <group
           position={[0.07, 0.32, 0.4]}
           rotation={[0, 0, -1.55]}
-          scale={keyCardHovered ? 0.275 : 0.25}
+          scale={0.25}
           onPointerEnter={(event) => {
             if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
             event.stopPropagation();
@@ -195,7 +207,13 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
             onKeyCardClick();
           }}
         >
-          <primitive object={keyCardModel.clone(true)} />
+          <group scale={keyCardHovered ? 1.1 : 1}>
+            <primitive object={keyCardModel} />
+          </group>
+          <mesh position={keyCardHitArea.center}>
+            <boxGeometry args={[keyCardHitArea.size.x, keyCardHitArea.size.y, keyCardHitArea.size.z]} />
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          </mesh>
         </group>
       </group>
 
