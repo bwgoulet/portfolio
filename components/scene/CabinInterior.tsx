@@ -244,7 +244,7 @@ const configureRepeatingTexture = (
   texture: THREE.Texture,
   repeatX: number,
   repeatY: number,
-  maxAnisotropy: number
+  maxAnisotropy: number,
 ) => {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
@@ -303,6 +303,23 @@ type CabinInteriorProps = {
   onPhotoSelect: (photoId: string) => void;
   onDartboardSelect: () => void;
 };
+
+/** Starts cabin-only network work without doing anything at module evaluation time. */
+export function preloadCabinInteriorAssets() {
+  CABIN_INTERIOR_MODEL_ASSETS.forEach((assetPath) => {
+    useGLTF.preload(assetPath);
+  });
+  useTexture.preload([...CABIN_INTERIOR_TEXTURE_ASSETS]);
+}
+
+export function clearCabinInteriorAssets() {
+  CABIN_INTERIOR_MODEL_ASSETS.forEach((assetPath) => {
+    useGLTF.clear(assetPath);
+  });
+  CABIN_INTERIOR_TEXTURE_ASSETS.forEach((assetPath) => {
+    useTexture.clear(assetPath);
+  });
+}
 
 export const CabinInterior = memo(function CabinInterior({
   photosInteractive,
@@ -438,15 +455,15 @@ export const CabinInterior = memo(function CabinInterior({
   }, [gameCubeControllerModel.size.x]);
   const gameCubeControllerPosition = useMemo<[number, number, number]>(
     () => [-0.3, -0.11, 0],
-    []
+    [],
   );
   const gameCubeControllerRotation = useMemo<[number, number, number]>(
     () => [Math.PI / 2, 2, -Math.PI / 2],
-    []
+    [],
   );
   const galleryTextureSources = useMemo(
     () => Array.from(new Set(GALLERY_PHOTOS.map((photo) => photo.textureSrc))),
-    []
+    [],
   );
   const galleryTextures = useTexture(galleryTextureSources);
   const galleryTextureBySrc = useMemo(
@@ -462,9 +479,9 @@ export const CabinInterior = memo(function CabinInterior({
           }
           return texturesBySrc;
         },
-        {}
+        {},
       ),
-    [galleryTextureSources, galleryTextures]
+    [galleryTextureSources, galleryTextures],
   );
   const [primaryPaintingTexture, secondaryPaintingTexture] = useTexture([
     CABIN_INTERIOR_ARTWORKS[0].textureSrc,
@@ -593,7 +610,7 @@ export const CabinInterior = memo(function CabinInterior({
 
   const startArtworkHover = (
     artworkRef: MutableRefObject<THREE.Group | null>,
-    baseScale: number
+    baseScale: number,
   ) => {
     if (!photosInteractive) return;
     const artworkGroup = artworkRef.current;
@@ -612,7 +629,7 @@ export const CabinInterior = memo(function CabinInterior({
 
   const endArtworkHover = (
     artworkRef: MutableRefObject<THREE.Group | null>,
-    baseScale: number
+    baseScale: number,
   ) => {
     const artworkGroup = artworkRef.current;
     if (!artworkGroup) return;
@@ -657,7 +674,7 @@ export const CabinInterior = memo(function CabinInterior({
   };
 
   const isMirrorCubeHoverAllowed = <TEvent extends Event>(
-    event: ThreeEvent<TEvent>
+    event: ThreeEvent<TEvent>,
   ) => {
     if (!photosInteractive) return false;
     const cabinGroup = cabinInteriorRef.current;
@@ -1214,8 +1231,3 @@ export const CabinInterior = memo(function CabinInterior({
     </group>
   );
 });
-
-CABIN_INTERIOR_MODEL_ASSETS.forEach((assetPath) => {
-  useGLTF.preload(assetPath);
-});
-useTexture.preload([...CABIN_INTERIOR_TEXTURE_ASSETS]);
