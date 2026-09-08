@@ -350,7 +350,17 @@ function FreeModeKeyboardPan({
   return null;
 }
 
-export function AdventureScene() {
+type AdventureSceneProps = {
+  onExperienceReady?: () => void;
+  onSimpleVersionRequested?: () => void;
+  onExperienceFailure?: (reason: string) => void;
+};
+
+export function AdventureScene({
+  onExperienceReady,
+  onSimpleVersionRequested,
+  onExperienceFailure,
+}: AdventureSceneProps = {}) {
   const billboardRef = useRef<Group>(null);
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
@@ -410,13 +420,10 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
-  const cabinProgressBaselineRef = useRef({ loaded: 0, total: 0 });
-  const [isCabinBundleReady, setIsCabinBundleReady] = useState(false);
+  const initialRevealTimerRef = useRef<number | null>(null);
   const {
     active: isSceneLoaderActive,
-    loaded: sceneAssetsLoaded,
     total: sceneAssetsTotal,
-    progress: sceneAssetProgress,
     errors: sceneAssetErrors,
   } = useProgress();
   const isCabinInteriorTarget =
@@ -534,9 +541,34 @@ export function AdventureScene() {
   }, [activeLoadingBundle, failedBundle, timedOutBundle]);
 
   useEffect(() => {
-    if (sceneAssetErrors.length === 0 || !activeLoadingBundle) return;
-    setFailedBundle(activeLoadingBundle);
-  }, [activeLoadingBundle, sceneAssetErrors]);
+    if (isInitialSceneReady) onExperienceReady?.();
+  }, [isInitialSceneReady, onExperienceReady]);
+
+  useEffect(() => {
+    if (sceneAssetErrors.length >= 3) {
+      onExperienceFailure?.("Several 3D assets failed to load.");
+    }
+  }, [onExperienceFailure, sceneAssetErrors]);
+
+  useEffect(() => {
+    const canvas = document.querySelector<HTMLCanvasElement>(
+      ".scene-canvas-shell canvas"
+    );
+    if (!canvas) return;
+    const handleContextLoss = () =>
+      onExperienceFailure?.("The WebGL context was lost.");
+    canvas.addEventListener("webglcontextlost", handleContextLoss);
+    return () =>
+      canvas.removeEventListener("webglcontextlost", handleContextLoss);
+  }, [isInitialSceneReady, onExperienceFailure]);
+
+  useEffect(() => {
+    return () => {
+      if (initialRevealTimerRef.current !== null) {
+        window.clearTimeout(initialRevealTimerRef.current);
+      }
+    };
+  }, []);
 
   const closeNoteDetail = useCallback(() => {
     if (!selectedNoteId) return;
@@ -1349,6 +1381,16 @@ export function AdventureScene() {
         <h1>Ben Goulet</h1>
         <p>an interactive portfolio</p>
       </header>
+
+      {isInitialSceneReady && onSimpleVersionRequested && (
+        <button
+          className="scene-simple-version"
+          type="button"
+          onClick={onSimpleVersionRequested}
+        >
+          View simple version
+        </button>
+      )}
 
       {interactionState === "billboardCloseup" && selectedNote && (
         <article

@@ -1,5 +1,5 @@
-import { AdventureScene } from '@/components/scene/AdventureScene';
+import { PortfolioView } from '@/components/PortfolioView';
 
 export default function HomePage() {
-  return <AdventureScene />;
+  return <PortfolioView />;
 }
