@@ -162,7 +162,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-mirror-cube-upper",
     imageSrc: "/gallery/album9.png",
-    textureSrc: "/gallery/album9.png",
+    textureSrc: "/gallery/thumbs/album9.webp",
     title: "Album 3x3",
     description:
       "A collection of some of my favorite albums! From top-left to bottom-right:",
