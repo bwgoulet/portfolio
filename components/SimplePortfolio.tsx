@@ -4,7 +4,7 @@ import { PROJECT_NOTES } from "./scene/projectNotes";
 import {
   CABIN_INTERIOR_ARTWORKS,
   GALLERY_PHOTOS,
-} from "./scene/CabinInterior";
+} from "./scene/cabinAssets";
 
 const INTRODUCTION = [
   "Hi, I’m Ben Goulet, a full-stack software engineer based in the Triangle with a strong focus on small-team and startup environments. I have about five years of total experience and graduated from UNC Chapel Hill.",

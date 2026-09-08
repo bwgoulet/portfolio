@@ -18,6 +18,7 @@ export type GalleryDetail = Pick<
   descriptionList?: string[];
   videoEmbedUrl?: string;
 };
+
 export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
     id: "photo-01",
@@ -26,7 +27,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: -0.09,
     pinOffsetX: -0.02,
     imageSrc: "/gallery/hacknc_jump.jpeg",
-    textureSrc: "/gallery/hacknc_jump.jpeg",
+    textureSrc: "/gallery/thumbs/hacknc_jump.webp",
     title: "HackNC 2023",
     description: "A picture of the team and I from HackNC 2023",
   },
@@ -37,7 +38,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.06,
     pinOffsetX: 0.018,
     imageSrc: "/gallery/beatduke.jpg",
-    textureSrc: "/gallery/beatduke.jpg",
+    textureSrc: "/gallery/thumbs/beatduke.webp",
     title: "Late-Night Build",
     description: "",
   },
@@ -48,7 +49,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: -0.03,
     pinOffsetX: -0.015,
     imageSrc: "/gallery/pywteam.jpg",
-    textureSrc: "/gallery/pywteam.jpg",
+    textureSrc: "/gallery/thumbs/pywteam.webp",
     title: "Team Snapshot",
     description: "",
   },
@@ -59,7 +60,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.08,
     pinOffsetX: 0.016,
     imageSrc: "/gallery/poker.jpg",
-    textureSrc: "/gallery/poker.jpg",
+    textureSrc: "/gallery/thumbs/poker.webp",
     title: "Focused Work",
     description: "",
   },
@@ -70,7 +71,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: -0.05,
     pinOffsetX: -0.018,
     imageSrc: "/gallery/hgod.jpg",
-    textureSrc: "/gallery/hgod.jpg",
+    textureSrc: "/gallery/thumbs/hgod.webp",
     title: "Community",
     description: "",
   },
@@ -81,7 +82,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.04,
     pinOffsetX: 0.02,
     imageSrc: "/gallery/crater lake.jpg",
-    textureSrc: "/gallery/crater lake.jpg",
+    textureSrc: "/gallery/thumbs/crater-lake.webp",
     title: "Behind the Scenes",
     description: "",
   },
@@ -92,7 +93,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.07,
     pinOffsetX: 0.014,
     imageSrc: "/gallery/hellopio.jpg",
-    textureSrc: "/gallery/hellopio.jpg",
+    textureSrc: "/gallery/thumbs/hellopio.webp",
     title: "Momentum",
     description: "",
   },
@@ -103,7 +104,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: -0.07,
     pinOffsetX: -0.016,
     imageSrc: "/gallery/brevityaward.png",
-    textureSrc: "/gallery/brevityaward.png",
+    textureSrc: "/gallery/thumbs/brevityaward.webp",
     title: "Shared Wins",
     description: "",
   },
@@ -114,7 +115,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.05,
     pinOffsetX: 0.016,
     imageSrc: "/gallery/tarheel10.jpg",
-    textureSrc: "/gallery/tarheel10.jpg",
+    textureSrc: "/gallery/thumbs/tarheel10.webp",
     title: "On the Move",
     description: "",
   },
@@ -125,7 +126,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: -0.06,
     pinOffsetX: -0.014,
     imageSrc: "/gallery/mayhem.jpg",
-    textureSrc: "/gallery/mayhem.jpg",
+    textureSrc: "/gallery/thumbs/mayhem.webp",
     title: "Big Picture",
     description: "",
   },
@@ -136,7 +137,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.06,
     pinOffsetX: 0.015,
     imageSrc: "/gallery/acting.jpg",
-    textureSrc: "/gallery/acting.jpg",
+    textureSrc: "/gallery/thumbs/acting.webp",
     title: "Gratitude",
     description: "",
   },
@@ -146,7 +147,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-framed-painting",
     imageSrc: "/gallery/prs25.jpg",
-    textureSrc: "/gallery/prs25.jpg",
+    textureSrc: "/gallery/thumbs/prs25.webp",
     title: "UNCCH Ultimate Pr (Spring '25)",
     description:
       "A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.",
@@ -154,7 +155,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-wall-mounted-painting",
     imageSrc: "/gallery/prf25.png",
-    textureSrc: "/gallery/prf25.png",
+    textureSrc: "/gallery/thumbs/prf25.webp",
     title: "UNCCH Ultimate Pr (Fall '25)",
     description:
       "A larger wall piece that opens in a focused detail view with context text below the image.",
@@ -167,12 +168,12 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     description:
       "A collection of some of my favorite albums! From top-left to bottom-right:",
     descriptionList: [
-      "Ryo Fukui - Scenery",
+      "Joey Bada$$ - 1999",
       "Kendrick Lamar - To Pimp A Butterfly",
-      "Clairo - Charm",
+      "Tyler, The Creator - Chromakopia",
       "Men I Trust - Oncle Jazz",
       "Magdalena Bay - Imaginal Disk",
-      "Con Todo El Mundo - Khruangbin",
+      "George Clanton - Ooh Rap I Ya",
       "Steely Dan - Can't Buy A Thrill",
       "Gorillaz - Demon Days",
       "Beach Fossils - Somersault",
@@ -181,7 +182,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-mirror-cube-lower",
     imageSrc: "/gallery/game9.png",
-    textureSrc: "/gallery/game9.png",
+    textureSrc: "/gallery/thumbs/game9.webp",
     title: "Game 3x3",
     description:
       "A collection of some of my favorite games! From top-left to bottom-right:",
@@ -200,7 +201,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   {
     id: "artwork-crt-video",
     imageSrc: "/gallery/mayhem.jpg",
-    textureSrc: "/gallery/mayhem.jpg",
+    textureSrc: "/gallery/thumbs/mayhem.webp",
     title: "CRT Highlight Reel",
     description:
       "A video clip that plays in the same cabin detail card format as the rest of the interactive artworks.",

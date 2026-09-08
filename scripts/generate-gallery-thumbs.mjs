@@ -10,7 +10,7 @@ const THUMBNAIL_HEIGHT = 256;
 const THUMBNAIL_QUALITY = 64;
 
 const GALLERY_THUMBNAILS = [
-  // Keep these entries in sync with GALLERY_PHOTOS in CabinInterior.tsx.
+  // Keep these entries in sync with GALLERY_PHOTOS in cabinAssets.ts.
   ['hacknc_jump.jpeg', 'hacknc_jump.webp'],
   ['beatduke.jpg', 'beatduke.webp'],
   ['pywteam.jpg', 'pywteam.webp'],
@@ -30,11 +30,11 @@ const GALLERY_THUMBNAILS = [
 
 const galleryDir = path.join(process.cwd(), 'public', 'gallery');
 const thumbsDir = path.join(galleryDir, 'thumbs');
-const cabinInteriorPath = path.join(
+const cabinAssetsPath = path.join(
   process.cwd(),
   'components',
   'scene',
-  'CabinInterior.tsx'
+  'cabinAssets.ts'
 );
 
 function bytesToKiB(bytes) {
@@ -71,13 +71,13 @@ async function generateThumbnail([sourceFile, outputFile]) {
 }
 
 async function validateGalleryCoverage() {
-  const cabinInterior = await fs.readFile(cabinInteriorPath, 'utf8');
-  const galleryPhotos = cabinInterior.match(
+  const cabinAssets = await fs.readFile(cabinAssetsPath, 'utf8');
+  const galleryPhotos = cabinAssets.match(
     /export const GALLERY_PHOTOS:[\s\S]*?export const CABIN_INTERIOR_ARTWORKS/
   )?.[0];
 
   if (!galleryPhotos) {
-    throw new Error('Could not find GALLERY_PHOTOS in CabinInterior.tsx.');
+    throw new Error('Could not find GALLERY_PHOTOS in cabinAssets.ts.');
   }
 
   const configuredTextures = [
