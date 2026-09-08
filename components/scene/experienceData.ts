@@ -2,7 +2,8 @@ export type ExperienceEntry = {
   id: string;
   role: string;
   company: string;
-  dateLocation: string;
+  date: string;
+  location: string;
   bullets: string[];
   placeholderImageSrc: string;
   detailImageSrc: string;
@@ -14,7 +15,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     id: "3c-institute",
     role: "Full Stack Software Engineer",
     company: "3C Institute for Social Development",
-    dateLocation: "August 2021 - August 2023 Durham, NC",
+    date: "August 2021 - August 2023",
+    location: "Durham, NC",
     bullets: [
       "Designed and implemented a library of 18 interactive social animations in Godot, collaborating with developers, artists, and psychologists.",
       "Built a web-based reporting tool to display real-time statistics on company projects, user engagement, version history, release notes, and more.",
@@ -36,7 +38,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     id: "unc-cs",
     role: "Full Stack Software Engineer Intern",
     company: "UNC Department of Computer Science",
-    dateLocation: "January 2024 - May 2024 Chapel Hill, NC",
+    date: "January 2024 - May 2024",
+    location: "Chapel Hill, NC",
     bullets: [
       "Spearheaded the development of an innovative TA application platform to streamline the selection of Teaching Assistants in the Computer Science department.",
       "Implemented a challenging single-table inheritance mapping in SQLAlchemy to manage over 200 TA records, optimizing data organization and retrieval efficiency.",
@@ -56,7 +59,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     id: "kinetik",
     role: "Data Science Intern",
     company: "Kinetik",
-    dateLocation: "May 2024 - July 2024 Chapel Hill, NC",
+    date: "May 2024 - July 2024",
+    location: "Chapel Hill, NC",
     bullets: [
       "Developed advanced statistical models to identify key signals driving go-to-market (GTM) strategies, contributing to data-driven decision-making.",
       "Partnered with an IT firm serving 86% of the Forbes Global 50 to define and track success metrics, improving overall GTM effectiveness.",
@@ -75,7 +79,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     id: "podcast-your-way",
     role: "Founding Engineer / Full-Stack Software Engineer",
     company: "Podcast Your Way",
-    dateLocation: "June 2025 - March 2026 Chapel Hill, NC",
+    date: "June 2025 - March 2026",
+    location: "Chapel Hill, NC",
     bullets: [
       "Architected and shipped an AI-powered learning platform for podcasters using Next.js, TypeScript, Supabase, and PostgreSQL, building the product from 0 to production and supporting 1,000+ users.",
       "Designed a graph-based curriculum and progress engine with per-user unlock and completion state, powering personalized dashboards, gated lesson flows, and scalable learner-state management.",
@@ -91,7 +96,8 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     id: "the-nexus",
     role: "Full-Stack Software Engineer (Contract)",
     company: "The Nexus",
-    dateLocation: "March 2026 - Present Remote",
+    date: "March 2026 - Present",
+    location: "Remote",
     bullets: [
       "Developing The Nexus, a Next.js + Supabase web platform for SSBU crew leagues, unifying user onboarding, match management, and stats publishing in one product surface.",
       "Architected a role-aware league system for directors, players, moderators, and admins, with route-level flows for dashboarding, match operations, and shared stat pages.",

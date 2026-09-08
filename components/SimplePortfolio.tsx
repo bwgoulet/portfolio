@@ -36,7 +36,8 @@ export function SimplePortfolio() {
         <div className="simple-grid">
           {EXPERIENCE_ENTRIES.map((entry) => (
             <article className="simple-card" key={entry.id}>
-              <p className="simple-meta">{entry.dateLocation}</p>
+              <p className="simple-meta">{entry.date}</p>
+              <p className="simple-meta">{entry.location}</p>
               <h3>{entry.role}</h3>
               <p className="simple-company">{entry.company}</p>
               <ul>{entry.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
@@ -65,7 +66,7 @@ export function SimplePortfolio() {
         <p className="simple-kicker">The path so far</p>
         <h2 id="timeline-heading">Timeline</h2>
         <ol className="simple-timeline">
-          {EXPERIENCE_ENTRIES.map((entry) => <li key={entry.id}><strong>{entry.company}</strong><span>{entry.dateLocation}</span><p>{entry.role}</p></li>)}
+          {EXPERIENCE_ENTRIES.map((entry) => <li key={entry.id}><strong>{entry.company}</strong><span>{entry.date}</span><span>{entry.location}</span><p>{entry.role}</p></li>)}
         </ol>
       </section>
 
