@@ -1,8 +1,9 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, useProgress } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   Component,
   Suspense,
@@ -27,11 +28,7 @@ import { CameraRig } from "./CameraRig";
 import { LightingAtmosphere } from "./LightingAtmosphere";
 import { LowPolyEnvironment } from "./LowPolyEnvironment";
 import { InteractionState, InteractiveTarget } from "./types";
-import {
-  CABIN_INTERIOR_ARTWORKS,
-  CabinInterior,
-  GALLERY_PHOTOS,
-} from "./CabinInterior";
+import { CABIN_INTERIOR_ARTWORKS, GALLERY_PHOTOS } from "./cabinAssets";
 import { PROJECT_NOTE_RECORD } from "./projectNotes";
 import { EXPERIENCE_RECORD } from "./experienceData";
 import {
@@ -40,6 +37,44 @@ import {
   MOTION_TIERS,
 } from "@/config/sceneConfig";
 import { IntroductionLandmark } from "./IntroductionLandmark";
+
+const loadCabinInterior = () => import("./CabinInterior");
+const CabinInterior = dynamic(
+  () => loadCabinInterior().then((module) => module.CabinInterior),
+  { ssr: false },
+);
+
+function ReadySignal({ onReady }: { onReady: () => void }) {
+  useEffect(onReady, [onReady]);
+  return null;
+}
+
+class CabinErrorBoundary extends Component<
+  { children: ReactNode; onError: () => void; resetKey: number },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    void error;
+    void info;
+    this.props.onError();
+  }
+
+  componentDidUpdate(previousProps: Readonly<{ resetKey: number }>) {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+
+  render() {
+    return this.state.error ? null : this.props.children;
+  }
+}
 
 type DartHit = {
   x: number;
@@ -287,7 +322,7 @@ function FreeModeKeyboardPan({
     const moveDirection = new Vector3(
       (right ? 1 : 0) - (left ? 1 : 0),
       0,
-      (up ? 1 : 0) - (down ? 1 : 0)
+      (up ? 1 : 0) - (down ? 1 : 0),
     );
     if (moveDirection.lengthSq() === 0) return;
     moveDirection.normalize();
@@ -338,7 +373,7 @@ export function AdventureScene() {
   >(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(
-    null
+    null,
   );
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] =
     useState(false);
@@ -370,7 +405,7 @@ export function AdventureScene() {
   const dartAimTargetRef = useRef<DartReticle>({ x: 0, y: 0 });
   const dartAimActivityRef = useRef(0);
   const lastAimSampleRef = useRef<{ x: number; y: number; at: number } | null>(
-    null
+    null,
   );
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
@@ -476,9 +511,9 @@ export function AdventureScene() {
     ? EXPERIENCE_RECORD[activeExperienceId]
     : null;
   const selectedGalleryPhoto = selectedGalleryPhotoId
-    ? [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find(
-        (photo) => photo.id === selectedGalleryPhotoId
-      ) ?? null
+    ? ([...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find(
+        (photo) => photo.id === selectedGalleryPhotoId,
+      ) ?? null)
     : null;
 
   useEffect(() => {
@@ -514,7 +549,7 @@ export function AdventureScene() {
     setSelectedNoteId(null);
     window.setTimeout(
       () => setClosingNoteId(null),
-      MOTION_TIERS.macro.overlayFadeDuration * 1000
+      MOTION_TIERS.macro.overlayFadeDuration * 1000,
     );
   }, [reducedMotion, selectedNoteId]);
 
@@ -529,7 +564,7 @@ export function AdventureScene() {
     setSelectedExperienceId(null);
     window.setTimeout(
       () => setClosingExperienceId(null),
-      MOTION_TIERS.macro.overlayFadeDuration * 1000
+      MOTION_TIERS.macro.overlayFadeDuration * 1000,
     );
   }, [reducedMotion, selectedExperienceId]);
 
@@ -579,7 +614,7 @@ export function AdventureScene() {
         label: result.label,
       });
     },
-    [dartThrowsLeft]
+    [dartThrowsLeft],
   );
 
   const handleDartboardThrow = useCallback(
@@ -595,7 +630,7 @@ export function AdventureScene() {
       };
       registerDartThrow(dartReticle.x, dartReticle.y);
     },
-    [dartReticle.x, dartReticle.y, registerDartThrow]
+    [dartReticle.x, dartReticle.y, registerDartThrow],
   );
 
   const handleDartboardKeyboardThrow = useCallback(
@@ -604,7 +639,7 @@ export function AdventureScene() {
       event.preventDefault();
       registerDartThrow(dartReticle.x, dartReticle.y);
     },
-    [dartReticle.x, dartReticle.y, registerDartThrow]
+    [dartReticle.x, dartReticle.y, registerDartThrow],
   );
 
   const handleDartboardAimMove = useCallback(
@@ -638,7 +673,7 @@ export function AdventureScene() {
       };
       lastAimSampleRef.current = { ...nextAimTarget, at: now };
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -721,7 +756,7 @@ export function AdventureScene() {
       '[tabindex]:not([tabindex="-1"])',
     ].join(",");
     const focusableNodes = Array.from(
-      dialog.querySelectorAll<HTMLElement>(focusableSelectors)
+      dialog.querySelectorAll<HTMLElement>(focusableSelectors),
     );
     const firstFocusable = focusableNodes[0] ?? dialog;
     const lastFocusable = focusableNodes[focusableNodes.length - 1] ?? dialog;
@@ -756,6 +791,7 @@ export function AdventureScene() {
 
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
+      if (target === "cabin" && hovered) preloadCabin();
       setInteractionState((currentState) => {
         const isCurrentOverviewState =
           currentState === "idleOverview" ||
@@ -771,20 +807,27 @@ export function AdventureScene() {
         return target === "billboard"
           ? "hoverBillboard"
           : target === "cabin"
-          ? "hoverCabin"
-          : target === "tablets"
-          ? "hoverTablets"
-          : target === "introduction"
-          ? "hoverIntroduction"
-          : "hoverTimeline";
+            ? "hoverCabin"
+            : target === "tablets"
+              ? "hoverTablets"
+              : target === "introduction"
+                ? "hoverIntroduction"
+                : "hoverTimeline";
       });
     },
-    []
+    [preloadCabin],
   );
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
+
+      if (target === "cabin" && !isCabinReady) {
+        preloadCabin();
+        setCabinLoadError(false);
+        setIsCabinRequested(true);
+        return;
+      }
 
       setIsFreeModeEnabled(false);
       setInteractionState("transitioning");
@@ -829,6 +872,24 @@ export function AdventureScene() {
     ]
   );
 
+  useEffect(() => {
+    if (!isCabinRequested || !isCabinReady || cabinLoadError) return;
+    handleFocusClick("cabin");
+    setIsCabinRequested(false);
+  }, [cabinLoadError, handleFocusClick, isCabinReady, isCabinRequested]);
+
+  const retryCabinLoad = useCallback(() => {
+    setCabinLoadError(false);
+    setIsCabinReady(false);
+    setCabinRetryKey((key) => key + 1);
+    void loadCabinInterior()
+      .then((module) => {
+        module.clearCabinInteriorAssets();
+        module.preloadCabinInteriorAssets();
+      })
+      .catch(() => setCabinLoadError(true));
+  }, []);
+
   const handleDartboardSelect = useCallback(() => {
     if (
       interactionState !== "cabinCloseup" ||
@@ -851,12 +912,13 @@ export function AdventureScene() {
       }
       document.body.style.cursor = "auto";
     },
-    []
+    [],
   );
 
   useEffect(() => {
     if (interactionState !== "introductionCloseup") {
       setIsIntroductionCloseupHovered(false);
+      setIsKeyCardHovered(false);
     }
   }, [interactionState]);
 
@@ -1089,9 +1151,6 @@ export function AdventureScene() {
                 onTransitionEnd={(completedTarget) => {
                   if (completedTarget === "cabinInterior") {
                     setIsCabinCameraTransitionComplete(true);
-                    if (isSceneLoaderActive) {
-                      setCabinTransitionFadeState("black");
-                    }
                     if (isCabinInteriorRevealed) {
                       setIsCabinFadePending(false);
                       setCabinTransitionFadeState("idle");
@@ -1118,12 +1177,12 @@ export function AdventureScene() {
                     completedTarget === "billboard"
                       ? "billboardCloseup"
                       : completedTarget === "cabinDartboard"
-                      ? "dartboardCloseup"
-                      : completedTarget === "tablets"
-                      ? "tabletsCloseup"
-                      : completedTarget === "introduction"
-                      ? "introductionCloseup"
-                      : "timelineCloseup"
+                        ? "dartboardCloseup"
+                        : completedTarget === "tablets"
+                          ? "tabletsCloseup"
+                          : completedTarget === "introduction"
+                            ? "introductionCloseup"
+                            : "timelineCloseup",
                   );
                 }}
               />
@@ -1294,7 +1353,7 @@ export function AdventureScene() {
       {interactionState === "billboardCloseup" && selectedNote && (
         <article
           className={`note-detail ${detailCardStateClass(
-            Boolean(closingNoteId)
+            Boolean(closingNoteId),
           )}`}
           aria-live="polite"
           onClick={closeNoteDetail}
@@ -1309,7 +1368,7 @@ export function AdventureScene() {
         >
           <div
             className={`note-detail-card detail-content-card project-detail-card ${detailCardStateClass(
-              Boolean(closingNoteId)
+              Boolean(closingNoteId),
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1351,7 +1410,7 @@ export function AdventureScene() {
       {interactionState === "tabletsCloseup" && selectedExperience && (
         <article
           className={`note-detail ${detailCardStateClass(
-            Boolean(closingExperienceId)
+            Boolean(closingExperienceId),
           )}`}
           aria-live="polite"
           onClick={closeExperienceDetail}
@@ -1366,7 +1425,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card experience-detail-card ${detailCardStateClass(
-              Boolean(closingExperienceId)
+              Boolean(closingExperienceId),
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1415,7 +1474,7 @@ export function AdventureScene() {
           >
             <div
               className={`detail-content-card introduction-detail-card ${detailCardStateClass(
-                false
+                false,
               )}`}
               ref={modalRef}
               onClick={(event) => event.stopPropagation()}
@@ -1434,13 +1493,18 @@ export function AdventureScene() {
                 <section className="introduction-detail-copy">
                   <h2 id="introduction-title">Introduction</h2>
                   <p>
-                    Hi, I&apos;m Ben Goulet, a full-stack software engineer based in the Triangle with a strong focus in small team and startup environments. I have ~5 years of 
-                    total experience and graduated from UNC Chapel Hill this last May. My work ranges from full-stack web development, DevOps and internal tooling, game dev, and
-                    various non-technical work.
+                    Hi, I&apos;m Ben Goulet, a full-stack software engineer
+                    based in the Triangle with a strong focus in small team and
+                    startup environments. I have ~5 years of total experience
+                    and graduated from UNC Chapel Hill this last May. My work
+                    ranges from full-stack web development, DevOps and internal
+                    tooling, game dev, and various non-technical work.
                   </p>
                   <p>
-                    Currently, I&apos;m focused on pursuing strong engineering opportunities in the Triangle or remote while finding my next big project.
-                    If you think I&apos;d be a good fit for your project or team, feel free to reach out!
+                    Currently, I&apos;m focused on pursuing strong engineering
+                    opportunities in the Triangle or remote while finding my
+                    next big project. If you think I&apos;d be a good fit for
+                    your project or team, feel free to reach out!
                   </p>
                   <p>
                     Explore the island to view projects, experience, and more
@@ -1478,8 +1542,9 @@ export function AdventureScene() {
             <p className="resume-contact-eyebrow">Resume &amp; contact</p>
             <h2 id="resume-contact-title">Let&apos;s connect.</h2>
             <p className="resume-contact-intro">
-              View my official resume or reach out directly. I&apos;m always happy
-              to talk about engineering opportunities and interesting projects.
+              View my official resume or reach out directly. I&apos;m always
+              happy to talk about engineering opportunities and interesting
+              projects.
             </p>
             <div className="resume-contact-actions">
               <a
@@ -1519,7 +1584,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card introduction-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1565,7 +1630,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1629,7 +1694,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             role="dialog"

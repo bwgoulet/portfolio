@@ -145,6 +145,34 @@ main {
   outline-offset: 2px;
 }
 
+.scene-loading-error {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 7;
+  width: min(28rem, calc(100% - 2rem));
+  padding: 1rem;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 205, 185, 0.7);
+  border-radius: 0.75rem;
+  color: #fff7f2;
+  text-align: center;
+  background: rgba(42, 18, 16, 0.94);
+}
+
+.scene-loading-error p {
+  margin: 0 0 0.75rem;
+}
+
+.scene-loading-error button {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(255, 238, 212, 0.7);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .scene-brand {
   position: absolute;
   top: 1rem;
@@ -226,7 +254,9 @@ main {
   line-height: 1;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background 180ms ease, border-color 180ms ease,
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
     box-shadow 180ms ease;
 }
 
@@ -334,7 +364,8 @@ main {
 
 .intro-plaque-preview.is-hovered {
   border-color: rgba(242, 247, 252, 0.95);
-  box-shadow: 0 0 0 1px rgba(241, 247, 252, 0.7),
+  box-shadow:
+    0 0 0 1px rgba(241, 247, 252, 0.7),
     0 4px 10px rgba(20, 28, 36, 0.42);
 }
 
@@ -621,7 +652,13 @@ main {
 .resume-contact-card {
   width: min(92vw, 620px);
   padding: clamp(1.5rem, 4vw, 2.5rem);
-  background: radial-gradient(circle at top right, rgba(76, 116, 111, 0.24), transparent 42%), #0f1217;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(76, 116, 111, 0.24),
+      transparent 42%
+    ),
+    #0f1217;
 }
 
 .resume-contact-eyebrow {
@@ -661,7 +698,10 @@ main {
   border-radius: 10px;
   color: #e7eff7;
   text-decoration: none;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
 }
 
 .resume-contact-actions a:hover,
@@ -883,8 +923,15 @@ main {
   margin: 0.3rem auto 1rem;
   position: relative;
   box-shadow: 0 18px 40px rgba(4, 8, 14, 0.4);
-  background:
-    radial-gradient(circle at center, #b31217 0 6%, #1f7a35 6% 12%, #f4f0e6 12% 45%, #1f7a35 45% 53%, #f4f0e6 53% 75%, #2f2f2f 75% 100%);
+  background: radial-gradient(
+    circle at center,
+    #b31217 0 6%,
+    #1f7a35 6% 12%,
+    #f4f0e6 12% 45%,
+    #1f7a35 45% 53%,
+    #f4f0e6 53% 75%,
+    #2f2f2f 75% 100%
+  );
 }
 
 .darts-actions {
