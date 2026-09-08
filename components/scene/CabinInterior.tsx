@@ -5,7 +5,7 @@ import { memo, useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useThree, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
-import { PALETTE, SCENE_ANCHORS } from "@/config/sceneConfig";
+import { PALETTE, SCENE_ANCHORS, SCENE_QUALITY_PRESETS, type SceneQualityTier } from "@/config/sceneConfig";
 import { VISUAL_TOKENS } from "@/config/visualTokens";
 
 export type GalleryPhoto = {
@@ -302,13 +302,16 @@ type CabinInteriorProps = {
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
   onDartboardSelect: () => void;
+  qualityTier: SceneQualityTier;
 };
 
 export const CabinInterior = memo(function CabinInterior({
   photosInteractive,
   onPhotoSelect,
   onDartboardSelect,
+  qualityTier,
 }: CabinInteriorProps) {
+  const quality = SCENE_QUALITY_PRESETS[qualityTier];
   const { cabinInterior } = VISUAL_TOKENS.scene;
   const chairGltf = useGLTF("/models/Chair.glb");
   const tableGltf = useGLTF("/models/Table.glb");
@@ -321,19 +324,19 @@ export const CabinInterior = memo(function CabinInterior({
     forceDiffuseOnlyOnSceneMaterials(chairScene);
     chairScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = quality.shadows;
+        child.receiveShadow = quality.shadows;
       }
     });
     return chairScene;
-  }, [chairGltf.scene]);
+  }, [chairGltf.scene, quality.shadows]);
   const tableModel = useMemo(() => {
     const tableScene = tableGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(tableScene);
     tableScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = quality.shadows;
+        child.receiveShadow = quality.shadows;
       }
     });
     tableScene.updateMatrixWorld(true);
@@ -343,14 +346,14 @@ export const CabinInterior = memo(function CabinInterior({
     tableScene.position.z -= tableCenter.z;
     tableScene.position.y -= tableBounds.min.y;
     return tableScene;
-  }, [tableGltf.scene]);
+  }, [quality.shadows, tableGltf.scene]);
   const crtModel = useMemo(() => {
     const crtScene = crtGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(crtScene);
     crtScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = false;
+        child.receiveShadow = quality.shadows;
       }
     });
     crtScene.updateMatrixWorld(true);
@@ -361,14 +364,14 @@ export const CabinInterior = memo(function CabinInterior({
     crtScene.position.z -= crtCenter.z;
     crtScene.position.y -= crtBounds.min.y;
     return { scene: crtScene, size: crtSize };
-  }, [crtGltf.scene]);
+  }, [crtGltf.scene, quality.shadows]);
   const dartboardModel = useMemo(() => {
     const dartboardScene = dartboardGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(dartboardScene);
     dartboardScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = false;
+        child.receiveShadow = quality.shadows;
       }
     });
     dartboardScene.updateMatrixWorld(true);
@@ -379,14 +382,14 @@ export const CabinInterior = memo(function CabinInterior({
     dartboardScene.position.y -= dartboardCenter.y;
     dartboardScene.position.z -= dartboardCenter.z;
     return { scene: dartboardScene, size: dartboardSize };
-  }, [dartboardGltf.scene]);
+  }, [dartboardGltf.scene, quality.shadows]);
   const mirrorCubeModel = useMemo(() => {
     const mirrorCubeScene = mirrorCubeGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(mirrorCubeScene);
     mirrorCubeScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = false;
+        child.receiveShadow = quality.shadows;
       }
     });
     mirrorCubeScene.updateMatrixWorld(true);
@@ -397,14 +400,14 @@ export const CabinInterior = memo(function CabinInterior({
     mirrorCubeScene.position.y -= mirrorCubeCenter.y;
     mirrorCubeScene.position.z -= mirrorCubeCenter.z;
     return { scene: mirrorCubeScene, size: mirrorCubeSize };
-  }, [mirrorCubeGltf.scene]);
+  }, [mirrorCubeGltf.scene, quality.shadows]);
   const gameCubeControllerModel = useMemo(() => {
     const controllerScene = gameCubeControllerGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(controllerScene);
     controllerScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        child.castShadow = false;
+        child.receiveShadow = quality.shadows;
       }
     });
     controllerScene.updateMatrixWorld(true);
@@ -415,7 +418,7 @@ export const CabinInterior = memo(function CabinInterior({
     controllerScene.position.z -= controllerCenter.z;
     controllerScene.position.y -= controllerCenter.y;
     return { scene: controllerScene, size: controllerSize };
-  }, [gameCubeControllerGltf.scene]);
+  }, [gameCubeControllerGltf.scene, quality.shadows]);
   const crtScale = useMemo(() => {
     if (crtModel.size.y <= Number.EPSILON) return 1;
     const desiredMonitorHeight = 0.22;

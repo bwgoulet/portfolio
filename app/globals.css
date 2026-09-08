@@ -783,6 +783,62 @@ main {
   transition: none !important;
 }
 
+.quality-control {
+  position: fixed;
+  z-index: 30;
+  right: 1rem;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.38rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(12, 18, 20, 0.78);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
+  color: #f7ebd2;
+  font: 600 0.72rem/1 system-ui, sans-serif;
+}
+
+.quality-control legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.quality-control button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.5rem 0.65rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.quality-control button:hover,
+.quality-control button:focus-visible,
+.quality-control button.is-active {
+  background: rgba(224, 188, 114, 0.24);
+  outline-color: #e0bc72;
+}
+
+.quality-control-tier {
+  min-width: 3.2rem;
+  padding-right: 0.35rem;
+  color: rgba(247, 235, 210, 0.64);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+@media (max-width: 640px) {
+  .quality-control { right: 0.5rem; bottom: 0.5rem; }
+  .quality-control-tier { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scene-brand-cloud {
     animation: none;

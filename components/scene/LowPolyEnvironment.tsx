@@ -4,6 +4,8 @@ import {
   ISLAND_GROUND_INTERACTION_MIN_Y,
   PALETTE,
   SCENE_ANCHORS,
+  SCENE_QUALITY_PRESETS,
+  type SceneQualityTier,
 } from "@/config/sceneConfig";
 import { VISUAL_TOKENS } from "@/config/visualTokens";
 import { Clone, Text, useGLTF, useTexture } from "@react-three/drei";
@@ -101,9 +103,11 @@ const updateModelHoverState = (
 function Tree({
   position,
   scale = 1,
+  shadows,
 }: {
   position: [number, number, number];
   scale?: number;
+  shadows: boolean;
 }) {
   const pineGltf = useGLTF("/models/Pine.glb");
   const pineModel = useMemo(() => {
@@ -111,8 +115,9 @@ function Tree({
     forceDiffuseOnlyOnSceneMaterials(pineScene);
     pineScene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+        // Repeated decorative foliage is deliberately not a shadow caster.
+        child.castShadow = false;
+        child.receiveShadow = shadows;
       }
     });
     pineScene.updateMatrixWorld(true);
@@ -122,7 +127,7 @@ function Tree({
     pineScene.position.z -= pineCenter.z;
     pineScene.position.y -= pineBounds.min.y;
     return pineScene;
-  }, [pineGltf.scene]);
+  }, [pineGltf.scene, shadows]);
 
   return (
     <group position={position} scale={scale}>
@@ -734,7 +739,7 @@ function TrailheadTimelineSign({
   );
 }
 
-function GrassGround() {
+function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   const gl = useThree((state) => state.gl);
   const mainIslandTexture = useTexture(
     "/textures-optimized/aerial_grass_rock_diff_4k.jpg"
@@ -759,7 +764,7 @@ function GrassGround() {
       receiveShadow
     >
       <cylinderGeometry
-        args={[8.9, 10.2, 0.25, 96, 8, false, Math.PI, Math.PI]}
+        args={[8.9, 10.2, 0.25, Math.round(96 * geometryDetail), Math.max(2, Math.round(8 * geometryDetail)), false, Math.PI, Math.PI]}
       />
       <meshStandardMaterial
         map={mainIslandTexture}
@@ -802,6 +807,7 @@ type LowPolyEnvironmentProps = {
   onTimelineHoverChange: (hovered: boolean) => void;
   onTimelineClick: (target: InteractiveTarget) => void;
   reducedMotion: boolean;
+  qualityTier: SceneQualityTier;
 };
 
 export function LowPolyEnvironment({
@@ -818,7 +824,9 @@ export function LowPolyEnvironment({
   onTimelineHoverChange,
   onTimelineClick,
   reducedMotion,
+  qualityTier,
 }: LowPolyEnvironmentProps) {
+  const quality = SCENE_QUALITY_PRESETS[qualityTier];
   const handleExperienceSectionHover = useCallback(
     (event: ThreeEvent<PointerEvent>) => {
       event.stopPropagation();
@@ -860,12 +868,12 @@ export function LowPolyEnvironment({
         receiveShadow
       >
         <cylinderGeometry
-          args={[8.2, 9.4, 2.2, 96, 1, false, Math.PI, Math.PI]}
+          args={[8.2, 9.4, 2.2, Math.round(96 * quality.geometryDetail), 1, false, Math.PI, Math.PI]}
         />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
-      <GrassGround />
+      <GrassGround geometryDetail={quality.geometryDetail} />
 
       <MountainRopeBridge />
 
@@ -888,14 +896,16 @@ export function LowPolyEnvironment({
         onClick={onTimelineClick}
       />
 
-      <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} />
-      <Tree position={[-0.8, 1.11, -2.7]} scale={1} />
-      <Tree position={[2.2, 1.08, -2.35]} scale={0.8} />
-      <Tree position={[-7.5, 1.08, 1.8]} scale={0.7} />
-      <Tree position={[-9.5, 1.08, -2]} scale={0.9} />
-      <Tree position={[-6, 1.08, -2]} scale={1.1} />
-      <Tree position={[9, 1.08, -2]} scale={1.1} />
-      <Tree position={[8, 1.08, 2]} scale={1.1} />
+      <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} shadows={quality.shadows} />
+      <Tree position={[-0.8, 1.11, -2.7]} scale={1} shadows={quality.shadows} />
+      <Tree position={[2.2, 1.08, -2.35]} scale={0.8} shadows={quality.shadows} />
+      {quality.decorativeEffects && <>
+        <Tree position={[-7.5, 1.08, 1.8]} scale={0.7} shadows={quality.shadows} />
+        <Tree position={[-9.5, 1.08, -2]} scale={0.9} shadows={quality.shadows} />
+        <Tree position={[-6, 1.08, -2]} scale={1.1} shadows={quality.shadows} />
+        <Tree position={[9, 1.08, -2]} scale={1.1} shadows={quality.shadows} />
+        <Tree position={[8, 1.08, 2]} scale={1.1} shadows={quality.shadows} />
+      </>}
 
       <mesh position={[2.75, 1.27, -1.65]} castShadow receiveShadow>
         <dodecahedronGeometry args={[0.5, 0]} />
@@ -912,7 +922,7 @@ export function LowPolyEnvironment({
           onDetailSelect={onTabletDetailSelect}
         />
       </group>
-      <Clouds reducedMotion={reducedMotion} />
+      {quality.decorativeEffects && <Clouds reducedMotion={reducedMotion} />}
       <MountainBackdrop />
     </group>
   );
