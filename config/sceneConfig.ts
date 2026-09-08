@@ -1,7 +1,6 @@
 import { ColorRepresentation, Vector3Tuple } from 'three';
 
 export type SceneQualityTier = 'low' | 'medium' | 'high';
-export type SceneQualityPreference = 'auto' | 'performance' | 'quality';
 
 export type SceneQualityPreset = {
   dprCap: number;
@@ -51,8 +50,6 @@ export const SCENE_QUALITY_PRESETS: Record<SceneQualityTier, SceneQualityPreset>
     targetFps: 58,
   },
 };
-
-export const QUALITY_STORAGE_KEY = 'portfolio-scene-quality';
 
 export type FocusTarget =
   | 'overview'
