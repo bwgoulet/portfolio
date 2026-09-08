@@ -1576,7 +1576,8 @@ export function AdventureScene({
             />
             <h2 id={experienceTitleId}>{selectedExperience.role}</h2>
             <p className="detail-meta">{selectedExperience.company}</p>
-            <p className="detail-meta">{selectedExperience.dateLocation}</p>
+            <p className="detail-meta">{selectedExperience.date}</p>
+            <p className="detail-meta">{selectedExperience.location}</p>
             <ul>
               {selectedExperience.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
