@@ -101,7 +101,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   const imageWidth = 0.4;
   const imageHeight = imageWidth / (858 / 1356);
   const isBackpackHovered = hovered && !detailInteractiveEnabled;
-  const isKeyCardInteractive = interactiveEnabled || detailInteractiveEnabled;
+  const isKeyCardInteractive = detailInteractiveEnabled;
 
   const backpackModel = useMemo(() => {
     const model = backpackGltf.scene.clone(true);
@@ -169,26 +169,27 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           rotation={[0, 0, -1.55]}
           scale={keyCardHovered ? 0.275 : 0.25}
           onPointerEnter={(event) => {
-            event.stopPropagation();
             if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            event.stopPropagation();
             onHoverChange(false);
             onKeyCardHoverChange(true);
             setInteractiveCursor(true);
           }}
           onPointerMove={(event) => {
-            event.stopPropagation();
             if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            event.stopPropagation();
             onKeyCardHoverChange(true);
             setInteractiveCursor(true);
           }}
           onPointerLeave={(event) => {
+            if (!isKeyCardInteractive) return;
             event.stopPropagation();
             onKeyCardHoverChange(false);
             setInteractiveCursor(false);
           }}
           onClick={(event) => {
-            event.stopPropagation();
             if (!isKeyCardInteractive || !isAboveIslandGround(event.point.y)) return;
+            event.stopPropagation();
             onKeyCardHoverChange(false);
             setInteractiveCursor(false);
             onKeyCardClick();
@@ -259,21 +260,6 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
           Introduction
         </Text>
       </group>
-
-      {keyCardHovered && (
-        <Text
-          position={[-0.08, 0.69, 1.48]}
-          fontSize={0.075}
-          anchorX="center"
-          anchorY="middle"
-          color="#ffffff"
-          outlineWidth={0.009}
-          outlineColor="#1a2430"
-          fontWeight="700"
-        >
-          Resume &amp; Contact
-        </Text>
-      )}
 
       <group position={[-.35, 0.32, 1.4]} rotation={[0.06, 0, 0]} scale={0.5}>
         <mesh
