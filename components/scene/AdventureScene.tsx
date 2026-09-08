@@ -1,9 +1,11 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, useProgress } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
+  Component,
   Suspense,
   useCallback,
   useEffect,
@@ -11,6 +13,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ErrorInfo,
+  type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
@@ -24,11 +28,7 @@ import { CameraRig } from "./CameraRig";
 import { LightingAtmosphere } from "./LightingAtmosphere";
 import { LowPolyEnvironment } from "./LowPolyEnvironment";
 import { InteractionState, InteractiveTarget } from "./types";
-import {
-  CABIN_INTERIOR_ARTWORKS,
-  CabinInterior,
-  GALLERY_PHOTOS,
-} from "./CabinInterior";
+import { CABIN_INTERIOR_ARTWORKS, GALLERY_PHOTOS } from "./cabinAssets";
 import { PROJECT_NOTE_RECORD } from "./projectNotes";
 import { EXPERIENCE_RECORD } from "./experienceData";
 import {
@@ -37,6 +37,44 @@ import {
   MOTION_TIERS,
 } from "@/config/sceneConfig";
 import { IntroductionLandmark } from "./IntroductionLandmark";
+
+const loadCabinInterior = () => import("./CabinInterior");
+const CabinInterior = dynamic(
+  () => loadCabinInterior().then((module) => module.CabinInterior),
+  { ssr: false },
+);
+
+function ReadySignal({ onReady }: { onReady: () => void }) {
+  useEffect(onReady, [onReady]);
+  return null;
+}
+
+class CabinErrorBoundary extends Component<
+  { children: ReactNode; onError: () => void; resetKey: number },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    void error;
+    void info;
+    this.props.onError();
+  }
+
+  componentDidUpdate(previousProps: Readonly<{ resetKey: number }>) {
+    if (previousProps.resetKey !== this.props.resetKey && this.state.error) {
+      this.setState({ error: null });
+    }
+  }
+
+  render() {
+    return this.state.error ? null : this.props.children;
+  }
+}
 
 type DartHit = {
   x: number;
@@ -246,7 +284,7 @@ function FreeModeKeyboardPan({
     const moveDirection = new Vector3(
       (right ? 1 : 0) - (left ? 1 : 0),
       0,
-      (up ? 1 : 0) - (down ? 1 : 0)
+      (up ? 1 : 0) - (down ? 1 : 0),
     );
     if (moveDirection.lengthSq() === 0) return;
     moveDirection.normalize();
@@ -297,7 +335,7 @@ export function AdventureScene() {
   >(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(
-    null
+    null,
   );
   const [isIntroductionDialogOpen, setIsIntroductionDialogOpen] =
     useState(false);
@@ -329,26 +367,23 @@ export function AdventureScene() {
   const dartAimTargetRef = useRef<DartReticle>({ x: 0, y: 0 });
   const dartAimActivityRef = useRef(0);
   const lastAimSampleRef = useRef<{ x: number; y: number; at: number } | null>(
-    null
+    null,
   );
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
   const initialRevealTimerRef = useRef<number | null>(null);
-  const { active: isSceneLoaderActive, total: sceneAssetsTotal } =
-    useProgress();
+  const [isOverviewReady, setIsOverviewReady] = useState(false);
+  const [isCabinRequested, setIsCabinRequested] = useState(false);
+  const [isCabinReady, setIsCabinReady] = useState(false);
+  const [cabinLoadError, setCabinLoadError] = useState(false);
+  const [cabinRetryKey, setCabinRetryKey] = useState(0);
   const isCabinInteriorTarget =
     focusTarget === "cabinInterior" || focusTarget === "cabinDartboard";
   const isCabinInteriorLoading =
-    isCabinInteriorTarget &&
-    !isCabinInteriorRevealed &&
-    (isCabinFadePending ||
-      !isCabinCameraTransitionComplete ||
-      isSceneLoaderActive);
-  const shouldShowCabinLoadingSpinner =
-    isCabinInteriorLoading && cabinTransitionFadeState === "black";
+    isCabinRequested && !isCabinReady && !cabinLoadError;
+  const shouldShowCabinLoadingSpinner = isCabinInteriorLoading;
 
-  const [hasSceneLoadingStarted, setHasSceneLoadingStarted] = useState(false);
   const [isInitialSceneReady, setIsInitialSceneReady] = useState(false);
   const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady
     ? undefined
@@ -404,9 +439,9 @@ export function AdventureScene() {
     ? EXPERIENCE_RECORD[activeExperienceId]
     : null;
   const selectedGalleryPhoto = selectedGalleryPhotoId
-    ? [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find(
-        (photo) => photo.id === selectedGalleryPhotoId
-      ) ?? null
+    ? ([...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS].find(
+        (photo) => photo.id === selectedGalleryPhotoId,
+      ) ?? null)
     : null;
 
   useEffect(() => {
@@ -418,15 +453,7 @@ export function AdventureScene() {
   }, []);
 
   useEffect(() => {
-    if (hasSceneLoadingStarted) return;
-    if (isSceneLoaderActive || sceneAssetsTotal > 0) {
-      setHasSceneLoadingStarted(true);
-    }
-  }, [hasSceneLoadingStarted, isSceneLoaderActive, sceneAssetsTotal]);
-
-  useEffect(() => {
-    if (isInitialSceneReady || !hasSceneLoadingStarted || isSceneLoaderActive)
-      return;
+    if (isInitialSceneReady || !isOverviewReady) return;
     if (initialRevealTimerRef.current !== null) return;
 
     initialRevealTimerRef.current = window.setTimeout(() => {
@@ -437,12 +464,27 @@ export function AdventureScene() {
         });
       });
     }, initialSceneRevealDelayMs);
-  }, [
-    hasSceneLoadingStarted,
-    initialSceneRevealDelayMs,
-    isInitialSceneReady,
-    isSceneLoaderActive,
-  ]);
+  }, [initialSceneRevealDelayMs, isInitialSceneReady, isOverviewReady]);
+
+  const preloadCabin = useCallback(() => {
+    void loadCabinInterior()
+      .then((module) => {
+        module.preloadCabinInteriorAssets();
+      })
+      .catch(() => {
+        // An interaction-triggered render reports the error and offers retry UI.
+      });
+  }, []);
+
+  useEffect(() => {
+    const requestIdle = window.requestIdleCallback;
+    if (requestIdle) {
+      const idleId = requestIdle(preloadCabin);
+      return () => window.cancelIdleCallback(idleId);
+    }
+    const timerId = window.setTimeout(preloadCabin, 1200);
+    return () => window.clearTimeout(timerId);
+  }, [preloadCabin]);
 
   useEffect(() => {
     return () => {
@@ -463,7 +505,7 @@ export function AdventureScene() {
     setSelectedNoteId(null);
     window.setTimeout(
       () => setClosingNoteId(null),
-      MOTION_TIERS.macro.overlayFadeDuration * 1000
+      MOTION_TIERS.macro.overlayFadeDuration * 1000,
     );
   }, [reducedMotion, selectedNoteId]);
 
@@ -478,7 +520,7 @@ export function AdventureScene() {
     setSelectedExperienceId(null);
     window.setTimeout(
       () => setClosingExperienceId(null),
-      MOTION_TIERS.macro.overlayFadeDuration * 1000
+      MOTION_TIERS.macro.overlayFadeDuration * 1000,
     );
   }, [reducedMotion, selectedExperienceId]);
 
@@ -528,7 +570,7 @@ export function AdventureScene() {
         label: result.label,
       });
     },
-    [dartThrowsLeft]
+    [dartThrowsLeft],
   );
 
   const handleDartboardThrow = useCallback(
@@ -544,7 +586,7 @@ export function AdventureScene() {
       };
       registerDartThrow(dartReticle.x, dartReticle.y);
     },
-    [dartReticle.x, dartReticle.y, registerDartThrow]
+    [dartReticle.x, dartReticle.y, registerDartThrow],
   );
 
   const handleDartboardKeyboardThrow = useCallback(
@@ -553,7 +595,7 @@ export function AdventureScene() {
       event.preventDefault();
       registerDartThrow(dartReticle.x, dartReticle.y);
     },
-    [dartReticle.x, dartReticle.y, registerDartThrow]
+    [dartReticle.x, dartReticle.y, registerDartThrow],
   );
 
   const handleDartboardAimMove = useCallback(
@@ -587,7 +629,7 @@ export function AdventureScene() {
       };
       lastAimSampleRef.current = { ...nextAimTarget, at: now };
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -670,7 +712,7 @@ export function AdventureScene() {
       '[tabindex]:not([tabindex="-1"])',
     ].join(",");
     const focusableNodes = Array.from(
-      dialog.querySelectorAll<HTMLElement>(focusableSelectors)
+      dialog.querySelectorAll<HTMLElement>(focusableSelectors),
     );
     const firstFocusable = focusableNodes[0] ?? dialog;
     const lastFocusable = focusableNodes[focusableNodes.length - 1] ?? dialog;
@@ -705,6 +747,7 @@ export function AdventureScene() {
 
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
+      if (target === "cabin" && hovered) preloadCabin();
       setInteractionState((currentState) => {
         const isCurrentOverviewState =
           currentState === "idleOverview" ||
@@ -720,20 +763,27 @@ export function AdventureScene() {
         return target === "billboard"
           ? "hoverBillboard"
           : target === "cabin"
-          ? "hoverCabin"
-          : target === "tablets"
-          ? "hoverTablets"
-          : target === "introduction"
-          ? "hoverIntroduction"
-          : "hoverTimeline";
+            ? "hoverCabin"
+            : target === "tablets"
+              ? "hoverTablets"
+              : target === "introduction"
+                ? "hoverIntroduction"
+                : "hoverTimeline";
       });
     },
-    []
+    [preloadCabin],
   );
 
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
+
+      if (target === "cabin" && !isCabinReady) {
+        preloadCabin();
+        setCabinLoadError(false);
+        setIsCabinRequested(true);
+        return;
+      }
 
       setIsFreeModeEnabled(false);
       setInteractionState("transitioning");
@@ -762,8 +812,32 @@ export function AdventureScene() {
         setIsCabinFadePending(false);
       }
     },
-    [isOverviewState, isTransitioning, reducedMotion]
+    [
+      isCabinReady,
+      isOverviewState,
+      isTransitioning,
+      preloadCabin,
+      reducedMotion,
+    ],
   );
+
+  useEffect(() => {
+    if (!isCabinRequested || !isCabinReady || cabinLoadError) return;
+    handleFocusClick("cabin");
+    setIsCabinRequested(false);
+  }, [cabinLoadError, handleFocusClick, isCabinReady, isCabinRequested]);
+
+  const retryCabinLoad = useCallback(() => {
+    setCabinLoadError(false);
+    setIsCabinReady(false);
+    setCabinRetryKey((key) => key + 1);
+    void loadCabinInterior()
+      .then((module) => {
+        module.clearCabinInteriorAssets();
+        module.preloadCabinInteriorAssets();
+      })
+      .catch(() => setCabinLoadError(true));
+  }, []);
 
   const handleDartboardSelect = useCallback(() => {
     if (
@@ -787,7 +861,7 @@ export function AdventureScene() {
       }
       document.body.style.cursor = "auto";
     },
-    []
+    [],
   );
 
   useEffect(() => {
@@ -894,7 +968,7 @@ export function AdventureScene() {
 
   useEffect(() => {
     if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
-    if (!isCabinCameraTransitionComplete || isSceneLoaderActive) return;
+    if (!isCabinCameraTransitionComplete || !isCabinReady) return;
     setIsCabinInteriorRevealed(true);
     setInteractionState("cabinCloseup");
     if (!reducedMotion) {
@@ -907,7 +981,7 @@ export function AdventureScene() {
     isCabinCameraTransitionComplete,
     isCabinInteriorRevealed,
     isCabinInteriorTarget,
-    isSceneLoaderActive,
+    isCabinReady,
     reducedMotion,
     scheduleCabinFadeReset,
   ]);
@@ -937,7 +1011,21 @@ export function AdventureScene() {
             aria-live="polite"
           >
             <div className="scene-loading-spinner" aria-hidden="true" />
-            <p>Loading Scene…</p>
+            <p>
+              {shouldShowInitialLoadingOverlay
+                ? "Loading Scene…"
+                : "Preparing cabin…"}
+            </p>
+          </div>
+        )}
+        {cabinLoadError && (
+          <div className="scene-loading-error" role="alert">
+            <p>
+              The cabin could not be loaded. The overview is still available.
+            </p>
+            <button type="button" onClick={retryCabinLoad}>
+              Retry cabin
+            </button>
           </div>
         )}
         <div
@@ -973,9 +1061,6 @@ export function AdventureScene() {
                 onTransitionEnd={(completedTarget) => {
                   if (completedTarget === "cabinInterior") {
                     setIsCabinCameraTransitionComplete(true);
-                    if (isSceneLoaderActive) {
-                      setCabinTransitionFadeState("black");
-                    }
                     if (isCabinInteriorRevealed) {
                       setIsCabinFadePending(false);
                       setCabinTransitionFadeState("idle");
@@ -1002,12 +1087,12 @@ export function AdventureScene() {
                     completedTarget === "billboard"
                       ? "billboardCloseup"
                       : completedTarget === "cabinDartboard"
-                      ? "dartboardCloseup"
-                      : completedTarget === "tablets"
-                      ? "tabletsCloseup"
-                      : completedTarget === "introduction"
-                      ? "introductionCloseup"
-                      : "timelineCloseup"
+                        ? "dartboardCloseup"
+                        : completedTarget === "tablets"
+                          ? "tabletsCloseup"
+                          : completedTarget === "introduction"
+                            ? "introductionCloseup"
+                            : "timelineCloseup",
                   );
                 }}
               />
@@ -1142,20 +1227,35 @@ export function AdventureScene() {
                   onClick={() => handleFocusClick("cabin")}
                 />
               )}
-              {(focusTarget === "cabinInterior" ||
-                focusTarget === "cabinDartboard") &&
-                isCabinInteriorRevealed && (
-                  <CabinInterior
-                    photosInteractive={
-                      interactionState === "cabinCloseup" && !isFreeModeEnabled
-                    }
-                    onPhotoSelect={(photoId) =>
-                      setSelectedGalleryPhotoId(photoId)
-                    }
-                    onDartboardSelect={handleDartboardSelect}
-                  />
-                )}
+              <ReadySignal onReady={() => setIsOverviewReady(true)} />
             </Suspense>
+            {isCabinRequested || isCabinInteriorTarget ? (
+              <CabinErrorBoundary
+                key={cabinRetryKey}
+                resetKey={cabinRetryKey}
+                onError={() => {
+                  setCabinLoadError(true);
+                  setIsCabinRequested(false);
+                  setCabinTransitionFadeState("idle");
+                }}
+              >
+                <Suspense fallback={null}>
+                  <group visible={isCabinInteriorRevealed}>
+                    <CabinInterior
+                      photosInteractive={
+                        interactionState === "cabinCloseup" &&
+                        !isFreeModeEnabled
+                      }
+                      onPhotoSelect={(photoId) =>
+                        setSelectedGalleryPhotoId(photoId)
+                      }
+                      onDartboardSelect={handleDartboardSelect}
+                    />
+                  </group>
+                  <ReadySignal onReady={() => setIsCabinReady(true)} />
+                </Suspense>
+              </CabinErrorBoundary>
+            ) : null}
           </Canvas>
         </div>
       </div>
@@ -1173,7 +1273,7 @@ export function AdventureScene() {
       {interactionState === "billboardCloseup" && selectedNote && (
         <article
           className={`note-detail ${detailCardStateClass(
-            Boolean(closingNoteId)
+            Boolean(closingNoteId),
           )}`}
           aria-live="polite"
           onClick={closeNoteDetail}
@@ -1188,7 +1288,7 @@ export function AdventureScene() {
         >
           <div
             className={`note-detail-card detail-content-card project-detail-card ${detailCardStateClass(
-              Boolean(closingNoteId)
+              Boolean(closingNoteId),
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1230,7 +1330,7 @@ export function AdventureScene() {
       {interactionState === "tabletsCloseup" && selectedExperience && (
         <article
           className={`note-detail ${detailCardStateClass(
-            Boolean(closingExperienceId)
+            Boolean(closingExperienceId),
           )}`}
           aria-live="polite"
           onClick={closeExperienceDetail}
@@ -1245,7 +1345,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card experience-detail-card ${detailCardStateClass(
-              Boolean(closingExperienceId)
+              Boolean(closingExperienceId),
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1294,7 +1394,7 @@ export function AdventureScene() {
           >
             <div
               className={`detail-content-card introduction-detail-card ${detailCardStateClass(
-                false
+                false,
               )}`}
               ref={modalRef}
               onClick={(event) => event.stopPropagation()}
@@ -1313,13 +1413,18 @@ export function AdventureScene() {
                 <section className="introduction-detail-copy">
                   <h2 id="introduction-title">Introduction</h2>
                   <p>
-                    Hi, I&apos;m Ben Goulet, a full-stack software engineer based in the Triangle with a strong focus in small team and startup environments. I have ~5 years of 
-                    total experience and graduated from UNC Chapel Hill this last May. My work ranges from full-stack web development, DevOps and internal tooling, game dev, and
-                    various non-technical work.
+                    Hi, I&apos;m Ben Goulet, a full-stack software engineer
+                    based in the Triangle with a strong focus in small team and
+                    startup environments. I have ~5 years of total experience
+                    and graduated from UNC Chapel Hill this last May. My work
+                    ranges from full-stack web development, DevOps and internal
+                    tooling, game dev, and various non-technical work.
                   </p>
                   <p>
-                    Currently, I&apos;m focused on pursuing strong engineering opportunities in the Triangle or remote while finding my next big project.
-                    If you think I&apos;d be a good fit for your project or team, feel free to reach out!
+                    Currently, I&apos;m focused on pursuing strong engineering
+                    opportunities in the Triangle or remote while finding my
+                    next big project. If you think I&apos;d be a good fit for
+                    your project or team, feel free to reach out!
                   </p>
                   <p>
                     Explore the island to view projects, experience, and more
@@ -1357,8 +1462,9 @@ export function AdventureScene() {
             <p className="resume-contact-eyebrow">Resume &amp; contact</p>
             <h2 id="resume-contact-title">Let&apos;s connect.</h2>
             <p className="resume-contact-intro">
-              View my official resume or reach out directly. I&apos;m always happy
-              to talk about engineering opportunities and interesting projects.
+              View my official resume or reach out directly. I&apos;m always
+              happy to talk about engineering opportunities and interesting
+              projects.
             </p>
             <div className="resume-contact-actions">
               <a
@@ -1398,7 +1504,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card introduction-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1444,7 +1550,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             onClick={(event) => event.stopPropagation()}
@@ -1508,7 +1614,7 @@ export function AdventureScene() {
         >
           <div
             className={`detail-content-card gallery-detail-card darts-detail-card ${detailCardStateClass(
-              false
+              false,
             )}`}
             ref={modalRef}
             role="dialog"
