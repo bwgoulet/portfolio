@@ -40,7 +40,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     imageSrc: "/gallery/beatduke.jpg",
     textureSrc: "/gallery/thumbs/beatduke.webp",
     title: "UNC > Duke",
-    description: "We beat Duke! My last time getting to watch the heels beat Duke as a student, at Coach K's last game.",
+    description: "We beat Duke! Celebrating at Franklin St with friends, after a historic final four win at Coach K's final game.",
   },
   {
     id: "photo-03",
