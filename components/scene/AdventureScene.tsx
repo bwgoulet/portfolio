@@ -23,7 +23,7 @@ import {
 import type { Group } from "three";
 import { PerspectiveCamera, Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
-import introImage from "@/public/introimage.png";
+import introImage from "@/public/introimage.jpg";
 import { Billboard } from "./Billboard";
 import { Cabin } from "./Cabin";
 import { CameraRig } from "./CameraRig";
@@ -1637,14 +1637,6 @@ export function AdventureScene({
               projects.
             </p>
             <div className="resume-contact-actions">
-              <a
-                className="resume-primary-action"
-                href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf"
-                target="_blank"
-                rel="noreferrer"
-              >
-                View official resume <span aria-hidden="true">↗</span>
-              </a>
               <a href="mailto:bengoulet02@gmail.com">
                 <span>Email</span>
                 <strong>bengoulet02@gmail.com</strong>
@@ -1652,6 +1644,14 @@ export function AdventureScene({
               <a href="tel:+19197709551">
                 <span>Phone</span>
                 <strong>(919) 770-9551</strong>
+              </a>
+                            <a
+                className="resume-primary-action"
+                href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View official resume <span aria-hidden="true">↗</span>
               </a>
             </div>
           </div>

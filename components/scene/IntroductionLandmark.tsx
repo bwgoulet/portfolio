@@ -5,7 +5,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import * as THREE from 'three';
-import introImage from '@/public/introimage.png';
+import introImage from '@/public/introimage.jpg';
 import {
   ClampToEdgeWrapping,
   DoubleSide,
