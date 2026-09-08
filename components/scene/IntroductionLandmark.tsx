@@ -5,6 +5,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
 import * as THREE from 'three';
+import introImage from '@/public/introimage.png';
 import {
   ClampToEdgeWrapping,
   DoubleSide,
@@ -94,7 +95,7 @@ export const IntroductionLandmark = memo(function IntroductionLandmark({
   reducedMotion
 }: IntroductionLandmarkProps) {
   const engravingGroupRef = useRef<Group>(null);
-  const introTexture = useTexture('/introimage.png');
+  const introTexture = useTexture(introImage.src);
   const backpackGltf = useGLTF('/models/Backpack.glb');
   const keyCardGltf = useGLTF('/models/Pickup Key Card.glb');
   const gl = useThree((state) => state.gl);
