@@ -9,25 +9,6 @@ const THUMBNAIL_WIDTH = 256;
 const THUMBNAIL_HEIGHT = 256;
 const THUMBNAIL_QUALITY = 64;
 
-const GALLERY_THUMBNAILS = [
-  // Keep these entries in sync with GALLERY_PHOTOS in cabinAssets.ts.
-  ['hacknc_jump.jpeg', 'hacknc_jump.webp'],
-  ['beatduke.jpg', 'beatduke.webp'],
-  ['pywteam.jpg', 'pywteam.webp'],
-  ['poker.jpg', 'poker.webp'],
-  ['hgod.jpg', 'hgod.webp'],
-  ['crater lake.jpg', 'crater-lake.webp'],
-  ['hellopio.jpg', 'hellopio.webp'],
-  ['brevityaward.png', 'brevityaward.webp'],
-  ['tarheel10.jpg', 'tarheel10.webp'],
-  ['mayhem.jpg', 'mayhem.webp'],
-  ['acting.jpg', 'acting.webp'],
-  ['prs25.jpg', 'prs25.webp'],
-  ['prf25.png', 'prf25.webp'],
-  ['album9.png', 'album9.webp'],
-  ['game9.png', 'game9.webp'],
-];
-
 const galleryDir = path.join(process.cwd(), 'public', 'gallery');
 const thumbsDir = path.join(galleryDir, 'thumbs');
 const cabinAssetsPath = path.join(
@@ -70,45 +51,45 @@ async function generateThumbnail([sourceFile, outputFile]) {
   };
 }
 
-async function validateGalleryCoverage() {
+async function getGalleryThumbnails() {
   const cabinAssets = await fs.readFile(cabinAssetsPath, 'utf8');
-  const galleryPhotos = cabinAssets.match(
-    /export const GALLERY_PHOTOS:[\s\S]*?export const CABIN_INTERIOR_ARTWORKS/
+  const galleryAssets = cabinAssets.match(
+    /export const GALLERY_PHOTOS:[\s\S]*?export const CABIN_INTERIOR_MODEL_ASSETS/
   )?.[0];
 
-  if (!galleryPhotos) {
-    throw new Error('Could not find GALLERY_PHOTOS in cabinAssets.ts.');
+  if (!galleryAssets) {
+    throw new Error('Could not find gallery assets in cabinAssets.ts.');
   }
 
-  const configuredTextures = [
-    ...galleryPhotos.matchAll(/textureSrc: "\/gallery\/thumbs\/([^"]+\.webp)"/g),
-  ].map((match) => match[1]);
-  const generatedTextures = new Set(
-    GALLERY_THUMBNAILS.map(([, outputFile]) => outputFile)
-  );
-  const missingTextures = configuredTextures.filter(
-    (texture) => !generatedTextures.has(texture)
-  );
-  const photoCount = (galleryPhotos.match(/id: "photo-/g) ?? []).length;
+  const thumbnails = [
+    ...galleryAssets.matchAll(
+      /imageSrc:\s*["']\/gallery\/([^"']+)["'][\s\S]*?textureSrc:\s*["']\/gallery\/thumbs\/([^"']+\.webp)["']/g
+    ),
+  ].map(([, sourceFile, outputFile]) => [sourceFile, outputFile]);
+  const configuredTextureCount = (
+    galleryAssets.match(/textureSrc:\s*["']\/gallery\/thumbs\//g) ?? []
+  ).length;
 
-  if (configuredTextures.length !== photoCount || missingTextures.length > 0) {
+  if (thumbnails.length !== configuredTextureCount) {
     throw new Error(
-      `GALLERY_PHOTOS thumbnail coverage is incomplete. Missing: ${
-        missingTextures.join(', ') || 'a textureSrc assignment'
-      }`
+      'Every gallery asset must have an imageSrc and a .webp textureSrc.'
     );
   }
+
+  return [
+    ...new Map(thumbnails.map((thumbnail) => [thumbnail[1], thumbnail])).values(),
+  ];
 }
 
 async function main() {
-  await validateGalleryCoverage();
+  const galleryThumbnails = await getGalleryThumbnails();
   await fs.mkdir(thumbsDir, { recursive: true });
 
   let sourceBytes = 0;
   let outputBytes = 0;
   const results = [];
 
-  for (const thumbnail of GALLERY_THUMBNAILS) {
+  for (const thumbnail of galleryThumbnails) {
     const result = await generateThumbnail(thumbnail);
     sourceBytes += result.sourceBytes;
     outputBytes += result.outputBytes;
