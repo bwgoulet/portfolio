@@ -102,6 +102,18 @@ export const PROJECT_NOTES: ProjectNote[] = [
     rotation: 0.07,
     color: "#f7e5b8",
   },
+  {
+    id: "poker-tracker",
+    title: "Poker Tracker",
+    detail: "[Coming Soon!]",
+    bullets: [],
+    imageSrc: "/gallery/poker.jpg",
+    detailImageSrc: "/gallery/poker.jpg",
+    whyItMattered: "[Coming Soon!]",
+    position: [0, 1.18, 0.19],
+    rotation: -0.02,
+    color: "#f3dfaa",
+  },
 ];
 
 export const PROJECT_NOTE_RECORD = Object.fromEntries(
