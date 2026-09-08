@@ -14,10 +14,10 @@ import {
   useState,
   type CSSProperties,
   type ErrorInfo,
-  type ReactNode,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
+  type ReactNode,
 } from "react";
 import type { Group } from "three";
 import { PerspectiveCamera, Vector3 } from "three";
@@ -93,6 +93,44 @@ const DARTBOARD_SECTORS = [
 ] as const;
 
 const DARTS_PER_ROUND = 3;
+const SCENE_LOAD_TIMEOUT_MS = 20_000;
+
+type SceneBundle = "overview" | "cabin";
+
+class SceneErrorBoundary extends Component<
+  {
+    children: ReactNode;
+    onError: (error: Error) => void;
+  },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Scene bundle failed to render", error, info);
+    this.props.onError(error);
+  }
+
+  render() {
+    return this.state.error ? null : this.props.children;
+  }
+}
+
+function SceneReadyReporter({ onReady }: { onReady: () => void }) {
+  const hasReportedRef = useRef(false);
+
+  useFrame(() => {
+    if (hasReportedRef.current) return;
+    hasReportedRef.current = true;
+    onReady();
+  });
+
+  return null;
+}
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -372,26 +410,60 @@ export function AdventureScene() {
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
-  const initialRevealTimerRef = useRef<number | null>(null);
-  const [isOverviewReady, setIsOverviewReady] = useState(false);
-  const [isCabinRequested, setIsCabinRequested] = useState(false);
-  const [isCabinReady, setIsCabinReady] = useState(false);
-  const [cabinLoadError, setCabinLoadError] = useState(false);
-  const [cabinRetryKey, setCabinRetryKey] = useState(0);
+  const cabinProgressBaselineRef = useRef({ loaded: 0, total: 0 });
+  const [isCabinBundleReady, setIsCabinBundleReady] = useState(false);
+  const {
+    active: isSceneLoaderActive,
+    loaded: sceneAssetsLoaded,
+    total: sceneAssetsTotal,
+    progress: sceneAssetProgress,
+    errors: sceneAssetErrors,
+  } = useProgress();
   const isCabinInteriorTarget =
     focusTarget === "cabinInterior" || focusTarget === "cabinDartboard";
   const isCabinInteriorLoading =
-    isCabinRequested && !isCabinReady && !cabinLoadError;
-  const shouldShowCabinLoadingSpinner = isCabinInteriorLoading;
+    isCabinInteriorTarget &&
+    !isCabinInteriorRevealed &&
+    (isCabinFadePending ||
+      !isCabinCameraTransitionComplete ||
+      !isCabinBundleReady ||
+      isSceneLoaderActive);
+  const shouldShowCabinLoadingSpinner =
+    isCabinInteriorLoading && cabinTransitionFadeState === "black";
 
   const [isInitialSceneReady, setIsInitialSceneReady] = useState(false);
+  const [failedBundle, setFailedBundle] = useState<SceneBundle | null>(null);
+  const [timedOutBundle, setTimedOutBundle] = useState<SceneBundle | null>(null);
   const canvasVisibilityStyle: CSSProperties | undefined = isInitialSceneReady
     ? undefined
     : { opacity: 0, pointerEvents: "none" };
   const shouldShowInitialLoadingOverlay = !isInitialSceneReady;
   const shouldShowLoadingOverlay =
     shouldShowInitialLoadingOverlay || shouldShowCabinLoadingSpinner;
-  const initialSceneRevealDelayMs = 220;
+  const activeLoadingBundle: SceneBundle | null = shouldShowInitialLoadingOverlay
+    ? "overview"
+    : shouldShowCabinLoadingSpinner
+    ? "cabin"
+    : null;
+  const cabinAssetsLoaded = Math.max(
+    0,
+    sceneAssetsLoaded - cabinProgressBaselineRef.current.loaded
+  );
+  const cabinAssetsTotal = Math.max(
+    0,
+    sceneAssetsTotal - cabinProgressBaselineRef.current.total
+  );
+  const loadingPercent = Math.round(
+    activeLoadingBundle === "overview"
+      ? isInitialSceneReady
+        ? 100
+        : sceneAssetProgress
+      : isCabinBundleReady
+      ? 100
+      : cabinAssetsTotal > 0
+      ? (cabinAssetsLoaded / cabinAssetsTotal) * 100
+      : 0
+  );
 
   const scheduleCabinFadeReset = useCallback((durationMs: number) => {
     if (cabinFadeTimerRef.current !== null) {
@@ -453,46 +525,18 @@ export function AdventureScene() {
   }, []);
 
   useEffect(() => {
-    if (isInitialSceneReady || !isOverviewReady) return;
-    if (initialRevealTimerRef.current !== null) return;
-
-    initialRevealTimerRef.current = window.setTimeout(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsInitialSceneReady(true);
-          initialRevealTimerRef.current = null;
-        });
-      });
-    }, initialSceneRevealDelayMs);
-  }, [initialSceneRevealDelayMs, isInitialSceneReady, isOverviewReady]);
-
-  const preloadCabin = useCallback(() => {
-    void loadCabinInterior()
-      .then((module) => {
-        module.preloadCabinInteriorAssets();
-      })
-      .catch(() => {
-        // An interaction-triggered render reports the error and offers retry UI.
-      });
-  }, []);
+    if (!activeLoadingBundle || failedBundle || timedOutBundle) return;
+    const timeout = window.setTimeout(
+      () => setTimedOutBundle(activeLoadingBundle),
+      SCENE_LOAD_TIMEOUT_MS
+    );
+    return () => window.clearTimeout(timeout);
+  }, [activeLoadingBundle, failedBundle, timedOutBundle]);
 
   useEffect(() => {
-    const requestIdle = window.requestIdleCallback;
-    if (requestIdle) {
-      const idleId = requestIdle(preloadCabin);
-      return () => window.cancelIdleCallback(idleId);
-    }
-    const timerId = window.setTimeout(preloadCabin, 1200);
-    return () => window.clearTimeout(timerId);
-  }, [preloadCabin]);
-
-  useEffect(() => {
-    return () => {
-      if (initialRevealTimerRef.current !== null) {
-        window.clearTimeout(initialRevealTimerRef.current);
-      }
-    };
-  }, []);
+    if (sceneAssetErrors.length === 0 || !activeLoadingBundle) return;
+    setFailedBundle(activeLoadingBundle);
+  }, [activeLoadingBundle, sceneAssetErrors]);
 
   const closeNoteDetail = useCallback(() => {
     if (!selectedNoteId) return;
@@ -799,6 +843,13 @@ export function AdventureScene() {
       setIsTimelineDialogOpen(false);
 
       if (target === "cabin") {
+        cabinProgressBaselineRef.current = {
+          loaded: sceneAssetsLoaded,
+          total: sceneAssetsTotal,
+        };
+        setIsCabinBundleReady(false);
+        setFailedBundle(null);
+        setTimedOutBundle(null);
         if (reducedMotion) {
           setCabinTransitionFadeState("idle");
           setIsCabinFadePending(false);
@@ -813,12 +864,12 @@ export function AdventureScene() {
       }
     },
     [
-      isCabinReady,
       isOverviewState,
       isTransitioning,
-      preloadCabin,
       reducedMotion,
-    ],
+      sceneAssetsLoaded,
+      sceneAssetsTotal,
+    ]
   );
 
   useEffect(() => {
@@ -969,7 +1020,7 @@ export function AdventureScene() {
 
   useEffect(() => {
     if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
-    if (!isCabinCameraTransitionComplete || !isCabinReady) return;
+    if (!isCabinCameraTransitionComplete || !isCabinBundleReady) return;
     setIsCabinInteriorRevealed(true);
     setInteractionState("cabinCloseup");
     if (!reducedMotion) {
@@ -982,7 +1033,7 @@ export function AdventureScene() {
     isCabinCameraTransitionComplete,
     isCabinInteriorRevealed,
     isCabinInteriorTarget,
-    isCabinReady,
+    isCabinBundleReady,
     reducedMotion,
     scheduleCabinFadeReset,
   ]);
@@ -1011,22 +1062,54 @@ export function AdventureScene() {
             role="status"
             aria-live="polite"
           >
-            <div className="scene-loading-spinner" aria-hidden="true" />
-            <p>
-              {shouldShowInitialLoadingOverlay
-                ? "Loading Scene…"
-                : "Preparing cabin…"}
-            </p>
-          </div>
-        )}
-        {cabinLoadError && (
-          <div className="scene-loading-error" role="alert">
-            <p>
-              The cabin could not be loaded. The overview is still available.
-            </p>
-            <button type="button" onClick={retryCabinLoad}>
-              Retry cabin
-            </button>
+            <div className="scene-loading-card">
+              <p className="scene-loading-label">
+                {activeLoadingBundle === "cabin"
+                  ? "Opening the cabin"
+                  : "Preparing the trail"}
+              </p>
+              {failedBundle || timedOutBundle ? (
+                <>
+                  <p className="scene-loading-status" role="alert">
+                    {failedBundle
+                      ? "We couldn’t load part of this scene."
+                      : "This is taking longer than expected."}
+                  </p>
+                  <button
+                    className="scene-loading-retry"
+                    type="button"
+                    onClick={() => window.location.reload()}
+                  >
+                    Retry
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div
+                    className="scene-loading-progress"
+                    role="progressbar"
+                    aria-label={`${activeLoadingBundle} bundle progress`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={loadingPercent}
+                  >
+                    <span style={{ width: `${loadingPercent}%` }} />
+                  </div>
+                  <p className="scene-loading-status">
+                    <span className="scene-loading-percentage">
+                      {loadingPercent}%
+                    </span>{" "}
+                    {activeLoadingBundle === "cabin"
+                      ? cabinAssetsTotal > 0
+                        ? `${cabinAssetsLoaded} of ${cabinAssetsTotal} cabin assets`
+                        : "Resolving cabin resources"
+                      : sceneAssetsTotal > 0
+                      ? `${sceneAssetsLoaded} of ${sceneAssetsTotal} trail assets`
+                      : "Resolving trail resources"}
+                  </p>
+                </>
+              )}
+            </div>
           </div>
         )}
         <div
@@ -1047,7 +1130,13 @@ export function AdventureScene() {
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
             }}
           >
-            <Suspense fallback={null}>
+            <SceneErrorBoundary
+              onError={() => setFailedBundle(activeLoadingBundle ?? "overview")}
+            >
+              <Suspense fallback={null}>
+                <SceneReadyReporter
+                  onReady={() => setIsInitialSceneReady(true)}
+                />
               <CameraRig
                 targetKey={focusTarget}
                 isTransitioning={isTransitioning}
@@ -1228,35 +1317,25 @@ export function AdventureScene() {
                   onClick={() => handleFocusClick("cabin")}
                 />
               )}
-              <ReadySignal onReady={() => setIsOverviewReady(true)} />
-            </Suspense>
-            {isCabinRequested || isCabinInteriorTarget ? (
-              <CabinErrorBoundary
-                key={cabinRetryKey}
-                resetKey={cabinRetryKey}
-                onError={() => {
-                  setCabinLoadError(true);
-                  setIsCabinRequested(false);
-                  setCabinTransitionFadeState("idle");
-                }}
-              >
+              </Suspense>
+              {(focusTarget === "cabinInterior" ||
+                focusTarget === "cabinDartboard") && (
                 <Suspense fallback={null}>
-                  <group visible={isCabinInteriorRevealed}>
-                    <CabinInterior
-                      photosInteractive={
-                        interactionState === "cabinCloseup" &&
-                        !isFreeModeEnabled
-                      }
-                      onPhotoSelect={(photoId) =>
-                        setSelectedGalleryPhotoId(photoId)
-                      }
-                      onDartboardSelect={handleDartboardSelect}
-                    />
-                  </group>
-                  <ReadySignal onReady={() => setIsCabinReady(true)} />
+                  <SceneReadyReporter
+                    onReady={() => setIsCabinBundleReady(true)}
+                  />
+                  <CabinInterior
+                    photosInteractive={
+                      interactionState === "cabinCloseup" && !isFreeModeEnabled
+                    }
+                    onPhotoSelect={(photoId) =>
+                      setSelectedGalleryPhotoId(photoId)
+                    }
+                    onDartboardSelect={handleDartboardSelect}
+                  />
                 </Suspense>
-              </CabinErrorBoundary>
-            ) : null}
+              )}
+            </SceneErrorBoundary>
           </Canvas>
         </div>
       </div>
