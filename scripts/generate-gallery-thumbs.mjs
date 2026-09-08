@@ -3,11 +3,14 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 
-const THUMBNAIL_WIDTH = 512;
-const THUMBNAIL_HEIGHT = 512;
-const THUMBNAIL_QUALITY = 68;
+// Cabin textures are displayed on very small planes, so 256px preserves more
+// than enough detail while keeping the initial scene transfer inexpensive.
+const THUMBNAIL_WIDTH = 256;
+const THUMBNAIL_HEIGHT = 256;
+const THUMBNAIL_QUALITY = 64;
 
 const GALLERY_THUMBNAILS = [
+  // Keep these entries in sync with GALLERY_PHOTOS in CabinInterior.tsx.
   ['hacknc_jump.jpeg', 'hacknc_jump.webp'],
   ['beatduke.jpg', 'beatduke.webp'],
   ['pywteam.jpg', 'pywteam.webp'],
@@ -27,6 +30,12 @@ const GALLERY_THUMBNAILS = [
 
 const galleryDir = path.join(process.cwd(), 'public', 'gallery');
 const thumbsDir = path.join(galleryDir, 'thumbs');
+const cabinInteriorPath = path.join(
+  process.cwd(),
+  'components',
+  'scene',
+  'CabinInterior.tsx'
+);
 
 function bytesToKiB(bytes) {
   return `${(bytes / 1024).toFixed(1)} KiB`;
@@ -61,7 +70,38 @@ async function generateThumbnail([sourceFile, outputFile]) {
   };
 }
 
+async function validateGalleryCoverage() {
+  const cabinInterior = await fs.readFile(cabinInteriorPath, 'utf8');
+  const galleryPhotos = cabinInterior.match(
+    /export const GALLERY_PHOTOS:[\s\S]*?export const CABIN_INTERIOR_ARTWORKS/
+  )?.[0];
+
+  if (!galleryPhotos) {
+    throw new Error('Could not find GALLERY_PHOTOS in CabinInterior.tsx.');
+  }
+
+  const configuredTextures = [
+    ...galleryPhotos.matchAll(/textureSrc: "\/gallery\/thumbs\/([^"]+\.webp)"/g),
+  ].map((match) => match[1]);
+  const generatedTextures = new Set(
+    GALLERY_THUMBNAILS.map(([, outputFile]) => outputFile)
+  );
+  const missingTextures = configuredTextures.filter(
+    (texture) => !generatedTextures.has(texture)
+  );
+  const photoCount = (galleryPhotos.match(/id: "photo-/g) ?? []).length;
+
+  if (configuredTextures.length !== photoCount || missingTextures.length > 0) {
+    throw new Error(
+      `GALLERY_PHOTOS thumbnail coverage is incomplete. Missing: ${
+        missingTextures.join(', ') || 'a textureSrc assignment'
+      }`
+    );
+  }
+}
+
 async function main() {
+  await validateGalleryCoverage();
   await fs.mkdir(thumbsDir, { recursive: true });
 
   let sourceBytes = 0;
