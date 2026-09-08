@@ -299,6 +299,7 @@ const forceDiffuseOnlyOnSceneMaterials = (scene: THREE.Object3D) => {
 };
 
 type CabinInteriorProps = {
+  visible: boolean;
   photosInteractive: boolean;
   onPhotoSelect: (photoId: string) => void;
   onDartboardSelect: () => void;
@@ -323,6 +324,7 @@ export function clearCabinInteriorAssets() {
 }
 
 export const CabinInterior = memo(function CabinInterior({
+  visible,
   photosInteractive,
   onPhotoSelect,
   onDartboardSelect,
@@ -692,6 +694,7 @@ export const CabinInterior = memo(function CabinInterior({
 
   return (
     <group
+      visible={visible}
       position={SCENE_ANCHORS.cabin}
       rotation={[0, -0.46, 0]}
       scale={1.28}

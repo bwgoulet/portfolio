@@ -1384,6 +1384,7 @@ export function AdventureScene({
                   />
                   <CabinInterior
                     qualityTier={qualityTier}
+                    visible={isCabinInteriorRevealed}
                     photosInteractive={
                       interactionState === "cabinCloseup" && !isFreeModeEnabled
                     }
