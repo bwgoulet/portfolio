@@ -1,5 +1,59 @@
 import { ColorRepresentation, Vector3Tuple } from 'three';
 
+export type SceneQualityTier = 'low' | 'medium' | 'high';
+export type SceneQualityPreference = 'auto' | 'performance' | 'quality';
+
+export type SceneQualityPreset = {
+  dprCap: number;
+  antialias: boolean;
+  shadows: boolean;
+  shadowMapResolution: number;
+  shadowCastingLights: number;
+  geometryDetail: number;
+  textureResolution: 1024 | 2048 | 4096;
+  decorativeEffects: boolean;
+  targetFps: number;
+};
+
+/** Central rendering budget used by every expensive scene system. */
+export const SCENE_QUALITY_PRESETS: Record<SceneQualityTier, SceneQualityPreset> = {
+  low: {
+    dprCap: 1,
+    antialias: false,
+    shadows: false,
+    shadowMapResolution: 0,
+    shadowCastingLights: 0,
+    geometryDetail: 0.5,
+    textureResolution: 1024,
+    decorativeEffects: false,
+    targetFps: 40,
+  },
+  medium: {
+    dprCap: 1.35,
+    antialias: true,
+    shadows: true,
+    shadowMapResolution: 1024,
+    shadowCastingLights: 1,
+    geometryDetail: 0.75,
+    textureResolution: 2048,
+    decorativeEffects: true,
+    targetFps: 50,
+  },
+  high: {
+    dprCap: 1.7,
+    antialias: true,
+    shadows: true,
+    shadowMapResolution: 2048,
+    shadowCastingLights: 1,
+    geometryDetail: 1,
+    textureResolution: 4096,
+    decorativeEffects: true,
+    targetFps: 58,
+  },
+};
+
+export const QUALITY_STORAGE_KEY = 'portfolio-scene-quality';
+
 export type FocusTarget =
   | 'overview'
   | 'billboard'

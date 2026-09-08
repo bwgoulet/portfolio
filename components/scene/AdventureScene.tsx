@@ -10,6 +10,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -35,6 +36,10 @@ import {
   CAMERA_PRESETS,
   FocusTarget,
   MOTION_TIERS,
+  QUALITY_STORAGE_KEY,
+  SCENE_QUALITY_PRESETS,
+  type SceneQualityPreference,
+  type SceneQualityTier,
 } from "@/config/sceneConfig";
 import { IntroductionLandmark } from "./IntroductionLandmark";
 
@@ -134,6 +139,38 @@ function SceneReadyReporter({ onReady }: { onReady: () => void }) {
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
+
+const qualityBelow = (tier: SceneQualityTier): SceneQualityTier =>
+  tier === "high" ? "medium" : "low";
+
+function FrameTimeMonitor({
+  tier,
+  enabled,
+  onDecline,
+}: {
+  tier: SceneQualityTier;
+  enabled: boolean;
+  onDecline: () => void;
+}) {
+  const sample = useRef({ elapsed: 0, frames: 0, slowWindows: 0 });
+  useFrame((_, delta) => {
+    if (!enabled || tier === "low" || delta > 0.25) return;
+    sample.current.elapsed += delta;
+    sample.current.frames += 1;
+    if (sample.current.elapsed < 3) return;
+    const fps = sample.current.frames / sample.current.elapsed;
+    sample.current.slowWindows = fps < SCENE_QUALITY_PRESETS[tier].targetFps
+      ? sample.current.slowWindows + 1
+      : 0;
+    sample.current.elapsed = 0;
+    sample.current.frames = 0;
+    if (sample.current.slowWindows >= 2) {
+      sample.current.slowWindows = 0;
+      onDecline();
+    }
+  });
+  return null;
+}
 
 const randomPointInCircle = (maxRadius: number): DartReticle => {
   const angle = Math.random() * Math.PI * 2;
@@ -395,6 +432,16 @@ export function AdventureScene({
   const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] =
     useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [qualityPreference, setQualityPreference] =
+    useState<SceneQualityPreference>("auto");
+  const [autoQualityTier, setAutoQualityTier] =
+    useState<SceneQualityTier>("medium");
+  const qualityTier = useMemo<SceneQualityTier>(() => {
+    if (qualityPreference === "performance") return "low";
+    if (qualityPreference === "quality") return "high";
+    return autoQualityTier;
+  }, [autoQualityTier, qualityPreference]);
+  const quality = SCENE_QUALITY_PRESETS[qualityTier];
   const [isCabinInteriorRevealed, setIsCabinInteriorRevealed] = useState(false);
   const [isCabinCameraTransitionComplete, setIsCabinCameraTransitionComplete] =
     useState(false);
@@ -527,8 +574,30 @@ export function AdventureScene({
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => setReducedMotion(media.matches);
     update();
+    const stored = window.localStorage.getItem(QUALITY_STORAGE_KEY);
+    if (stored === "auto" || stored === "performance" || stored === "quality") {
+      setQualityPreference(stored);
+    }
+
+    const navigatorWithMemory = navigator as Navigator & { deviceMemory?: number };
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+    const maxTextureSize = context?.getParameter(context.MAX_TEXTURE_SIZE) ?? 0;
+    const smallViewport = Math.min(window.innerWidth, window.innerHeight) < 700;
+    const constrained = smallViewport || media.matches ||
+      (navigatorWithMemory.deviceMemory ?? 8) <= 4 || navigator.hardwareConcurrency <= 4 ||
+      !context || maxTextureSize < 8192;
+    const capable = !smallViewport && !media.matches &&
+      (navigatorWithMemory.deviceMemory ?? 4) >= 8 && navigator.hardwareConcurrency >= 8 &&
+      Boolean(context) && maxTextureSize >= 16384;
+    setAutoQualityTier(constrained ? "low" : capable ? "high" : "medium");
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
+  }, []);
+
+  const selectQuality = useCallback((preference: SceneQualityPreference) => {
+    setQualityPreference(preference);
+    window.localStorage.setItem(QUALITY_STORAGE_KEY, preference);
   }, []);
 
   useEffect(() => {
@@ -1150,25 +1219,25 @@ export function AdventureScene({
           aria-hidden={!isInitialSceneReady}
         >
           <Canvas
-            shadows
+            key={qualityTier}
+            shadows={quality.shadows}
             camera={{
               position: CAMERA_PRESETS.overview.position,
               fov: CAMERA_PRESETS.overview.fov,
             }}
-            dpr={[1, 1.7]}
-            gl={{ alpha: false }}
+            dpr={[1, quality.dprCap]}
+            gl={{ alpha: false, antialias: quality.antialias }}
             onPointerMissed={handleSceneBackgroundDismiss}
             onCreated={({ camera }) => {
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
             }}
           >
-            <SceneErrorBoundary
-              onError={() => setFailedBundle(activeLoadingBundle ?? "overview")}
-            >
-              <Suspense fallback={null}>
-                <SceneReadyReporter
-                  onReady={() => setIsInitialSceneReady(true)}
-                />
+            <Suspense fallback={null}>
+              <FrameTimeMonitor
+                tier={qualityTier}
+                enabled={qualityPreference === "auto"}
+                onDecline={() => setAutoQualityTier((current) => qualityBelow(current))}
+              />
               <CameraRig
                 targetKey={focusTarget}
                 isTransitioning={isTransitioning}
@@ -1247,6 +1316,7 @@ export function AdventureScene({
                 />
               )}
               <LightingAtmosphere
+                qualityTier={qualityTier}
                 backgroundColor={
                   (focusTarget === "cabinInterior" ||
                     focusTarget === "cabinDartboard") &&
@@ -1256,6 +1326,7 @@ export function AdventureScene({
                 }
               />
               <LowPolyEnvironment
+                qualityTier={qualityTier}
                 tabletsInteractiveEnabled={
                   isOverviewState && !isFreeModeEnabled
                 }
@@ -1357,6 +1428,7 @@ export function AdventureScene({
                     onReady={() => setIsCabinBundleReady(true)}
                   />
                   <CabinInterior
+                    qualityTier={qualityTier}
                     photosInteractive={
                       interactionState === "cabinCloseup" && !isFreeModeEnabled
                     }
@@ -1371,6 +1443,26 @@ export function AdventureScene({
           </Canvas>
         </div>
       </div>
+
+      <fieldset className="quality-control" aria-label="Rendering quality">
+        <legend>Graphics</legend>
+        {([
+          ["auto", "Auto"],
+          ["performance", "Performance"],
+          ["quality", "Quality"],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={qualityPreference === value ? "is-active" : ""}
+            aria-pressed={qualityPreference === value}
+            onClick={() => selectQuality(value)}
+          >
+            {label}
+          </button>
+        ))}
+        <span className="quality-control-tier" aria-live="polite">{qualityTier}</span>
+      </fieldset>
 
       <header
         className={`scene-brand ${
