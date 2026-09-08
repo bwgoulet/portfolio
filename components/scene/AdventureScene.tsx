@@ -793,6 +793,7 @@ export function AdventureScene() {
   useEffect(() => {
     if (interactionState !== "introductionCloseup") {
       setIsIntroductionCloseupHovered(false);
+      setIsKeyCardHovered(false);
     }
   }, [interactionState]);
 
