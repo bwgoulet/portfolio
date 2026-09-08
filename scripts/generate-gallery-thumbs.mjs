@@ -8,6 +8,14 @@ import sharp from 'sharp';
 const THUMBNAIL_WIDTH = 256;
 const THUMBNAIL_HEIGHT = 256;
 const THUMBNAIL_QUALITY = 64;
+const SOURCE_EXTENSIONS = new Set([
+  '.avif',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.tif',
+  '.tiff',
+]);
 
 const galleryDir = path.join(process.cwd(), 'public', 'gallery');
 const thumbsDir = path.join(galleryDir, 'thumbs');
@@ -76,9 +84,39 @@ async function getGalleryThumbnails() {
     );
   }
 
-  return [
-    ...new Map(thumbnails.map((thumbnail) => [thumbnail[1], thumbnail])).values(),
-  ];
+  const galleryEntries = await fs.readdir(galleryDir, { withFileTypes: true });
+  const discoveredThumbnails = galleryEntries
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        SOURCE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())
+    )
+    .map((entry) => [
+      entry.name,
+      `${path.basename(entry.name, path.extname(entry.name))}.webp`,
+    ]);
+
+  const outputSources = new Map(
+    discoveredThumbnails.map(([sourceFile, outputFile]) => [
+      outputFile,
+      sourceFile,
+    ])
+  );
+
+  for (const [sourceFile, outputFile] of thumbnails) {
+    const existingSource = outputSources.get(outputFile);
+    if (existingSource && existingSource !== sourceFile) {
+      console.warn(
+        `Skipping conflicting thumbnail alias: ${sourceFile} and ${existingSource} both target ${outputFile}. Using ${existingSource}; update textureSrc for ${sourceFile}.`
+      );
+      continue;
+    }
+    outputSources.set(outputFile, sourceFile);
+  }
+
+  return [...outputSources]
+    .map(([outputFile, sourceFile]) => [sourceFile, outputFile])
+    .sort(([left], [right]) => left.localeCompare(right));
 }
 
 async function main() {
