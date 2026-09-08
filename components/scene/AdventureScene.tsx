@@ -23,6 +23,7 @@ import {
 import type { Group } from "three";
 import { PerspectiveCamera, Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import introImage from "@/public/introimage.png";
 import { Billboard } from "./Billboard";
 import { Cabin } from "./Cabin";
 import { CameraRig } from "./CameraRig";
@@ -1574,7 +1575,7 @@ export function AdventureScene({
             >
               <div className="introduction-detail-layout">
                 <Image
-                  src="/introimage.png"
+                  src={introImage}
                   alt="Introduction thumbnail"
                   width={520}
                   height={460}
