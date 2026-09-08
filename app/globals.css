@@ -176,7 +176,7 @@ main {
 .scene-brand {
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  left: 1rem;
   z-index: 5;
   text-align: center;
   display: flex;
@@ -278,8 +278,8 @@ main {
 .simple-scene-switch {
   position: fixed;
   z-index: 60;
-  left: 1rem;
-  bottom: 1rem;
+  right: 1rem;
+  top: 1rem;
   border: 1px solid rgba(231, 244, 250, 0.72);
   border-radius: 999px;
   background: rgba(16, 29, 38, 0.92);
@@ -825,7 +825,7 @@ main {
 
 @media (max-width: 900px) {
   .scene-brand {
-    right: 0.7rem;
+    left: 0.7rem;
     top: 0.7rem;
     padding: 0.72rem 0.86rem;
   }
