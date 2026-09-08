@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, useProgress } from "@react-three/drei";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
@@ -48,38 +48,6 @@ const CabinInterior = dynamic(
   () => loadCabinInterior().then((module) => module.CabinInterior),
   { ssr: false },
 );
-
-function ReadySignal({ onReady }: { onReady: () => void }) {
-  useEffect(onReady, [onReady]);
-  return null;
-}
-
-class CabinErrorBoundary extends Component<
-  { children: ReactNode; onError: () => void; resetKey: number },
-  { error: Error | null }
-> {
-  state: { error: Error | null } = { error: null };
-
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    void error;
-    void info;
-    this.props.onError();
-  }
-
-  componentDidUpdate(previousProps: Readonly<{ resetKey: number }>) {
-    if (previousProps.resetKey !== this.props.resetKey && this.state.error) {
-      this.setState({ error: null });
-    }
-  }
-
-  render() {
-    return this.state.error ? null : this.props.children;
-  }
-}
 
 type DartHit = {
   x: number;
@@ -467,10 +435,13 @@ export function AdventureScene({
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
-  const initialRevealTimerRef = useRef<number | null>(null);
+  const cabinProgressBaselineRef = useRef({ loaded: 0, total: 0 });
+  const [isCabinBundleReady, setIsCabinBundleReady] = useState(false);
   const {
     active: isSceneLoaderActive,
+    loaded: sceneAssetsLoaded,
     total: sceneAssetsTotal,
+    progress: sceneAssetProgress,
     errors: sceneAssetErrors,
   } = useProgress();
   const isCabinInteriorTarget =
@@ -630,14 +601,6 @@ export function AdventureScene({
     return () =>
       canvas.removeEventListener("webglcontextlost", handleContextLoss);
   }, [isInitialSceneReady, onExperienceFailure]);
-
-  useEffect(() => {
-    return () => {
-      if (initialRevealTimerRef.current !== null) {
-        window.clearTimeout(initialRevealTimerRef.current);
-      }
-    };
-  }, []);
 
   const closeNoteDetail = useCallback(() => {
     if (!selectedNoteId) return;
@@ -890,6 +853,14 @@ export function AdventureScene({
     lastTriggerRef.current?.focus();
   }, [isDetailDialogOpen]);
 
+  const preloadCabin = useCallback(() => {
+    void loadCabinInterior()
+      .then((module) => module.preloadCabinInteriorAssets())
+      .catch(() => {
+        // The scene error boundary reports failures if the cabin is opened.
+      });
+  }, []);
+
   const updateHover = useCallback(
     (target: InteractiveTarget, hovered: boolean) => {
       if (target === "cabin" && hovered) preloadCabin();
@@ -922,13 +893,6 @@ export function AdventureScene({
   const handleFocusClick = useCallback(
     (target: InteractiveTarget) => {
       if (!isOverviewState || isTransitioning) return;
-
-      if (target === "cabin" && !isCabinReady) {
-        preloadCabin();
-        setCabinLoadError(false);
-        setIsCabinRequested(true);
-        return;
-      }
 
       setIsFreeModeEnabled(false);
       setInteractionState("transitioning");
@@ -972,24 +936,6 @@ export function AdventureScene({
       sceneAssetsTotal,
     ]
   );
-
-  useEffect(() => {
-    if (!isCabinRequested || !isCabinReady || cabinLoadError) return;
-    handleFocusClick("cabin");
-    setIsCabinRequested(false);
-  }, [cabinLoadError, handleFocusClick, isCabinReady, isCabinRequested]);
-
-  const retryCabinLoad = useCallback(() => {
-    setCabinLoadError(false);
-    setIsCabinReady(false);
-    setCabinRetryKey((key) => key + 1);
-    void loadCabinInterior()
-      .then((module) => {
-        module.clearCabinInteriorAssets();
-        module.preloadCabinInteriorAssets();
-      })
-      .catch(() => setCabinLoadError(true));
-  }, []);
 
   const handleDartboardSelect = useCallback(() => {
     if (
@@ -1232,12 +1178,20 @@ export function AdventureScene({
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
             }}
           >
-            <Suspense fallback={null}>
-              <FrameTimeMonitor
-                tier={qualityTier}
-                enabled={qualityPreference === "auto"}
-                onDecline={() => setAutoQualityTier((current) => qualityBelow(current))}
-              />
+            <SceneErrorBoundary
+              onError={() => setFailedBundle(activeLoadingBundle ?? "overview")}
+            >
+              <Suspense fallback={null}>
+                <SceneReadyReporter
+                  onReady={() => setIsInitialSceneReady(true)}
+                />
+                <FrameTimeMonitor
+                  tier={qualityTier}
+                  enabled={qualityPreference === "auto"}
+                  onDecline={() =>
+                    setAutoQualityTier((current) => qualityBelow(current))
+                  }
+                />
               <CameraRig
                 targetKey={focusTarget}
                 isTransitioning={isTransitioning}
