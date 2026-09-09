@@ -26,7 +26,13 @@ export const PROJECT_NOTES: ProjectNote[] = [
     ],
     imageSrc: "/projects/cloudify.png",
     detailImageSrc: "/projects/cloudify_gui.png",
-    whyItMattered: "[Coming Soon!]",
+    whyItMattered: [
+      "One of my first ever projects, and likely the place where I first fell in love with entrepreneurship and software development as a whole.",
+      "This was during my first semester of undergrad, and I had recently learned React independently to prepare for building this.",
+      "It took the team and I nearly the full 24 hours to finish. We kept having issues with Electron that kept us from completing the project.",
+      "But we finished... and then we won. As a wide-eyed freshman, winning a competitive hackathon full of so much talent and experience was surreal.",
+      "I will never forget receiving the announcement in the elevator with the team - ggs only!"
+    ].join(" "),
     position: [-0.64, 1.96, 0.19],
     rotation: -0.15,
     color: "#f5dfa4",
@@ -43,7 +49,17 @@ export const PROJECT_NOTES: ProjectNote[] = [
     ],
     imageSrc: "/projects/fast_wallet.png",
     detailImageSrc: "/projects/fast_wallet_gui.png",
-    whyItMattered: "[Coming Soon!]",
+    whyItMattered: [
+      "I almost excluded this project, but it changed my life and undergrad experience enough that it needs at least an inclusion.",
+      "Early in my 2nd semester of undergrad, a friend and teammate from earlier showed me this bot he was using to buy NFTs quickly after release.",
+      "This was a big deal because many of these releases were first come, first serve, with several captchas and gates to prevent botting.",
+      "This would cause the price of the NFTs to skyrockets right after release, then plummet each day after.",
+      "You can think of the old NFT market price graph like a Dunning-Kruger curve.",
+      "At the time, he had only been using the bot for a couple turns - so I was immediately excited about increasing the use of this literal money printing bot.",
+      "I ended up getting into Cardano, updating the GUI for the software, and bot > upselling as many NFTs as we could.",
+      "The NFT bubble popped shortly after, and we were only able to profit on this for a few months.",
+      "But the profits we did make allowed me to pay off my sophomore year of undergrad, all thanks to an exploitation of a broken market."
+    ].join(" "),
     position: [-0.12, 1.93, 0.19],
     rotation: -0.04,
     color: "#efe3b4",
