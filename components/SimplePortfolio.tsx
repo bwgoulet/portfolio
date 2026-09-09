@@ -41,7 +41,7 @@ export function SimplePortfolio() {
               <h3>{entry.role}</h3>
               <p className="simple-company">{entry.company}</p>
               <ul>{entry.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
-              <details><summary>Why it mattered</summary><p>{entry.whyItMattered}</p></details>
+              <details><summary>Personal Relevance</summary><p>{entry.whyItMattered}</p></details>
             </article>
           ))}
         </div>
