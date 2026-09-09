@@ -14,7 +14,7 @@
   "dependencies": {
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.0.4",
-    "@svg-maps/usa": "^2.0.0",
+    "@svg-maps/usa": "2.0.0",
     "@vercel/analytics": "^2.0.1",
     "babel-plugin-react-compiler": "^19.1.0-rc.3",
     "gsap": "^3.12.5",
