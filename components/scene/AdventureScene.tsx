@@ -32,6 +32,7 @@ import { InteractionState, InteractiveTarget } from "./types";
 import { CABIN_INTERIOR_ARTWORKS, GALLERY_PHOTOS } from "./cabinAssets";
 import { PROJECT_NOTE_RECORD } from "./projectNotes";
 import { EXPERIENCE_RECORD } from "./experienceData";
+import { STATE_STORIES } from "./stateData";
 import {
   CAMERA_PRESETS,
   FocusTarget,
@@ -338,9 +339,10 @@ export function AdventureScene({
   const introductionRef = useRef<Group>(null);
   const timelineSignRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
-  const lastTriggerRef = useRef<HTMLElement | null>(null);
+  const lastTriggerRef = useRef<HTMLElement | SVGElement | null>(null);
   const noteTitleId = useId();
   const experienceTitleId = useId();
+  const stateTitleId = useId();
 
   const [interactionState, setInteractionState] =
     useState<InteractionState>("idleOverview");
@@ -352,6 +354,7 @@ export function AdventureScene({
   const [selectedGalleryPhotoId, setSelectedGalleryPhotoId] = useState<
     string | null
   >(null);
+  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
   const [closingNoteId, setClosingNoteId] = useState<string | null>(null);
   const [closingExperienceId, setClosingExperienceId] = useState<string | null>(
     null,
@@ -463,6 +466,7 @@ export function AdventureScene({
     selectedNoteId !== null ||
     selectedExperienceId !== null ||
     selectedGalleryPhotoId !== null ||
+    selectedStateId !== null ||
     isIntroductionDialogOpen ||
     isResumeDialogOpen ||
     isTimelineDialogOpen;
@@ -498,6 +502,7 @@ export function AdventureScene({
         (photo) => photo.id === selectedGalleryPhotoId,
       ) ?? null)
     : null;
+  const selectedState = selectedStateId ? STATE_STORIES[selectedStateId] : null;
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -1197,6 +1202,11 @@ export function AdventureScene({
                 }
               />
               <LowPolyEnvironment
+                mapInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
+                onStateSelect={(stateId, trigger) => {
+                  lastTriggerRef.current = trigger;
+                  setSelectedStateId(stateId);
+                }}
                 qualityTier={qualityTier}
                 tabletsInteractiveEnabled={
                   isOverviewState && !isFreeModeEnabled
@@ -1389,6 +1399,39 @@ export function AdventureScene({
               <h3>Personal Relevance</h3>
               <p>{selectedNote.whyItMattered}</p>
             </section>
+          </div>
+        </article>
+      )}
+
+      {selectedState && (
+        <article
+          className={`note-detail ${detailCardStateClass(false)}`}
+          aria-live="polite"
+          onClick={() => setSelectedStateId(null)}
+          role="presentation"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setSelectedStateId(null);
+          }}
+        >
+          <div
+            className={`detail-content-card project-detail-card state-detail-card ${detailCardStateClass(false)}`}
+            ref={modalRef}
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={stateTitleId}
+            tabIndex={-1}
+          >
+            <div className={`state-detail-card__badge${selectedState.visited ? " state-detail-card__badge--featured" : ""}`}>
+              {selectedState.abbreviation}
+            </div>
+            <p className="detail-meta">{selectedState.visited ? "A highlighted stop" : "Open to adventure"}</p>
+            <h2 id={stateTitleId}>{selectedState.name}</h2>
+            <h3>{selectedState.heading}</h3>
+            <p className="detail-summary">{selectedState.detail}</p>
+            <button className="state-detail-card__close" type="button" onClick={() => setSelectedStateId(null)}>
+              Back to the map
+            </button>
           </div>
         </article>
       )}
