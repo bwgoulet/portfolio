@@ -22,6 +22,7 @@ import {
 import type { Group } from "three";
 import type { InteractiveTarget } from "./types";
 import { EXPERIENCE_ENTRIES } from "./experienceData";
+import { UnitedStatesMap } from "./UnitedStatesMap";
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
 const STUMP_LOGO_TINTS: Partial<
@@ -794,6 +795,8 @@ function SceneFloor() {
 }
 
 type LowPolyEnvironmentProps = {
+  mapInteractiveEnabled: boolean;
+  onStateSelect: (stateId: string, trigger: SVGPathElement) => void;
   tabletsInteractiveEnabled: boolean;
   tabletsDetailInteractiveEnabled: boolean;
   tabletsHovered: boolean;
@@ -811,6 +814,8 @@ type LowPolyEnvironmentProps = {
 };
 
 export function LowPolyEnvironment({
+  mapInteractiveEnabled,
+  onStateSelect,
   tabletsInteractiveEnabled,
   tabletsDetailInteractiveEnabled,
   tabletsHovered,
@@ -924,6 +929,10 @@ export function LowPolyEnvironment({
       </group>
       {quality.decorativeEffects && <Clouds reducedMotion={reducedMotion} />}
       <MountainBackdrop />
+      <UnitedStatesMap
+        interactive={mapInteractiveEnabled}
+        onStateSelect={onStateSelect}
+      />
     </group>
   );
 }
