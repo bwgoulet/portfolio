@@ -739,17 +739,13 @@ function TrailheadTimelineSign({
   );
 }
 
-const ISLAND_CENTER_Z = 1.5;
-const ISLAND_TOP_Y = 1.12;
-const ISLAND_RADIUS = 18.5;
-const ISLAND_SHORE_RADIUS = 19.1;
-const ISLAND_BASE_Y = -0.14;
-
 function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   const gl = useThree((state) => state.gl);
   const mainIslandTexture = useTexture(
     "/textures-optimized/aerial_grass_rock_diff_4k.jpg"
   );
+  const mainIslandHalfCircleCenterZ = 10;
+
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
     mainIslandTexture.colorSpace = SRGBColorSpace;
@@ -762,12 +758,13 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
 
   return (
     <mesh
-      position={[0, ISLAND_TOP_Y + 0.006, ISLAND_CENTER_Z]}
-      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, 1, mainIslandHalfCircleCenterZ]}
+      rotation={[0, -Math.PI / 2, 0]}
+      scale={2}
       receiveShadow
     >
-      <circleGeometry
-        args={[ISLAND_RADIUS, Math.round(128 * geometryDetail)]}
+      <cylinderGeometry
+        args={[8.9, 10.2, 0.25, Math.round(96 * geometryDetail), Math.max(2, Math.round(8 * geometryDetail)), false, Math.PI, Math.PI]}
       />
       <meshStandardMaterial
         map={mainIslandTexture}
@@ -923,21 +920,12 @@ export function LowPolyEnvironment({
       <OceanBackdrop />
 
       <mesh
-        position={[
-          0,
-          (ISLAND_TOP_Y + ISLAND_BASE_Y) / 2,
-          ISLAND_CENTER_Z,
-        ]}
+        position={[0, 0, 3.2]}
+        rotation={[0, -Math.PI / 2, 0]}
         receiveShadow
       >
         <cylinderGeometry
-          args={[
-            ISLAND_RADIUS,
-            ISLAND_SHORE_RADIUS,
-            ISLAND_TOP_Y - ISLAND_BASE_Y,
-            Math.round(128 * quality.geometryDetail),
-            2,
-          ]}
+          args={[8.2, 9.4, 2.2, Math.round(96 * quality.geometryDetail), 1, false, Math.PI, Math.PI]}
         />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
