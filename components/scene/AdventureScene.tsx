@@ -1202,6 +1202,7 @@ export function AdventureScene({
                 }
               />
               <LowPolyEnvironment
+                mapVisible={!isCabinInteriorTarget}
                 mapInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
                 onStateSelect={(stateId, trigger) => {
                   lastTriggerRef.current = trigger;

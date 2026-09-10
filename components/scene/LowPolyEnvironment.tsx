@@ -795,6 +795,7 @@ function SceneFloor() {
 }
 
 type LowPolyEnvironmentProps = {
+  mapVisible: boolean;
   mapInteractiveEnabled: boolean;
   onStateSelect: (stateId: string, trigger: SVGPathElement) => void;
   tabletsInteractiveEnabled: boolean;
@@ -814,6 +815,7 @@ type LowPolyEnvironmentProps = {
 };
 
 export function LowPolyEnvironment({
+  mapVisible,
   mapInteractiveEnabled,
   onStateSelect,
   tabletsInteractiveEnabled,
@@ -929,10 +931,12 @@ export function LowPolyEnvironment({
       </group>
       {quality.decorativeEffects && <Clouds reducedMotion={reducedMotion} />}
       <MountainBackdrop />
-      <UnitedStatesMap
-        interactive={mapInteractiveEnabled}
-        onStateSelect={onStateSelect}
-      />
+      {mapVisible && (
+        <UnitedStatesMap
+          interactive={mapInteractiveEnabled}
+          onStateSelect={onStateSelect}
+        />
+      )}
     </group>
   );
 }
