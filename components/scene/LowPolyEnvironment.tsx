@@ -22,7 +22,6 @@ import {
 import type { Group } from "three";
 import type { InteractiveTarget } from "./types";
 import { EXPERIENCE_ENTRIES } from "./experienceData";
-import { UnitedStatesMap } from "./UnitedStatesMap";
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
 const STUMP_LOGO_TINTS: Partial<
@@ -777,20 +776,37 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   );
 }
 
-function SceneFloor() {
+function OceanBackdrop() {
   return (
-    <mesh
-      position={[0, -0.25, -1]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      receiveShadow
-    >
-      <circleGeometry args={[60, 256]} />
-      <meshStandardMaterial
-        color={PALETTE.islandTop}
-        roughness={1}
-        metalness={0}
-      />
-    </mesh>
+    <group>
+      <mesh position={[0, -0.12, -8]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[90, 128]} />
+        <meshStandardMaterial
+          color={PALETTE.oceanDeep}
+          roughness={0.34}
+          metalness={0.08}
+        />
+      </mesh>
+      <mesh position={[0, -0.105, 2.5]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[24, 96]} />
+        <meshStandardMaterial
+          color={PALETTE.ocean}
+          roughness={0.3}
+          metalness={0.04}
+          transparent
+          opacity={0.82}
+        />
+      </mesh>
+      <mesh position={[0, -0.09, 3.8]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[8.4, 13.5, 96]} />
+        <meshStandardMaterial
+          color={PALETTE.oceanShallow}
+          roughness={0.42}
+          transparent
+          opacity={0.72}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -815,9 +831,6 @@ type LowPolyEnvironmentProps = {
 };
 
 export function LowPolyEnvironment({
-  mapVisible,
-  mapInteractiveEnabled,
-  onStateSelect,
   tabletsInteractiveEnabled,
   tabletsDetailInteractiveEnabled,
   tabletsHovered,
@@ -867,7 +880,7 @@ export function LowPolyEnvironment({
 
   return (
     <group>
-      <SceneFloor />
+      <OceanBackdrop />
 
       <mesh
         position={[0, 0, 3.2]}
