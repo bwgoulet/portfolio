@@ -136,7 +136,7 @@ export const SCENE_ANCHORS = {
   cabin: [4.1, 1.12, -0.45] as Vector3Tuple,
   tabletsStart: [1.8, 0.93, 2.9] as Vector3Tuple,
   introductionLandmark: [-2.2, 1.22, 2.2] as Vector3Tuple,
-  mountain: [0.8, -.3, -23] as Vector3Tuple,
+  mountain: [0.8, -0.07, -23] as Vector3Tuple,
   trailStart: [0.8, 1.03, 2.9] as Vector3Tuple,
   trailEnd: [0.8, 1.03, -14.2] as Vector3Tuple
 };
@@ -144,8 +144,11 @@ export const SCENE_ANCHORS = {
 export const ISLAND_GROUND_INTERACTION_MIN_Y = 1.12;
 
 export const PALETTE: Record<string, ColorRepresentation> = {
-  skyBottom: '#ffb27a',
-  fog: '#d78a67',
+  skyBottom: '#f2a071',
+  fog: '#d99a7c',
+  oceanDeep: '#176b91',
+  ocean: '#269bbb',
+  oceanShallow: '#63d4cf',
   islandTop: '#46764f',
   islandSide: '#1f2926',
   rock: '#515d68',
