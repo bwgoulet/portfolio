@@ -777,22 +777,57 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
 }
 
 function OceanBackdrop() {
+  const waterNormalMap = useMemo(() => {
+    const size = 128;
+    const data = new Uint8Array(size * size * 4);
+
+    for (let y = 0; y < size; y += 1) {
+      for (let x = 0; x < size; x += 1) {
+        const waveX = Math.sin((x / size) * Math.PI * 12 + y * 0.09);
+        const waveY = Math.cos((y / size) * Math.PI * 15 + x * 0.07);
+        const index = (y * size + x) * 4;
+        data[index] = 128 + Math.round(waveX * 28);
+        data[index + 1] = 128 + Math.round(waveY * 22);
+        data[index + 2] = 245;
+        data[index + 3] = 255;
+      }
+    }
+
+    const texture = new THREE.DataTexture(data, size, size);
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(14, 14);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
+  useFrame(({ clock }) => {
+    const elapsed = clock.getElapsedTime();
+    waterNormalMap.offset.set(elapsed * 0.008, elapsed * 0.004);
+  });
+
+  useEffect(() => () => waterNormalMap.dispose(), [waterNormalMap]);
+
   return (
     <group>
       <mesh position={[0, -0.12, -8]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[90, 128]} />
         <meshStandardMaterial
           color={PALETTE.oceanDeep}
-          roughness={0.34}
-          metalness={0.08}
+          roughness={0.22}
+          metalness={0.12}
+          normalMap={waterNormalMap}
+          normalScale={new THREE.Vector2(0.24, 0.24)}
         />
       </mesh>
       <mesh position={[0, -0.105, 2.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[24, 96]} />
+        <circleGeometry args={[18, 96]} />
         <meshStandardMaterial
           color={PALETTE.ocean}
           roughness={0.3}
           metalness={0.04}
+          normalMap={waterNormalMap}
+          normalScale={new THREE.Vector2(0.18, 0.18)}
           transparent
           opacity={0.82}
         />
@@ -802,6 +837,8 @@ function OceanBackdrop() {
         <meshStandardMaterial
           color={PALETTE.oceanShallow}
           roughness={0.42}
+          normalMap={waterNormalMap}
+          normalScale={new THREE.Vector2(0.12, 0.12)}
           transparent
           opacity={0.72}
         />
