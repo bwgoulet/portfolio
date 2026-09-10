@@ -740,10 +740,13 @@ function TrailheadTimelineSign({
 }
 
 const ISLAND_CENTER_Z = 1.5;
-const ISLAND_TOP_Y = 1.12;
+// Preserve the original vertical profile: the scaled ground cylinder's top was
+// at y=1.25, while the cliff ran from y=1.1 down to y=-1.1.
+const ISLAND_SURFACE_Y = 1.25;
+const ISLAND_CLIFF_TOP_Y = 1.1;
 const ISLAND_RADIUS = 18.5;
 const ISLAND_SHORE_RADIUS = 19.1;
-const ISLAND_BASE_Y = -0.14;
+const ISLAND_BASE_Y = -1.1;
 
 function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   const gl = useThree((state) => state.gl);
@@ -762,7 +765,7 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
 
   return (
     <mesh
-      position={[0, ISLAND_TOP_Y + 0.006, ISLAND_CENTER_Z]}
+      position={[0, ISLAND_SURFACE_Y, ISLAND_CENTER_Z]}
       rotation={[-Math.PI / 2, 0, 0]}
       receiveShadow
     >
@@ -925,7 +928,7 @@ export function LowPolyEnvironment({
       <mesh
         position={[
           0,
-          (ISLAND_TOP_Y + ISLAND_BASE_Y) / 2,
+          (ISLAND_CLIFF_TOP_Y + ISLAND_BASE_Y) / 2,
           ISLAND_CENTER_Z,
         ]}
         receiveShadow
@@ -934,7 +937,7 @@ export function LowPolyEnvironment({
           args={[
             ISLAND_RADIUS,
             ISLAND_SHORE_RADIUS,
-            ISLAND_TOP_Y - ISLAND_BASE_Y,
+            ISLAND_CLIFF_TOP_Y - ISLAND_BASE_Y,
             Math.round(128 * quality.geometryDetail),
             2,
           ]}
