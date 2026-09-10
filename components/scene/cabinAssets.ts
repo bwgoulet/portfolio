@@ -29,7 +29,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     imageSrc: "/gallery/hacknc_jump.jpeg",
     textureSrc: "/gallery/thumbs/hacknc_jump.webp",
     title: "HackNC 2023",
-    description: "A picture of the team and I from HackNC 2023",
+    description: "A picture of the team and I from HackNC 2023!",
   },
   {
     id: "photo-02",
@@ -51,7 +51,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     imageSrc: "/gallery/pywteam.jpg",
     textureSrc: "/gallery/thumbs/pywteam.webp",
     title: "Podcast YourWay",
-    description: "A picture of the team and I working on PYW",
+    description: "A picture of the team and I working on PYW.",
   },
   {
     id: "photo-04",
@@ -60,9 +60,9 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     rotation: 0.08,
     pinOffsetX: 0.016,
     imageSrc: "/gallery/fanclub.jpg",
-    textureSrc: "/gallery/thumbs/poker.webp",
-    title: "Focused Work",
-    description: "",
+    textureSrc: "/gallery/thumbs/fanclub.webp",
+    title: "Moondog",
+    description: "A picture of me with my friends Mason and Calen at our weekly melee tournament!",
   },
   {
     id: "photo-05",
@@ -106,7 +106,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     imageSrc: "/gallery/brevityaward.png",
     textureSrc: "/gallery/thumbs/brevityaward.webp",
     title: "Brevity",
-    description: "A picture of the team and I after winning 2nd at HackNC. This project was one of the earliest moments where I saw the direction generative AI was heading.",
+    description: "A picture of the team and I after getting 2nd at HackNC 2022.",
   },
   {
     id: "photo-09",
@@ -125,10 +125,10 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     size: [0.17, 0.12],
     rotation: -0.06,
     pinOffsetX: -0.014,
-    imageSrc: "/gallery/mayhem.jpg",
-    textureSrc: "/gallery/thumbs/mayhem.webp",
-    title: "Big Picture",
-    description: "",
+    imageSrc: "/gallery/grad.jpg",
+    textureSrc: "/gallery/thumbs/grad.webp",
+    title: "Graduation",
+    description: "A picture of my friend Noah and I at graduation!",
   },
   {
     id: "photo-11",
@@ -138,8 +138,8 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     pinOffsetX: 0.015,
     imageSrc: "/gallery/acting.jpg",
     textureSrc: "/gallery/thumbs/acting.webp",
-    title: "Gratitude",
-    description: "",
+    title: "Performance",
+    description: "A picture of me performing at a comedy show. I got to work alongside SNL writers, it was super cool!",
   },
 ];
 
@@ -150,7 +150,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     textureSrc: "/gallery/thumbs/prs25.webp",
     title: "UNCCH Ultimate Pr (Spring '25)",
     description:
-      "A framed memory pinned in the cabin—clicking in gives a closer look similar to the gallery photo view.",
+      "Commisioned art piece from our Spring '25 Ult season.",
   },
   {
     id: "artwork-wall-mounted-painting",
@@ -158,7 +158,7 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     textureSrc: "/gallery/thumbs/prf25.webp",
     title: "UNCCH Ultimate Pr (Fall '25)",
     description:
-      "A larger wall piece that opens in a focused detail view with context text below the image.",
+      "Commisioned art piece from our Fall '25 Ult season.",
   },
   {
     id: "artwork-mirror-cube-upper",
@@ -200,11 +200,11 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
   },
   {
     id: "artwork-crt-video",
-    imageSrc: "/gallery/mayhem.jpg",
-    textureSrc: "/gallery/thumbs/mayhem.webp",
-    title: "CRT Highlight Reel",
+    imageSrc: "/gallery/grad.jpg",
+    textureSrc: "/gallery/thumbs/grad.webp",
+    title: "carolina in my mind",
     description:
-      "A video clip that plays in the same cabin detail card format as the rest of the interactive artworks.",
+      "A short film I made around the time I graduated from UNC.",
     videoEmbedUrl: "https://www.youtube.com/embed/LED7Pzxuee8",
   },
 ];

@@ -931,12 +931,12 @@ export function LowPolyEnvironment({
       </group>
       {quality.decorativeEffects && <Clouds reducedMotion={reducedMotion} />}
       <MountainBackdrop />
-      {mapVisible && (
+      {/* {mapVisible && (
         <UnitedStatesMap
           interactive={mapInteractiveEnabled}
           onStateSelect={onStateSelect}
         />
-      )}
+      )} */}
     </group>
   );
 }
