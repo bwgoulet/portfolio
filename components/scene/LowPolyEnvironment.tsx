@@ -739,13 +739,20 @@ function TrailheadTimelineSign({
   );
 }
 
+const ISLAND_CENTER_Z = 1.5;
+// Preserve the original vertical profile: the scaled ground cylinder's top was
+// at y=1.25, while the cliff ran from y=1.1 down to y=-1.1.
+const ISLAND_SURFACE_Y = 1.25;
+const ISLAND_CLIFF_TOP_Y = 1.1;
+const ISLAND_RADIUS = 18.5;
+const ISLAND_SHORE_RADIUS = 19.1;
+const ISLAND_BASE_Y = -1.1;
+
 function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   const gl = useThree((state) => state.gl);
   const mainIslandTexture = useTexture(
     "/textures-optimized/aerial_grass_rock_diff_4k.jpg"
   );
-  const mainIslandHalfCircleCenterZ = 10;
-
   useEffect(() => {
     const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
     mainIslandTexture.colorSpace = SRGBColorSpace;
@@ -758,13 +765,12 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
 
   return (
     <mesh
-      position={[0, 1, mainIslandHalfCircleCenterZ]}
-      rotation={[0, -Math.PI / 2, 0]}
-      scale={2}
+      position={[0, ISLAND_SURFACE_Y, ISLAND_CENTER_Z]}
+      rotation={[-Math.PI / 2, 0, 0]}
       receiveShadow
     >
-      <cylinderGeometry
-        args={[8.9, 10.2, 0.25, Math.round(96 * geometryDetail), Math.max(2, Math.round(8 * geometryDetail)), false, Math.PI, Math.PI]}
+      <circleGeometry
+        args={[ISLAND_RADIUS, Math.round(128 * geometryDetail)]}
       />
       <meshStandardMaterial
         map={mainIslandTexture}
@@ -920,12 +926,21 @@ export function LowPolyEnvironment({
       <OceanBackdrop />
 
       <mesh
-        position={[0, 0, 3.2]}
-        rotation={[0, -Math.PI / 2, 0]}
+        position={[
+          0,
+          (ISLAND_CLIFF_TOP_Y + ISLAND_BASE_Y) / 2,
+          ISLAND_CENTER_Z,
+        ]}
         receiveShadow
       >
         <cylinderGeometry
-          args={[8.2, 9.4, 2.2, Math.round(96 * quality.geometryDetail), 1, false, Math.PI, Math.PI]}
+          args={[
+            ISLAND_RADIUS,
+            ISLAND_SHORE_RADIUS,
+            ISLAND_CLIFF_TOP_Y - ISLAND_BASE_Y,
+            Math.round(128 * quality.geometryDetail),
+            2,
+          ]}
         />
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
