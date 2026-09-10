@@ -247,16 +247,16 @@ function FreeModeKeyboardPan({
         return;
       }
 
-      if (event.key === "ArrowLeft") {
+      if (event.code === "KeyA") {
         pressedKeysRef.current.left = isPressed;
         event.preventDefault();
-      } else if (event.key === "ArrowRight") {
+      } else if (event.code === "KeyD") {
         pressedKeysRef.current.right = isPressed;
         event.preventDefault();
-      } else if (event.key === "ArrowUp") {
+      } else if (event.code === "KeyW") {
         pressedKeysRef.current.up = isPressed;
         event.preventDefault();
-      } else if (event.key === "ArrowDown") {
+      } else if (event.code === "KeyS") {
         pressedKeysRef.current.down = isPressed;
         event.preventDefault();
       } else if (event.code === "Space") {
@@ -1855,14 +1855,50 @@ export function AdventureScene({
           </button>
         )}
       {canToggleFreeMode && (
-        <button
-          className={`scene-free-mode ${isFreeModeEnabled ? "is-enabled" : ""}`}
-          type="button"
-          aria-pressed={isFreeModeEnabled}
-          onClick={() => setIsFreeModeEnabled((current) => !current)}
-        >
-          Free Mode: {isFreeModeEnabled ? "On" : "Off"}
-        </button>
+        <div className="scene-free-mode-group">
+          <aside
+            className="scene-free-mode-tooltip"
+            id="free-mode-guide"
+            role="tooltip"
+          >
+            <div className="free-mode-copy">
+              <strong>Explore the island</strong>
+              <span>Turn on Free Mode to roam anywhere at your own pace.</span>
+            </div>
+            <div className="free-mode-controls" aria-label="Free Mode controls">
+              <div className="free-mode-move-keys" aria-label="W A S D to move">
+                <kbd className="free-mode-key-w">W</kbd>
+                <kbd>A</kbd>
+                <kbd>S</kbd>
+                <kbd>D</kbd>
+              </div>
+              <span className="free-mode-control-label">Move</span>
+              <div className="free-mode-extra-controls">
+                <span>
+                  <kbd>Space</kbd> Rise
+                </span>
+                <span>
+                  <kbd>Shift</kbd> Lower
+                </span>
+                <span>
+                  <span className="free-mode-mouse-icon" aria-hidden>
+                    ↖
+                  </span>{" "}
+                  Drag to look
+                </span>
+              </div>
+            </div>
+          </aside>
+          <button
+            className={`scene-free-mode ${isFreeModeEnabled ? "is-enabled" : ""}`}
+            type="button"
+            aria-pressed={isFreeModeEnabled}
+            aria-describedby="free-mode-guide"
+            onClick={() => setIsFreeModeEnabled((current) => !current)}
+          >
+            Free Mode: {isFreeModeEnabled ? "On" : "Off"}
+          </button>
+        </div>
       )}
     </main>
   );
