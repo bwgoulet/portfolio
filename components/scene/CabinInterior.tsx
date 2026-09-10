@@ -597,10 +597,14 @@ export const CabinInterior = memo(function CabinInterior({
         }}
       >
         <primitive object={crtModel.scene} scale={crtScale} />
-        <mesh position={[-0.01, 1, -0.675]} scale={crtScale}>
-          <planeGeometry args={[1.55, 0.872]} />
-          <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
-        </mesh>
+          <mesh
+            position={[0.12, 0.585, -0.535]}
+            rotation={[0, Math.PI, 0]}
+            scale={0.125}
+          >
+            <planeGeometry args={[1.55, 0.872]} />
+            <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
+          </mesh>
         <mesh
           position={[0, 0.12, 0]}
           onPointerEnter={(event) => {
