@@ -54,13 +54,13 @@ export const VISUAL_TOKENS = {
     }
   },
   lighting: {
-    hemisphere: { intensity: 0.72, skyTint: '#d8f3ff', groundTint: '#317d7a' },
-    ambient: { intensity: 0.3, tint: '#d9f2ff' },
-    key: { intensity: 2.25, tint: '#fff4d4' },
-    fill: { intensity: 0.52, tint: '#83d8ff' },
-    rim: { intensity: 0.68, tint: '#a6e7ff' },
-    sun: { tint: '#fff1b8' },
-    warmBounce: { tint: '#a8e8ff' }
+    hemisphere: { intensity: 0.64, skyTint: '#ffd8ad', groundTint: '#3d5142' },
+    ambient: { intensity: 0.27, tint: '#ffd7ba' },
+    key: { intensity: 2.3, tint: '#ffb477' },
+    fill: { intensity: 0.34, tint: '#91bce7' },
+    rim: { intensity: 0.5, tint: '#ffd0a0' },
+    sun: { tint: '#ffd07d' },
+    warmBounce: { tint: '#ffb36b' }
   },
   scene: {
     billboard: {

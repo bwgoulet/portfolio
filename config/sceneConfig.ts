@@ -144,8 +144,8 @@ export const SCENE_ANCHORS = {
 export const ISLAND_GROUND_INTERACTION_MIN_Y = 1.12;
 
 export const PALETTE: Record<string, ColorRepresentation> = {
-  skyBottom: '#7dcdf2',
-  fog: '#b9e5f2',
+  skyBottom: '#f2a071',
+  fog: '#d99a7c',
   oceanDeep: '#176b91',
   ocean: '#269bbb',
   oceanShallow: '#63d4cf',

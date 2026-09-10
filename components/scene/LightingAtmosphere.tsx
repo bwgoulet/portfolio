@@ -20,7 +20,7 @@ export function LightingAtmosphere({
 
   useEffect(() => {
     scene.background = new Color(backgroundColor);
-    scene.fog = new FogExp2(PALETTE.fog, 0.018);
+    scene.fog = new FogExp2(PALETTE.fog, 0.022);
 
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 1.08;
@@ -65,11 +65,11 @@ export function LightingAtmosphere({
 
       {quality.decorativeEffects && <Sky
         distance={260}
-        sunPosition={[8, 7, -12]}
-        turbidity={3.5}
-        rayleigh={2.4}
-        mieCoefficient={0.006}
-        mieDirectionalG={0.82}
+        sunPosition={[8, 1.35, -12]}
+        turbidity={7}
+        rayleigh={1.45}
+        mieCoefficient={0.014}
+        mieDirectionalG={0.88}
       />}
     </>
   );
