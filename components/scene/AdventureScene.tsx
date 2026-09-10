@@ -219,6 +219,8 @@ function FreeModeKeyboardPan({
     right: false,
     up: false,
     down: false,
+    ascend: false,
+    descend: false,
   });
 
   useEffect(() => {
@@ -228,6 +230,8 @@ function FreeModeKeyboardPan({
         right: false,
         up: false,
         down: false,
+        ascend: false,
+        descend: false,
       };
       return;
     }
@@ -255,6 +259,12 @@ function FreeModeKeyboardPan({
       } else if (event.key === "ArrowDown") {
         pressedKeysRef.current.down = isPressed;
         event.preventDefault();
+      } else if (event.code === "Space") {
+        pressedKeysRef.current.ascend = isPressed;
+        event.preventDefault();
+      } else if (event.key === "Shift") {
+        pressedKeysRef.current.descend = isPressed;
+        event.preventDefault();
       }
     };
 
@@ -266,6 +276,8 @@ function FreeModeKeyboardPan({
         right: false,
         up: false,
         down: false,
+        ascend: false,
+        descend: false,
       };
     };
 
@@ -285,15 +297,16 @@ function FreeModeKeyboardPan({
     if (!enabled) return;
     const controls = controlsRef.current;
     if (!controls) return;
-    const { left, right, up, down } = pressedKeysRef.current;
-    if (!left && !right && !up && !down) return;
+    const { left, right, up, down, ascend, descend } =
+      pressedKeysRef.current;
+    if (!left && !right && !up && !down && !ascend && !descend) return;
 
     const camera = controls.object;
     const moveSpeedPerSecond = 7;
     const step = moveSpeedPerSecond * delta;
     const moveDirection = new Vector3(
       (right ? 1 : 0) - (left ? 1 : 0),
-      0,
+      (ascend ? 1 : 0) - (descend ? 1 : 0),
       (up ? 1 : 0) - (down ? 1 : 0),
     );
     if (moveDirection.lengthSq() === 0) return;
@@ -312,6 +325,7 @@ function FreeModeKeyboardPan({
     const panOffset = rightVector
       .multiplyScalar(moveDirection.x)
       .add(forward.multiplyScalar(moveDirection.z))
+      .add(new Vector3(0, moveDirection.y, 0))
       .multiplyScalar(step);
 
     camera.position.add(panOffset);
