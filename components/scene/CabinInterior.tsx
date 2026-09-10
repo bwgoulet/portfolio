@@ -272,7 +272,7 @@ export const CabinInterior = memo(function CabinInterior({
     CABIN_INTERIOR_ARTWORKS[2].textureSrc,
     CABIN_INTERIOR_ARTWORKS[3].textureSrc,
   ]);
-  const crtThumbnailTexture = useTexture("/gallery/thumbs/vidthumb.webp");
+  const crtThumbnailTexture = useTexture("/gallery/vidthumb.webp");
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -596,11 +596,16 @@ export const CabinInterior = memo(function CabinInterior({
           onPhotoSelect("artwork-crt-video");
         }}
       >
-        <primitive object={crtModel.scene} scale={crtScale} />
-        <mesh position={[-0.01, 1, -0.675]} scale={crtScale}>
-          <planeGeometry args={[1.55, 0.872]} />
-          <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
-        </mesh>
+        <group scale={crtScale}>
+          <primitive object={crtModel.scene} />
+          <mesh
+            position={[-0.01, 1.12, -0.79]}
+            rotation={[0, Math.PI, 0]}
+          >
+            <planeGeometry args={[1.55, 0.872]} />
+            <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
+          </mesh>
+        </group>
         <mesh
           position={[0, 0.12, 0]}
           onPointerEnter={(event) => {
