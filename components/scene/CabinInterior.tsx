@@ -596,11 +596,13 @@ export const CabinInterior = memo(function CabinInterior({
           onPhotoSelect("artwork-crt-video");
         }}
       >
-        <primitive object={crtModel.scene} scale={crtScale} />
-        <mesh position={[-0.01, 1.12, -0.675]} scale={crtScale}>
-          <planeGeometry args={[1.55, 0.872]} />
-          <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
-        </mesh>
+        <group scale={crtScale}>
+          <primitive object={crtModel.scene} />
+          <mesh position={[-0.01, 1.12, -0.675]}>
+            <planeGeometry args={[1.55, 0.872]} />
+            <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
+          </mesh>
+        </group>
         <mesh
           position={[0, 0.12, 0]}
           onPointerEnter={(event) => {
