@@ -272,6 +272,7 @@ export const CabinInterior = memo(function CabinInterior({
     CABIN_INTERIOR_ARTWORKS[2].textureSrc,
     CABIN_INTERIOR_ARTWORKS[3].textureSrc,
   ]);
+  const crtThumbnailTexture = useTexture("/gallery/vidthumb.webp");
   const [framedPaintingTexture, wallMountedPaintingTexture] = useMemo(() => {
     const configureTexture = (texture: THREE.Texture | undefined) => {
       if (!texture) return null;
@@ -317,12 +318,21 @@ export const CabinInterior = memo(function CabinInterior({
   const maxAnisotropy = gl.capabilities.getMaxAnisotropy();
 
   useMemo(() => {
+    crtThumbnailTexture.colorSpace = THREE.SRGBColorSpace;
+    crtThumbnailTexture.anisotropy = maxAnisotropy;
+    crtThumbnailTexture.needsUpdate = true;
     configureRepeatingTexture(woodFloorTexture, 1.1, 1.45, maxAnisotropy);
     configureRepeatingTexture(wallTexture, 2.2, 1.6, maxAnisotropy);
     wallTexture.center.set(0.5, 0.5);
     wallTexture.rotation = Math.PI / 2;
     configureRepeatingTexture(tableTexture, 1.4, 1.4, maxAnisotropy);
-  }, [maxAnisotropy, tableTexture, wallTexture, woodFloorTexture]);
+  }, [
+    crtThumbnailTexture,
+    maxAnisotropy,
+    tableTexture,
+    wallTexture,
+    woodFloorTexture,
+  ]);
 
   useEffect(() => {
     tableModel.traverse((child) => {
@@ -586,7 +596,13 @@ export const CabinInterior = memo(function CabinInterior({
           onPhotoSelect("artwork-crt-video");
         }}
       >
-        <primitive object={crtModel.scene} scale={crtScale} />
+        <group scale={crtScale}>
+          <primitive object={crtModel.scene} />
+          <mesh position={[-0.01, 1.12, -0.675]}>
+            <planeGeometry args={[1.55, 0.872]} />
+            <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
+          </mesh>
+        </group>
         <mesh
           position={[0, 0.12, 0]}
           onPointerEnter={(event) => {
