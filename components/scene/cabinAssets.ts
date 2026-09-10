@@ -219,6 +219,7 @@ export const CABIN_INTERIOR_MODEL_ASSETS = [
 ] as const;
 
 export const CABIN_INTERIOR_TEXTURE_ASSETS = [
+  "/gallery/thumbs/vidthumb.webp",
   "/textures-optimized/wood_floor_worn_diff_4k.jpg",
   "/textures-optimized/stained_pine_diff_4k.jpg",
   "/textures-optimized/oak_veneer_01_diff_4k.jpg",
