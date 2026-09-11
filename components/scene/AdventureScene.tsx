@@ -1856,6 +1856,14 @@ export function AdventureScene({
         )}
       {canToggleFreeMode && (
         <div className="scene-free-mode-group">
+          <button
+            className="scene-free-mode-help"
+            type="button"
+            aria-label="Show Free Mode controls"
+            aria-describedby="free-mode-guide"
+          >
+            ?
+          </button>
           <aside
             className="scene-free-mode-tooltip"
             id="free-mode-guide"
@@ -1893,7 +1901,6 @@ export function AdventureScene({
             className={`scene-free-mode ${isFreeModeEnabled ? "is-enabled" : ""}`}
             type="button"
             aria-pressed={isFreeModeEnabled}
-            aria-describedby="free-mode-guide"
             onClick={() => setIsFreeModeEnabled((current) => !current)}
           >
             Free Mode: {isFreeModeEnabled ? "On" : "Off"}
