@@ -776,6 +776,90 @@ function GrassGround({ geometryDetail }: { geometryDetail: number }) {
   );
 }
 
+function IslandShorelineRim({ geometryDetail }: { geometryDetail: number }) {
+  const gl = useThree((state) => state.gl);
+  const islandTextureSource = useTexture(
+    "/textures-optimized/aerial_grass_rock_diff_4k.jpg"
+  );
+  const shorelineTexture = useMemo(
+    () => islandTextureSource.clone(),
+    [islandTextureSource]
+  );
+  const shorelineGeometry = useMemo(() => {
+    const angularSegments = Math.round(96 * geometryDetail);
+    const radialSegments = Math.max(5, Math.round(10 * geometryDetail));
+    const innerRadius = 8.86;
+    const outerRadius = 11.7;
+    const positions: number[] = [];
+    const uvs: number[] = [];
+    const indices: number[] = [];
+
+    for (let radialIndex = 0; radialIndex <= radialSegments; radialIndex += 1) {
+      const progress = radialIndex / radialSegments;
+      const easedProgress = THREE.MathUtils.smoothstep(progress, 0, 1);
+      const radius = THREE.MathUtils.lerp(innerRadius, outerRadius, progress);
+      const height = THREE.MathUtils.lerp(1.126, -0.055, easedProgress);
+
+      for (let angleIndex = 0; angleIndex <= angularSegments; angleIndex += 1) {
+        const angle = Math.PI + (angleIndex / angularSegments) * Math.PI;
+        // CylinderGeometry uses sine for X and cosine for Z; keeping that
+        // convention makes this inner edge trace the existing island exactly.
+        const localX = Math.sin(angle) * radius;
+        const localZ = Math.cos(angle) * radius;
+        // Match the quarter-turn used by the existing island without changing it.
+        const worldX = -localZ;
+        const worldZ = localX + 10;
+        positions.push(worldX, height, worldZ);
+        uvs.push((worldX + outerRadius) / (outerRadius * 2), (worldZ - 10 + outerRadius) / (outerRadius * 2));
+      }
+    }
+
+    const rowLength = angularSegments + 1;
+    for (let radialIndex = 0; radialIndex < radialSegments; radialIndex += 1) {
+      for (let angleIndex = 0; angleIndex < angularSegments; angleIndex += 1) {
+        const near = radialIndex * rowLength + angleIndex;
+        const far = near + rowLength;
+        indices.push(near, far + 1, far, near, near + 1, far + 1);
+      }
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    return geometry;
+  }, [geometryDetail]);
+
+  useEffect(() => {
+    shorelineTexture.colorSpace = SRGBColorSpace;
+    shorelineTexture.wrapS = RepeatWrapping;
+    shorelineTexture.wrapT = RepeatWrapping;
+    shorelineTexture.repeat.set(2.85, 2.85);
+    shorelineTexture.anisotropy = gl.capabilities.getMaxAnisotropy();
+    shorelineTexture.needsUpdate = true;
+  }, [gl, shorelineTexture]);
+
+  useEffect(
+    () => () => {
+      shorelineGeometry.dispose();
+      shorelineTexture.dispose();
+    },
+    [shorelineGeometry, shorelineTexture]
+  );
+
+  return (
+    <mesh geometry={shorelineGeometry} receiveShadow>
+      <meshStandardMaterial
+        map={shorelineTexture}
+        color="#b8c892"
+        roughness={1}
+        metalness={0}
+      />
+    </mesh>
+  );
+}
+
 function OceanBackdrop() {
   const waterNormalMap = useMemo(() => {
     const size = 128;
@@ -930,6 +1014,7 @@ export function LowPolyEnvironment({
         <meshStandardMaterial color={PALETTE.islandSide} flatShading />
       </mesh>
 
+      <IslandShorelineRim geometryDetail={quality.geometryDetail} />
       <GrassGround geometryDetail={quality.geometryDetail} />
 
       <MountainRopeBridge />
