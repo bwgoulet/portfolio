@@ -93,7 +93,11 @@ function MapTexture({ hoveredState }: { hoveredState: string | null }) {
   );
 }
 
-export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapProps) {
+export function UnitedStatesMap({
+  interactive,
+  onStateSelect,
+  onMapPointerMove,
+}: UnitedStatesMapProps) {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
 
   return (
@@ -110,6 +114,7 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
           className="mountain-map"
           data-interactive={interactive || undefined}
           aria-label="Map of the United States"
+          onPointerMove={onMapPointerMove}
         >
           <svg viewBox={usa.viewBox} role="group" aria-label={usa.label}>
             {(usa.locations as MapLocation[]).map((location) => {
