@@ -4,13 +4,13 @@ export type InteractionState =
   | 'hoverCabin'
   | 'hoverTablets'
   | 'hoverIntroduction'
-  | 'hoverTimeline'
+  | 'hoverChasing50'
   | 'transitioning'
   | 'billboardCloseup'
   | 'cabinCloseup'
   | 'dartboardCloseup'
   | 'tabletsCloseup'
   | 'introductionCloseup'
-  | 'timelineCloseup';
+  | 'chasing50Closeup';
 
-export type InteractiveTarget = 'billboard' | 'cabin' | 'tablets' | 'introduction' | 'timeline';
+export type InteractiveTarget = 'billboard' | 'cabin' | 'tablets' | 'introduction' | 'chasing50';
