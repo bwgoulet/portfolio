@@ -22,6 +22,7 @@ import {
 import type { Group } from "three";
 import type { InteractiveTarget } from "./types";
 import { EXPERIENCE_ENTRIES } from "./experienceData";
+import { UnitedStatesMap } from "./UnitedStatesMap";
 
 const environmentPalette = VISUAL_TOKENS.scene.environment;
 const STUMP_LOGO_TINTS: Partial<
@@ -952,6 +953,9 @@ type LowPolyEnvironmentProps = {
 };
 
 export function LowPolyEnvironment({
+  mapVisible,
+  mapInteractiveEnabled,
+  onStateSelect,
   tabletsInteractiveEnabled,
   tabletsDetailInteractiveEnabled,
   tabletsHovered,
@@ -1066,12 +1070,12 @@ export function LowPolyEnvironment({
       </group>
       {quality.decorativeEffects && <Clouds reducedMotion={reducedMotion} />}
       <MountainBackdrop />
-      {/* {mapVisible && (
+      {mapVisible && (
         <UnitedStatesMap
           interactive={mapInteractiveEnabled}
           onStateSelect={onStateSelect}
         />
-      )} */}
+      )}
     </group>
   );
 }
