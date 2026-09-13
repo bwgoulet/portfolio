@@ -1151,7 +1151,9 @@ main {
 .state-detail-card { width: min(560px, 92vw); text-align: center; }
 .state-detail-card__badge { display: grid; place-items: center; width: 92px; height: 92px; margin: 0 auto 12px; border: 2px solid #d8c5a0; border-radius: 50%; background: #665b4b; color: #fff8e6; font: 800 34px/1 system-ui, sans-serif; letter-spacing: 0.08em; }
 .state-detail-card__thumbnail { width: 100%; height: 190px; margin: 0 0 1rem; border: 2px solid #d8c5a0; border-radius: 18px; object-fit: cover; }
-.state-detail-card__status { color: #9a7224; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.state-detail-card__status { font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.state-detail-card__status--complete { color: #557d3f; }
+.state-detail-card__status--incomplete { color: #a33f35; }
 
 @media (prefers-reduced-motion: reduce) {
   .scene-brand-cloud {

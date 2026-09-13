@@ -59,6 +59,7 @@ function MapTexture({ hoveredState }: { hoveredState: string | null }) {
 
     for (const location of usa.locations as MapLocation[]) {
       const path = new Path2D(getMapPath(location));
+      const isComplete = STATE_STORIES[location.id]?.status === "complete";
       if (location.id === hoveredState) {
         context.fillStyle = "rgba(224, 188, 114, 0.45)";
         context.fill(path);
@@ -67,7 +68,11 @@ function MapTexture({ hoveredState }: { hoveredState: string | null }) {
         context.shadowColor = "rgba(255, 236, 184, 0.95)";
         context.shadowBlur = 8;
       } else {
-        context.strokeStyle = "#d8ccb6";
+        if (isComplete) {
+          context.fillStyle = "rgba(111, 150, 93, 0.78)";
+          context.fill(path);
+        }
+        context.strokeStyle = isComplete ? "#b9d5a8" : "#d8ccb6";
         context.lineWidth = 2.4;
         context.shadowColor = "transparent";
         context.shadowBlur = 0;

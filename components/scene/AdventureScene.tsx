@@ -1452,7 +1452,9 @@ export function AdventureScene({
                 {selectedState.abbreviation}
               </div>
             )}
-            <p className="detail-meta state-detail-card__status">{selectedState.status === "complete" ? "Complete" : "Incomplete"}</p>
+            <p className={`detail-meta state-detail-card__status state-detail-card__status--${selectedState.status}`}>
+              {selectedState.status === "complete" ? "Complete" : "Incomplete"}
+            </p>
             <h2 id={stateTitleId}>{selectedState.name}</h2>
             <p className="detail-summary">{selectedState.content}</p>
           </div>
