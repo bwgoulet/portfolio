@@ -100,6 +100,15 @@ export function UnitedStatesMap({
 }: UnitedStatesMapProps) {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!interactive) setHoveredState(null);
+  }, [interactive]);
+
+  const selectState = (stateId: string, trigger: SVGPathElement) => {
+    setHoveredState(null);
+    onStateSelect(stateId, trigger);
+  };
+
   return (
     <group position={[0.25, 4, -20.5]} rotation={[0, 0.02, 0]}>
       <MapTexture hoveredState={hoveredState} />
@@ -133,13 +142,19 @@ export function UnitedStatesMap({
                     if (interactive) setHoveredState(location.id);
                   }}
                   onPointerLeave={() => setHoveredState(null)}
-                  onFocus={() => {
-                    if (interactive) setHoveredState(location.id);
+                  onFocus={(event) => {
+                    if (
+                      interactive &&
+                      event.currentTarget.matches(":focus-visible")
+                    ) {
+                      setHoveredState(location.id);
+                    }
                   }}
                   onBlur={() => setHoveredState(null)}
                   onClick={(event) => {
-                    if (interactive)
-                      onStateSelect(location.id, event.currentTarget);
+                    if (interactive) {
+                      selectState(location.id, event.currentTarget);
+                    }
                   }}
                   onKeyDown={(event) => {
                     if (
@@ -147,7 +162,7 @@ export function UnitedStatesMap({
                       (event.key === "Enter" || event.key === " ")
                     ) {
                       event.preventDefault();
-                      onStateSelect(location.id, event.currentTarget);
+                      selectState(location.id, event.currentTarget);
                     }
                   }}
                 />
