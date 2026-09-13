@@ -97,7 +97,7 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
   const [hoveredState, setHoveredState] = useState<string | null>(null);
 
   return (
-    <group position={[0.25, 4, -20.72]} rotation={[0, 0.02, 0]}>
+    <group position={[0.25, 4, -20.5]} rotation={[0, 0.02, 0]}>
       <MapTexture hoveredState={hoveredState} />
       <Html
         transform

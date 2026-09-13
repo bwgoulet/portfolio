@@ -1650,7 +1650,7 @@ export function AdventureScene({
               <section className="introduction-detail-copy">
                 <h2 id="chasing50-title">Chasing 50</h2>
                 <p>
-                  I’m chasing a visit to all 50 states. Explore the map to see the places I’ve been and the states still waiting down the road.
+                  A lifelong project of mine is to reach the highest point in all 50 states. You can track my chase for 50 here!
                 </p>
                 <p></p>
                 <p></p>
