@@ -637,7 +637,7 @@ function TrailheadChasing50Sign({
   signRef,
 }: TrailheadChasing50SignProps) {
   const woodenSignGltf = useGLTF("/models/Wooden Sign.glb");
-  const { woodenSignModel, hitAreaSize, hitAreaOffset } = useMemo(() => {
+  const woodenSignModel = useMemo(() => {
     const signScene = woodenSignGltf.scene.clone(true);
     forceDiffuseOnlyOnSceneMaterials(signScene);
     signScene.traverse((child) => {
@@ -653,22 +653,7 @@ function TrailheadChasing50Sign({
     signScene.position.z -= signCenter.z;
     signScene.position.y -= signBounds.min.y;
     signScene.updateMatrixWorld(true);
-    const normalizedBounds = new THREE.Box3().setFromObject(signScene);
-    const boundsSize = normalizedBounds.getSize(new THREE.Vector3());
-    const boundsCenter = normalizedBounds.getCenter(new THREE.Vector3());
-    return {
-      woodenSignModel: signScene,
-      hitAreaSize: [boundsSize.x, boundsSize.y, boundsSize.z] as [
-        number,
-        number,
-        number
-      ],
-      hitAreaOffset: [boundsCenter.x, boundsCenter.y, boundsCenter.z] as [
-        number,
-        number,
-        number
-      ],
-    };
+    return signScene;
   }, [woodenSignGltf.scene]);
   const signScale = hovered ? 1.15 : 1.12;
 
@@ -686,11 +671,8 @@ function TrailheadChasing50Sign({
       rotation={[0, 0.22, 0]}
       scale={signScale}
     >
-      <group scale={0.55}>
-        <primitive object={woodenSignModel} />
-      </group>
-      <mesh
-        position={hitAreaOffset}
+      <group
+        scale={0.55}
         onPointerEnter={(event) => {
           event.stopPropagation();
           if (!isAboveIslandGround(event.point.y)) {
@@ -722,9 +704,8 @@ function TrailheadChasing50Sign({
           if (interactiveEnabled) onClick("chasing50");
         }}
       >
-        <boxGeometry args={hitAreaSize} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
+        <primitive object={woodenSignModel} />
+      </group>
       <Text
         position={[0.11, 0.76, 0]}
         fontSize={hovered ? 0.06 : 0.06}
