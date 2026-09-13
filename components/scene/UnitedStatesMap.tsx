@@ -4,6 +4,7 @@ import { Html } from "@react-three/drei";
 import usa from "@svg-maps/usa";
 import { useEffect, useMemo, useState } from "react";
 import { CanvasTexture, LinearFilter } from "three";
+import { STATE_STORIES } from "./stateEntries";
 
 type UnitedStatesMapProps = {
   interactive: boolean;
@@ -58,6 +59,7 @@ function MapTexture({ hoveredState }: { hoveredState: string | null }) {
 
     for (const location of usa.locations as MapLocation[]) {
       const path = new Path2D(getMapPath(location));
+      const isComplete = STATE_STORIES[location.id]?.status === "complete";
       if (location.id === hoveredState) {
         context.fillStyle = "rgba(224, 188, 114, 0.45)";
         context.fill(path);
@@ -66,7 +68,11 @@ function MapTexture({ hoveredState }: { hoveredState: string | null }) {
         context.shadowColor = "rgba(255, 236, 184, 0.95)";
         context.shadowBlur = 8;
       } else {
-        context.strokeStyle = "#d8ccb6";
+        if (isComplete) {
+          context.fillStyle = "rgba(111, 150, 93, 0.78)";
+          context.fill(path);
+        }
+        context.strokeStyle = isComplete ? "#b9d5a8" : "#d8ccb6";
         context.lineWidth = 2.4;
         context.shadowColor = "transparent";
         context.shadowBlur = 0;
@@ -127,16 +133,16 @@ export function UnitedStatesMap({
         >
           <svg viewBox={usa.viewBox} role="group" aria-label={usa.label}>
             {(usa.locations as MapLocation[]).map((location) => {
-              const isFeatured = location.id === "nc" || location.id === "vt";
+              const isComplete = STATE_STORIES[location.id]?.status === "complete";
               return (
                 <path
                   key={location.id}
                   d={getMapPath(location)}
-                  className={`mountain-map__state${isFeatured ? " mountain-map__state--featured" : ""}`}
+                  className={`mountain-map__state${isComplete ? " mountain-map__state--complete" : ""}`}
                   data-hovered={hoveredState === location.id || undefined}
                   role={interactive ? "button" : undefined}
                   tabIndex={interactive ? 0 : -1}
-                  aria-label={`${location.name}${isFeatured ? ", highlighted place" : ""}`}
+                  aria-label={`${location.name}, ${isComplete ? "complete" : "incomplete"}`}
                   aria-disabled={!interactive || undefined}
                   onPointerEnter={() => {
                     if (interactive) setHoveredState(location.id);
