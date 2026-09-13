@@ -58,7 +58,7 @@ export type FocusTarget =
   | 'cabinDartboard'
   | 'tablets'
   | 'introduction'
-  | 'timeline';
+  | 'chasing50';
 
 export type CameraPreset = {
   position: Vector3Tuple;
@@ -97,7 +97,7 @@ export const CAMERA_PRESETS: Record<FocusTarget, CameraPreset> = {
     lookAt: [-2.2, 1.8, 2.2],
     fov: 40
   },
-  timeline: {
+  chasing50: {
     position: [1.5, 2, 1.5],
     lookAt: [-1, 3, -13],
     fov: 24

@@ -2,7 +2,8 @@
 
 import { Html } from "@react-three/drei";
 import usa from "@svg-maps/usa";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { CanvasTexture, LinearFilter } from "three";
 
 type UnitedStatesMapProps = {
   interactive: boolean;
