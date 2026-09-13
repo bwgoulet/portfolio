@@ -2,8 +2,8 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useProgress } from "@react-three/drei";
-import Image from "next/image";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import {
   Component,
   Suspense,
@@ -32,7 +32,7 @@ import { InteractionState, InteractiveTarget } from "./types";
 import { CABIN_INTERIOR_ARTWORKS, GALLERY_PHOTOS } from "./cabinAssets";
 import { PROJECT_NOTE_RECORD } from "./projectNotes";
 import { EXPERIENCE_RECORD } from "./experienceData";
-import { STATE_STORIES } from "./stateData";
+import { STATE_STORIES } from "./stateEntries";
 import {
   CAMERA_PRESETS,
   FocusTarget,
@@ -1439,16 +1439,22 @@ export function AdventureScene({
             aria-labelledby={stateTitleId}
             tabIndex={-1}
           >
-            <div className={`state-detail-card__badge${selectedState.visited ? " state-detail-card__badge--featured" : ""}`}>
-              {selectedState.abbreviation}
-            </div>
-            <p className="detail-meta">{selectedState.visited ? "A highlighted stop" : "Open to adventure"}</p>
+            {selectedState.thumbnailSrc ? (
+              <Image
+                className="state-detail-card__thumbnail"
+                src={selectedState.thumbnailSrc}
+                alt={selectedState.thumbnailAlt ?? ""}
+                width={520}
+                height={220}
+              />
+            ) : (
+              <div className="state-detail-card__badge" aria-hidden="true">
+                {selectedState.abbreviation}
+              </div>
+            )}
+            <p className="detail-meta state-detail-card__status">{selectedState.status === "complete" ? "Complete" : "Incomplete"}</p>
             <h2 id={stateTitleId}>{selectedState.name}</h2>
-            <h3>{selectedState.heading}</h3>
-            <p className="detail-summary">{selectedState.detail}</p>
-            <button className="state-detail-card__close" type="button" onClick={() => setSelectedStateId(null)}>
-              Back to the map
-            </button>
+            <p className="detail-summary">{selectedState.content}</p>
           </div>
         </article>
       )}
