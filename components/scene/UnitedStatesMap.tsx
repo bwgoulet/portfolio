@@ -20,7 +20,7 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
       center
       position={[0.65, 4.2, -15.72]}
       rotation={[0, 0.02, 0]}
-      scale={0.0092}
+      scale={0.3}
       zIndexRange={[4, 0]}
       style={{ pointerEvents: interactive ? "auto" : "none" }}
     >
