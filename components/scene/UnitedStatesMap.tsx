@@ -24,11 +24,11 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
       zIndexRange={[4, 0]}
       style={{ pointerEvents: interactive ? "auto" : "none" }}
     >
-      <section className="mountain-map" aria-label="Interactive map of the United States">
-        <div className="mountain-map__heading" aria-hidden="true">
-          <strong>Places along the way</strong>
-          <span>Select a state</span>
-        </div>
+      <section
+        className="mountain-map"
+        data-interactive={interactive || undefined}
+        aria-label="Map of the United States"
+      >
         <svg viewBox={usa.viewBox} role="group" aria-label={usa.label}>
           {(usa.locations as MapLocation[]).map((location) => {
             const isFeatured = location.id === "nc" || location.id === "vt";
@@ -38,16 +38,23 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
                 d={location.path}
                 className={`mountain-map__state${isFeatured ? " mountain-map__state--featured" : ""}`}
                 data-hovered={hoveredState === location.id || undefined}
-                role="button"
+                role={interactive ? "button" : undefined}
                 tabIndex={interactive ? 0 : -1}
                 aria-label={`${location.name}${isFeatured ? ", highlighted place" : ""}`}
-                onPointerEnter={() => setHoveredState(location.id)}
+                aria-disabled={!interactive || undefined}
+                onPointerEnter={() => {
+                  if (interactive) setHoveredState(location.id);
+                }}
                 onPointerLeave={() => setHoveredState(null)}
-                onFocus={() => setHoveredState(location.id)}
+                onFocus={() => {
+                  if (interactive) setHoveredState(location.id);
+                }}
                 onBlur={() => setHoveredState(null)}
-                onClick={(event) => onStateSelect(location.id, event.currentTarget)}
+                onClick={(event) => {
+                  if (interactive) onStateSelect(location.id, event.currentTarget);
+                }}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
+                  if (interactive && (event.key === "Enter" || event.key === " ")) {
                     event.preventDefault();
                     onStateSelect(location.id, event.currentTarget);
                   }
