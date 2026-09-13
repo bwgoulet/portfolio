@@ -1217,7 +1217,9 @@ export function AdventureScene({
               />
               <LowPolyEnvironment
                 mapVisible={!isCabinInteriorTarget}
-                mapInteractiveEnabled={isOverviewState && !isFreeModeEnabled}
+                mapInteractiveEnabled={
+                  interactionState === "timelineCloseup" && !isFreeModeEnabled
+                }
                 onStateSelect={(stateId, trigger) => {
                   lastTriggerRef.current = trigger;
                   setSelectedStateId(stateId);
