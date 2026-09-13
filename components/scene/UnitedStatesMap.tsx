@@ -7,11 +7,16 @@ import { useState } from "react";
 type UnitedStatesMapProps = {
   interactive: boolean;
   onStateSelect: (stateId: string, trigger: SVGPathElement) => void;
+  onMapPointerMove: () => void;
 };
 
 type MapLocation = { id: string; name: string; path: string };
 
-export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapProps) {
+export function UnitedStatesMap({
+  interactive,
+  onStateSelect,
+  onMapPointerMove,
+}: UnitedStatesMapProps) {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
 
   return (
@@ -29,6 +34,12 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
         className="mountain-map"
         data-interactive={interactive || undefined}
         aria-label="Map of the United States"
+        onPointerMove={(event) => {
+          // The Html overlay shares an event source with the 3D canvas. Keep
+          // movement over the map from raycasting against the sign behind it.
+          event.stopPropagation();
+          onMapPointerMove();
+        }}
       >
         <svg viewBox={usa.viewBox} role="group" aria-label={usa.label}>
           {(usa.locations as MapLocation[]).map((location) => {
@@ -52,6 +63,10 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
                 }}
                 onBlur={() => setHoveredState(null)}
                 onClick={(event) => {
+                  // Keep this DOM click inside the map. Without stopping it here,
+                  // it reaches the canvas event manager and also activates the
+                  // timeline sign positioned behind the Html overlay.
+                  event.stopPropagation();
                   if (interactive) onStateSelect(location.id, event.currentTarget);
                 }}
                 onKeyDown={(event) => {
