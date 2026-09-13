@@ -8,6 +8,7 @@ import { CanvasTexture, LinearFilter } from "three";
 type UnitedStatesMapProps = {
   interactive: boolean;
   onStateSelect: (stateId: string, trigger: SVGPathElement) => void;
+  onMapPointerMove: () => void;
 };
 
 type MapLocation = { id: string; name: string; path: string };

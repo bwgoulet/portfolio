@@ -351,7 +351,7 @@ export function AdventureScene({
   const cabinRef = useRef<Group>(null);
   const tabletsRef = useRef<Group>(null);
   const introductionRef = useRef<Group>(null);
-  const timelineSignRef = useRef<Group>(null);
+  const chasing50SignRef = useRef<Group>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const lastTriggerRef = useRef<HTMLElement | SVGElement | null>(null);
   const noteTitleId = useId();
@@ -379,8 +379,8 @@ export function AdventureScene({
     useState(false);
   const [isKeyCardHovered, setIsKeyCardHovered] = useState(false);
   const [isResumeDialogOpen, setIsResumeDialogOpen] = useState(false);
-  const [isTimelineDialogOpen, setIsTimelineDialogOpen] = useState(false);
-  const [isTimelineCloseupHovered, setIsTimelineCloseupHovered] =
+  const [isChasing50DialogOpen, setIsChasing50DialogOpen] = useState(false);
+  const [isChasing50CloseupHovered, setIsChasing50CloseupHovered] =
     useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const qualityTier: SceneQualityTier = "high";
@@ -483,14 +483,14 @@ export function AdventureScene({
     selectedStateId !== null ||
     isIntroductionDialogOpen ||
     isResumeDialogOpen ||
-    isTimelineDialogOpen;
+    isChasing50DialogOpen;
   const isOverviewState =
     interactionState === "idleOverview" ||
     interactionState === "hoverBillboard" ||
     interactionState === "hoverCabin" ||
     interactionState === "hoverTablets" ||
     interactionState === "hoverIntroduction" ||
-    interactionState === "hoverTimeline";
+    interactionState === "hoverChasing50";
   const canToggleFreeMode =
     !isDetailDialogOpen &&
     !isTransitioning &&
@@ -500,7 +500,7 @@ export function AdventureScene({
     interactionState === "billboardCloseup" ||
     interactionState === "tabletsCloseup" ||
     interactionState === "introductionCloseup" ||
-    interactionState === "timelineCloseup" ||
+    interactionState === "chasing50Closeup" ||
     interactionState === "dartboardCloseup";
   const canDismissSceneSelection =
     canDismissViaBackgroundClick && !isDetailDialogOpen && !isTransitioning;
@@ -587,8 +587,8 @@ export function AdventureScene({
     setSelectedGalleryPhotoId(null);
   }, []);
 
-  const closeTimelineDialog = useCallback(() => {
-    setIsTimelineDialogOpen(false);
+  const closeChasing50Dialog = useCallback(() => {
+    setIsChasing50DialogOpen(false);
   }, []);
 
   const resetDartsRound = useCallback(() => {
@@ -814,7 +814,7 @@ export function AdventureScene({
           currentState === "hoverCabin" ||
           currentState === "hoverTablets" ||
           currentState === "hoverIntroduction" ||
-          currentState === "hoverTimeline";
+          currentState === "hoverChasing50";
 
         if (!isCurrentOverviewState) return currentState;
         if (!hovered) return "idleOverview";
@@ -827,7 +827,7 @@ export function AdventureScene({
               ? "hoverTablets"
               : target === "introduction"
                 ? "hoverIntroduction"
-                : "hoverTimeline";
+                : "hoverChasing50";
       });
     },
     [preloadCabin],
@@ -848,7 +848,7 @@ export function AdventureScene({
       setSelectedGalleryPhotoId(null);
       setIsIntroductionDialogOpen(false);
       setIsResumeDialogOpen(false);
-      setIsTimelineDialogOpen(false);
+      setIsChasing50DialogOpen(false);
 
       if (target === "cabin") {
         cabinProgressBaselineRef.current = {
@@ -913,8 +913,8 @@ export function AdventureScene({
   }, [interactionState]);
 
   useEffect(() => {
-    if (interactionState !== "timelineCloseup") {
-      setIsTimelineCloseupHovered(false);
+    if (interactionState !== "chasing50Closeup") {
+      setIsChasing50CloseupHovered(false);
     }
   }, [interactionState]);
 
@@ -933,7 +933,7 @@ export function AdventureScene({
     setSelectedGalleryPhotoId(null);
     setIsIntroductionDialogOpen(false);
     setIsResumeDialogOpen(false);
-    setIsTimelineDialogOpen(false);
+    setIsChasing50DialogOpen(false);
   }, []);
 
   const handleBackNavigation = useCallback(() => {
@@ -1115,7 +1115,7 @@ export function AdventureScene({
               fov: CAMERA_PRESETS.overview.fov,
             }}
             dpr={[1, quality.dprCap]}
-            gl={{ alpha: false, antialias: quality.antialias }}
+            gl={{ alpha: true, antialias: quality.antialias }}
             onPointerMissed={handleSceneBackgroundDismiss}
             onCreated={({ camera }) => {
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
@@ -1173,7 +1173,7 @@ export function AdventureScene({
                           ? "tabletsCloseup"
                           : completedTarget === "introduction"
                             ? "introductionCloseup"
-                            : "timelineCloseup",
+                            : "chasing50Closeup",
                   );
                 }}
               />
@@ -1218,7 +1218,7 @@ export function AdventureScene({
               <LowPolyEnvironment
                 mapVisible={!isCabinInteriorTarget}
                 mapInteractiveEnabled={
-                  interactionState === "timelineCloseup" && !isFreeModeEnabled
+                  interactionState === "chasing50Closeup" && !isFreeModeEnabled
                 }
                 onStateSelect={(stateId, trigger) => {
                   lastTriggerRef.current = trigger;
@@ -1240,25 +1240,25 @@ export function AdventureScene({
                   setSelectedExperienceId(entryId)
                 }
                 tabletsRef={tabletsRef}
-                timelineSignRef={timelineSignRef}
-                timelineInteractiveEnabled={
+                chasing50SignRef={chasing50SignRef}
+                chasing50InteractiveEnabled={
                   !isFreeModeEnabled &&
-                  (isOverviewState || interactionState === "timelineCloseup")
+                  (isOverviewState || interactionState === "chasing50Closeup")
                 }
-                timelineHovered={
-                  interactionState === "hoverTimeline" ||
-                  isTimelineCloseupHovered
+                chasing50Hovered={
+                  interactionState === "hoverChasing50" ||
+                  isChasing50CloseupHovered
                 }
-                onTimelineHoverChange={(hovered) => {
-                  if (interactionState === "timelineCloseup") {
-                    setIsTimelineCloseupHovered(hovered);
+                onChasing50HoverChange={(hovered) => {
+                  if (interactionState === "chasing50Closeup") {
+                    setIsChasing50CloseupHovered(hovered);
                     return;
                   }
-                  updateHover("timeline", hovered);
+                  updateHover("chasing50", hovered);
                 }}
-                onTimelineClick={(target) => {
-                  if (interactionState === "timelineCloseup") {
-                    setIsTimelineDialogOpen(true);
+                onChasing50Click={(target) => {
+                  if (interactionState === "chasing50Closeup") {
+                    setIsChasing50DialogOpen(true);
                     return;
                   }
                   handleFocusClick(target);
@@ -1615,17 +1615,17 @@ export function AdventureScene({
         </article>
       )}
 
-      {interactionState === "timelineCloseup" && isTimelineDialogOpen && (
+      {interactionState === "chasing50Closeup" && isChasing50DialogOpen && (
         <article
           className={`note-detail ${detailCardStateClass(false)}`}
           aria-live="polite"
-          onClick={closeTimelineDialog}
+          onClick={closeChasing50Dialog}
           role="button"
           tabIndex={0}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               event.preventDefault();
-              closeTimelineDialog();
+              closeChasing50Dialog();
             }
           }}
         >
@@ -1637,21 +1637,20 @@ export function AdventureScene({
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="timeline-title"
+            aria-labelledby="chasing50-title"
             tabIndex={-1}
           >
             <div className="introduction-detail-layout">
               <Image
-                src="/projects/timeline.png"
-                alt="Timeline thumbnail"
+                src="/projects/chasing-50.png"
+                alt="Chasing 50 thumbnail"
                 width={520}
                 height={460}
               />
               <section className="introduction-detail-copy">
-                <h2 id="timeline-title">Timeline</h2>
+                <h2 id="chasing50-title">Chasing 50</h2>
                 <p>
-                  This trail marks key chapters of my personal journey -
-                  timeline feature coming soon!
+                  I’m chasing a visit to all 50 states. Explore the map to see the places I’ve been and the states still waiting down the road.
                 </p>
                 <p></p>
                 <p></p>
