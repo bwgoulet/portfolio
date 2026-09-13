@@ -1115,7 +1115,7 @@ export function AdventureScene({
               fov: CAMERA_PRESETS.overview.fov,
             }}
             dpr={[1, quality.dprCap]}
-            gl={{ alpha: false, antialias: quality.antialias }}
+            gl={{ alpha: true, antialias: quality.antialias }}
             onPointerMissed={handleSceneBackgroundDismiss}
             onCreated={({ camera }) => {
               camera.lookAt(...CAMERA_PRESETS.overview.lookAt);
