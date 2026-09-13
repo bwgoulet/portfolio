@@ -1044,7 +1044,7 @@ export function LowPolyEnvironment({
 
       <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} shadows={quality.shadows} />
       <Tree position={[-0.8, 1.11, -2.7]} scale={1} shadows={quality.shadows} />
-      <Tree position={[2.2, 1.08, -2.35]} scale={0.8} shadows={quality.shadows} />
+      <Tree position={[2.6, 1.08, -2.35]} scale={0.8} shadows={quality.shadows} />
       {quality.decorativeEffects && <>
         <Tree position={[-7.5, 1.08, 1.8]} scale={0.7} shadows={quality.shadows} />
         <Tree position={[-9.5, 1.08, -2]} scale={0.9} shadows={quality.shadows} />
