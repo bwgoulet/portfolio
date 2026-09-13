@@ -1,6 +1,8 @@
 import Image from "next/image";
+import usa from "@svg-maps/usa";
 import { EXPERIENCE_ENTRIES } from "./scene/experienceData";
 import { PROJECT_NOTES } from "./scene/projectNotes";
+import { STATE_STORIES } from "./scene/stateData";
 import {
   CABIN_INTERIOR_ARTWORKS,
   GALLERY_PHOTOS,
@@ -10,6 +12,8 @@ const INTRODUCTION = [
   "Hi, I’m Ben Goulet, a full-stack software engineer based in the Triangle with a strong focus on small-team and startup environments. I have about five years of total experience and graduated from UNC Chapel Hill.",
   "My work ranges from full-stack web development, DevOps and internal tooling to game development and community building. I’m currently pursuing strong engineering opportunities in the Triangle or remote while looking for my next big project.",
 ];
+
+type MapLocation = { id: string; name: string; path: string };
 
 export function SimplePortfolio() {
   const gallery = [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS];
@@ -24,8 +28,8 @@ export function SimplePortfolio() {
         <nav aria-label="Portfolio sections">
           <a href="#experience">Experience</a>
           <a href="#projects">Projects</a>
-          <a href="#timeline">Timeline</a>
           <a href="#gallery">Gallery</a>
+          <a href="#chasing-50">Chasing 50</a>
           <a href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf">Resume</a>
         </nav>
       </header>
@@ -62,14 +66,6 @@ export function SimplePortfolio() {
         </div>
       </section>
 
-      <section id="timeline" aria-labelledby="timeline-heading">
-        <p className="simple-kicker">The path so far</p>
-        <h2 id="timeline-heading">Timeline</h2>
-        <ol className="simple-timeline">
-          {EXPERIENCE_ENTRIES.map((entry) => <li key={entry.id}><strong>{entry.company}</strong><span>{entry.date}</span><span>{entry.location}</span><p>{entry.role}</p></li>)}
-        </ol>
-      </section>
-
       <section id="gallery" aria-labelledby="gallery-heading">
         <p className="simple-kicker">Beyond the work</p>
         <h2 id="gallery-heading">Gallery highlights</h2>
@@ -78,6 +74,23 @@ export function SimplePortfolio() {
             <figure key={photo.id}><Image src={photo.imageSrc} alt={photo.title} width={480} height={360} /><figcaption><strong>{photo.title}</strong>{photo.description && <span>{photo.description}</span>}</figcaption></figure>
           ))}
         </div>
+      </section>
+
+      <section id="chasing-50" className="simple-chasing-50" aria-labelledby="chasing-50-heading">
+        <p className="simple-kicker">Places along the way</p>
+        <h2 id="chasing-50-heading">Chasing 50</h2>
+        <p className="simple-map-intro">A map of the places I’ve explored—and the states still waiting down the road.</p>
+        <svg className="simple-map" viewBox={usa.viewBox} role="img" aria-label="Map of the United States showing states visited">
+          {(usa.locations as MapLocation[]).map((location) => (
+            <path
+              key={location.id}
+              d={location.path}
+              className={`simple-map__state${STATE_STORIES[location.id]?.visited ? " simple-map__state--visited" : ""}`}
+            >
+              <title>{location.name}</title>
+            </path>
+          ))}
+        </svg>
       </section>
 
       <footer><h2>Let’s connect.</h2><p><a className="simple-resume" href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf">View official resume <span aria-hidden="true">↗</span></a></p><p><a href="mailto:bengoulet02@gmail.com">bengoulet02@gmail.com</a></p></footer>
