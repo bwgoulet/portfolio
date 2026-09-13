@@ -2,7 +2,7 @@ import Image from "next/image";
 import usa from "@svg-maps/usa";
 import { EXPERIENCE_ENTRIES } from "./scene/experienceData";
 import { PROJECT_NOTES } from "./scene/projectNotes";
-import { STATE_STORIES } from "./scene/stateData";
+import { STATE_STORIES } from "./scene/stateEntries";
 import {
   CABIN_INTERIOR_ARTWORKS,
   GALLERY_PHOTOS,
@@ -85,7 +85,7 @@ export function SimplePortfolio() {
             <path
               key={location.id}
               d={location.path}
-              className={`simple-map__state${STATE_STORIES[location.id]?.visited ? " simple-map__state--visited" : ""}`}
+              className={`simple-map__state${STATE_STORIES[location.id]?.status === "complete" ? " simple-map__state--visited" : ""}`}
             >
               <title>{location.name}</title>
             </path>
