@@ -1074,6 +1074,10 @@ export function LowPolyEnvironment({
         <UnitedStatesMap
           interactive={mapInteractiveEnabled}
           onStateSelect={onStateSelect}
+          onMapPointerMove={() => {
+            onTimelineHoverChange(false);
+            setInteractiveCursor(false);
+          }}
         />
       )}
     </group>
