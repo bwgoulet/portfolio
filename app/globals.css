@@ -519,16 +519,16 @@ main {
 .simple-meta { margin-bottom: .25rem; color: #5b6c66; font-size: .88rem; }
 .simple-company { margin-top: .2rem; font-weight: 700; color: #376357; }
 .simple-card summary { cursor: pointer; font-weight: 800; }
-.simple-timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid #7ca395; }
-.simple-timeline li { position: relative; padding: 0 0 2rem 2rem; }
-.simple-timeline li::before { content: ""; position: absolute; width: .8rem; height: .8rem; left: -.46rem; top: .4rem; border-radius: 50%; background: #295e50; }
-.simple-timeline span { display: block; color: #5b6c66; }
-.simple-timeline p { margin: .15rem 0 0; }
 .simple-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
 .simple-gallery figure { margin: 0; overflow: hidden; border-radius: 14px; background: #fffaf0; }
 .simple-gallery img { display: block; width: 100%; aspect-ratio: 4/3; height: auto; object-fit: cover; }
 .simple-gallery figcaption { display: flex; flex-direction: column; padding: .85rem 1rem 1rem; }
 .simple-gallery figcaption span { color: #52655f; }
+.simple-map-intro { max-width: 58ch; margin: -1rem 0 2.5rem; font-size: 1.1rem; color: #52655f; }
+.simple-map { display: block; width: min(100%, 980px); margin: 0 auto; overflow: visible; filter: drop-shadow(0 12px 12px rgba(23,48,42,.14)); }
+.simple-map__state { fill: #d8d0c0; stroke: #f5f0e5; stroke-width: 2.4; vector-effect: non-scaling-stroke; transition: fill 150ms ease; }
+.simple-map__state--visited { fill: #6f965d; }
+.simple-map__state:hover { fill: #d5a84f; }
 .simple-portfolio footer { padding: 5rem 0 7rem; border-top: 1px solid #c9c2b4; }
 .simple-portfolio footer h2 { margin: 0; }
 .simple-resume { display: inline-block; padding: .8rem 1rem; border-radius: 999px; background: #214f43; color: white !important; text-decoration: none; }
