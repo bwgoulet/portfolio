@@ -18,7 +18,7 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
     <Html
       transform
       center
-      position={[0.65, 4.2, -15.72]}
+      position={[0.25, 4, -20.72]}
       rotation={[0, 0.02, 0]}
       scale={0.3}
       zIndexRange={[4, 0]}
