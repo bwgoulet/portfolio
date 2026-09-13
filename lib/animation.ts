@@ -6,7 +6,3 @@ export function animateValue<T extends gsap.TweenTarget>(
 ) {
   return gsap.to(target, vars);
 }
-
-export function makeTimeline(vars?: gsap.TimelineVars) {
-  return gsap.timeline(vars);
-}

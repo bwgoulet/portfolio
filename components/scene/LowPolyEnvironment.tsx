@@ -619,7 +619,7 @@ function ExperienceEngraving({ hovered }: { hovered: boolean }) {
   );
 }
 
-type TrailheadTimelineSignProps = {
+type TrailheadChasing50SignProps = {
   reducedMotion: boolean;
   interactiveEnabled: boolean;
   hovered: boolean;
@@ -628,14 +628,14 @@ type TrailheadTimelineSignProps = {
   signRef: RefObject<Group | null>;
 };
 
-function TrailheadTimelineSign({
+function TrailheadChasing50Sign({
   reducedMotion,
   interactiveEnabled,
   hovered,
   onHoverChange,
   onClick,
   signRef,
-}: TrailheadTimelineSignProps) {
+}: TrailheadChasing50SignProps) {
   const woodenSignGltf = useGLTF("/models/Wooden Sign.glb");
   const { woodenSignModel, hitAreaSize, hitAreaOffset } = useMemo(() => {
     const signScene = woodenSignGltf.scene.clone(true);
@@ -719,7 +719,7 @@ function TrailheadTimelineSign({
         onClick={(event) => {
           event.stopPropagation();
           if (!isAboveIslandGround(event.point.y)) return;
-          if (interactiveEnabled) onClick("timeline");
+          if (interactiveEnabled) onClick("chasing50");
         }}
       >
         <boxGeometry args={hitAreaSize} />
@@ -734,7 +734,7 @@ function TrailheadTimelineSign({
         anchorY="middle"
         color={hovered ? "#f7ebd2" : environmentPalette.signText}
       >
-        Timeline
+        Chasing 50
       </Text>
     </group>
   );
@@ -943,11 +943,11 @@ type LowPolyEnvironmentProps = {
   onTabletsClick: (target: InteractiveTarget) => void;
   onTabletDetailSelect: (entryId: string) => void;
   tabletsRef: RefObject<Group | null>;
-  timelineSignRef: RefObject<Group | null>;
-  timelineInteractiveEnabled: boolean;
-  timelineHovered: boolean;
-  onTimelineHoverChange: (hovered: boolean) => void;
-  onTimelineClick: (target: InteractiveTarget) => void;
+  chasing50SignRef: RefObject<Group | null>;
+  chasing50InteractiveEnabled: boolean;
+  chasing50Hovered: boolean;
+  onChasing50HoverChange: (hovered: boolean) => void;
+  onChasing50Click: (target: InteractiveTarget) => void;
   reducedMotion: boolean;
   qualityTier: SceneQualityTier;
 };
@@ -963,11 +963,11 @@ export function LowPolyEnvironment({
   onTabletsClick,
   onTabletDetailSelect,
   tabletsRef,
-  timelineSignRef,
-  timelineInteractiveEnabled,
-  timelineHovered,
-  onTimelineHoverChange,
-  onTimelineClick,
+  chasing50SignRef,
+  chasing50InteractiveEnabled,
+  chasing50Hovered,
+  onChasing50HoverChange,
+  onChasing50Click,
   reducedMotion,
   qualityTier,
 }: LowPolyEnvironmentProps) {
@@ -1033,13 +1033,13 @@ export function LowPolyEnvironment({
           hovered={tabletsHovered && tabletsInteractiveEnabled}
         />
       </group>
-      <TrailheadTimelineSign
+      <TrailheadChasing50Sign
         reducedMotion={reducedMotion}
-        signRef={timelineSignRef}
-        interactiveEnabled={timelineInteractiveEnabled}
-        hovered={timelineHovered}
-        onHoverChange={onTimelineHoverChange}
-        onClick={onTimelineClick}
+        signRef={chasing50SignRef}
+        interactiveEnabled={chasing50InteractiveEnabled}
+        hovered={chasing50Hovered}
+        onHoverChange={onChasing50HoverChange}
+        onClick={onChasing50Click}
       />
 
       <Tree position={[-3.5, 1.13, -3.5]} scale={0.6} shadows={quality.shadows} />

@@ -122,7 +122,7 @@ export const PROJECT_NOTES: ProjectNote[] = [
     bullets: [
       "Coming soon!"
     ],
-    imageSrc: "/projects/timeline.png",
+    imageSrc: "/projects/chasing-50.png",
     detailImageSrc: "/projects/portfolio.png",
     whyItMattered: "[Coming Soon!]",
     position: [-0.14, 1.55, 0.19],
