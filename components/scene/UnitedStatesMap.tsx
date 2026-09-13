@@ -52,6 +52,10 @@ export function UnitedStatesMap({ interactive, onStateSelect }: UnitedStatesMapP
                 }}
                 onBlur={() => setHoveredState(null)}
                 onClick={(event) => {
+                  // Keep this DOM click inside the map. Without stopping it here,
+                  // it reaches the canvas event manager and also activates the
+                  // timeline sign positioned behind the Html overlay.
+                  event.stopPropagation();
                   if (interactive) onStateSelect(location.id, event.currentTarget);
                 }}
                 onKeyDown={(event) => {
