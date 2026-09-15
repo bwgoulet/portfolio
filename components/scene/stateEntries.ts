@@ -28,24 +28,24 @@ const STATE_NAMES: Record<string, string> = {
  * its completion status, card copy, and thumbnail without changing the map UI.
  */
 const STATE_CONTENT: Partial<Record<string, Partial<Omit<StateStory, "id" | "name" | "abbreviation">>>> = {
-  co: {
-    status: "incomplete",
-    content: "Colorado is still an open chapter on my map. Keep exploring the places that have shaped my journey.",
-    thumbnailSrc: "/projects/chasing-50.png",
-    thumbnailAlt: "The Chasing 50 mountain landscape",
-  },
-  nc: {
-    status: "complete",
-    content: "North Carolina is where I studied, built communities, and turned ambitious ideas into products. From UNC projects to startup work, it is the center of my story.",
-    thumbnailSrc: "/gallery/mygrad.jpg",
-    thumbnailAlt: "Ben celebrating his graduation in North Carolina",
-  },
-  vt: {
-    status: "complete",
-    content: "Vermont represents time spent exploring the outdoors and the kind of quiet, creative reset that keeps me curious.",
-    thumbnailSrc: "/gallery/crater lake.jpg",
-    thumbnailAlt: "A mountain landscape",
-  },
+  // co: {
+  //   status: "incomplete",
+  //   content: "Colorado is still an open chapter on my map. Keep exploring the places that have shaped my journey.",
+  //   thumbnailSrc: "/projects/chasing-50.png",
+  //   thumbnailAlt: "The Chasing 50 mountain landscape",
+  // },
+  // nc: {
+  //   status: "complete",
+  //   content: "North Carolina is where I studied, built communities, and turned ambitious ideas into products. From UNC projects to startup work, it is the center of my story.",
+  //   thumbnailSrc: "/gallery/mygrad.jpg",
+  //   thumbnailAlt: "Ben celebrating his graduation in North Carolina",
+  // },
+  // vt: {
+  //   status: "complete",
+  //   content: "Vermont represents time spent exploring the outdoors and the kind of quiet, creative reset that keeps me curious.",
+  //   thumbnailSrc: "/gallery/crater lake.jpg",
+  //   thumbnailAlt: "A mountain landscape",
+  // },
 };
 
 export const STATE_STORIES: Record<string, StateStory> = Object.fromEntries(
@@ -56,7 +56,7 @@ export const STATE_STORIES: Record<string, StateStory> = Object.fromEntries(
       name,
       abbreviation: id.toUpperCase(),
       status: entry?.status ?? "incomplete",
-      content: entry?.content ?? `${name} is still an open chapter on my map. Keep exploring the places that have shaped my journey.`,
+      content: entry?.content ?? `${name} is still on the map. Check out some of the other states in the meantime!`,
       thumbnailSrc: entry?.thumbnailSrc,
       thumbnailAlt: entry?.thumbnailAlt,
     }];
