@@ -1636,7 +1636,7 @@ export function AdventureScene({
           >
             <div className="introduction-detail-layout">
               <Image
-                src="/projects/chasing-50.png"
+                src="/elcap.jpg"
                 alt="Chasing 50 thumbnail"
                 width={520}
                 height={460}

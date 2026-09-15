@@ -168,12 +168,12 @@ export const CABIN_INTERIOR_ARTWORKS: GalleryDetail[] = [
     description:
       "A collection of some of my favorite albums! From top-left to bottom-right:",
     descriptionList: [
-      "Joey Bada$$ - 1999",
+      "Ryo Fukui - Scenery",
       "Kendrick Lamar - To Pimp A Butterfly",
-      "Tyler, The Creator - Chromakopia",
+      "Clairo - Charm",
       "Men I Trust - Oncle Jazz",
       "Magdalena Bay - Imaginal Disk",
-      "George Clanton - Ooh Rap I Ya",
+      "Khruangbin - Con Todo El Mundo",
       "Steely Dan - Can't Buy A Thrill",
       "Gorillaz - Demon Days",
       "Beach Fossils - Somersault",
