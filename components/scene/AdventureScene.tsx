@@ -41,6 +41,7 @@ import {
   type SceneQualityTier,
 } from "@/config/sceneConfig";
 import { IntroductionLandmark } from "./IntroductionLandmark";
+import { INTRODUCTION_PARAGRAPHS } from "./introductionData";
 
 const loadCabinInterior = () => import("./CabinInterior");
 const CabinInterior = dynamic(
@@ -1547,24 +1548,9 @@ export function AdventureScene({
                 />
                 <section className="introduction-detail-copy">
                   <h2 id="introduction-title">Introduction</h2>
-                  <p>
-                    Hi, I&apos;m Ben Goulet, a full-stack software engineer
-                    based in the Triangle with a strong focus in small team and
-                    startup environments. I have ~5 years of total experience
-                    and graduated from UNC Chapel Hill this last May. My work
-                    ranges from full-stack web development, DevOps and internal
-                    tooling, game dev, and various non-technical work.
-                  </p>
-                  <p>
-                    Currently, I&apos;m focused on pursuing strong engineering
-                    opportunities in the Triangle or remote while finding my
-                    next big project. If you think I&apos;d be a good fit for
-                    your project or team, feel free to reach out!
-                  </p>
-                  <p>
-                    Explore the island to view projects, experience, and more
-                    about me.
-                  </p>
+                  {INTRODUCTION_PARAGRAPHS.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
                 </section>
               </div>
             </div>
@@ -1658,7 +1644,7 @@ export function AdventureScene({
               <section className="introduction-detail-copy">
                 <h2 id="chasing50-title">Chasing 50</h2>
                 <p>
-                  I&apos;ve taken up the lifelong project of reaching the highest point in all 50 states. I&apos;ll be tackling the northeast this fall and enjoying the foliage - you can track my chase for 50 here!
+                  {"I've taken up the lifelong project of reaching the highest point in all 50 states. I'll be tackling the northeast this fall and enjoying the foliage - you can track my chase for 50 here!"}
                 </p>
                 <p></p>
                 <p></p>
