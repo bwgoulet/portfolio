@@ -504,8 +504,10 @@ main {
 }
 .simple-portfolio section, .simple-hero, .simple-portfolio footer { max-width: 1180px; margin: 0 auto; }
 .simple-hero { padding: clamp(5rem, 12vw, 9rem) 0 5rem; }
+.simple-hero__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 360px); align-items: center; gap: clamp(2rem, 6vw, 6rem); }
+.simple-hero__image { width: 100%; height: min(560px, 58vw); object-fit: cover; object-position: center 30%; border-radius: 48% 48% 18px 18px; box-shadow: 0 22px 50px rgba(23,48,42,.18); }
 .simple-hero h1 { margin: .15rem 0 1rem; font-family: Georgia, serif; font-size: clamp(3.5rem, 9vw, 7.5rem); line-height: .95; letter-spacing: -.05em; }
-.simple-hero > p:not(.simple-kicker) { max-width: 68ch; font-size: clamp(1.05rem, 2vw, 1.3rem); }
+.simple-hero__copy > p:not(.simple-kicker) { max-width: 68ch; font-size: clamp(1rem, 1.55vw, 1.2rem); }
 .simple-kicker { margin: 0; color: #497064; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; font-size: .78rem; }
 .simple-hero nav { display: flex; gap: .7rem 1.3rem; flex-wrap: wrap; margin-top: 2rem; }
 .simple-portfolio a { color: #174f40; font-weight: 750; text-underline-offset: 4px; }
@@ -519,9 +521,11 @@ main {
 .simple-meta { margin-bottom: .25rem; color: #5b6c66; font-size: .88rem; }
 .simple-company { margin-top: .2rem; font-weight: 700; color: #376357; }
 .simple-card summary { cursor: pointer; font-weight: 800; }
+.simple-card details { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #d7d0c3; }
 .simple-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
 .simple-gallery figure { margin: 0; overflow: hidden; border-radius: 14px; background: #fffaf0; }
 .simple-gallery img { display: block; width: 100%; aspect-ratio: 4/3; height: auto; object-fit: cover; }
+.simple-gallery iframe { display: block; width: 100%; aspect-ratio: 4/3; border: 0; }
 .simple-gallery figcaption { display: flex; flex-direction: column; padding: .85rem 1rem 1rem; }
 .simple-gallery figcaption span { color: #52655f; }
 .simple-map-intro { max-width: 58ch; margin: -1rem 0 2.5rem; font-size: 1.1rem; color: #52655f; }
@@ -529,12 +533,24 @@ main {
 .simple-map__state { fill: #d8d0c0; stroke: #f5f0e5; stroke-width: 2.4; vector-effect: non-scaling-stroke; transition: fill 150ms ease; }
 .simple-map__state--visited { fill: #6f965d; }
 .simple-map__state:hover { fill: #d5a84f; }
+.simple-state-stories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 2.5rem; }
+.simple-state-story { display: grid; grid-template-columns: 180px 1fr; gap: 1rem; overflow: hidden; border: 1px solid #cec6b7; border-radius: 14px; background: rgba(255,255,255,.48); }
+.simple-state-story img { width: 100%; height: 100%; object-fit: cover; }
+.simple-state-story div { padding: 1rem 1rem 1rem 0; }
+.simple-state-story h3, .simple-state-story p { margin-top: 0; }
 .simple-portfolio footer { padding: 5rem 0 7rem; border-top: 1px solid #c9c2b4; }
 .simple-portfolio footer h2 { margin: 0; }
 .simple-resume { display: inline-block; padding: .8rem 1rem; border-radius: 999px; background: #214f43; color: white !important; text-decoration: none; }
 
 @media (max-width: 760px) {
-  .simple-grid, .simple-gallery { grid-template-columns: 1fr; }
+  .simple-portfolio { padding-inline: 1rem; }
+  .simple-hero { padding: 5rem 0 3.5rem; }
+  .simple-hero__layout, .simple-grid, .simple-gallery, .simple-state-stories { grid-template-columns: 1fr; }
+  .simple-hero__copy { display: contents; }
+  .simple-hero__image { grid-row: 3; width: min(100%, 360px); height: 430px; margin: 1rem auto; }
+  .simple-hero h1 { font-size: clamp(3.7rem, 20vw, 6rem); }
+  .simple-portfolio section { padding: 3.5rem 0; }
+  .simple-state-story { grid-template-columns: 110px 1fr; }
   .simple-scene-switch { position: absolute; }
 }
 
