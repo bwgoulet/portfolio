@@ -1644,7 +1644,7 @@ export function AdventureScene({
               <section className="introduction-detail-copy">
                 <h2 id="chasing50-title">Chasing 50</h2>
                 <p>
-                  {"I've taken up the lifelong project of reaching the highest point in all 50 states. I'll be tackling the northeast this fall and enjoying the foliage - you can track my chase for 50 here!"}
+                  {"I've taken up the lifelong project of reaching the highest point in all 50 states. I'll be tackling the northeast this fall, enjoying the foliage, and updating the map for the first time - you can track my chase for 50 here!"}
                 </p>
                 <p></p>
                 <p></p>

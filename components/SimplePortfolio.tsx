@@ -36,7 +36,7 @@ export function SimplePortfolio() {
       </header>
 
       <section id="experience" aria-labelledby="experience-heading">
-        <p className="simple-kicker">What I’ve built with teams</p>
+        <p className="simple-kicker">What I’ve built</p>
         <h2 id="experience-heading">Experience</h2>
         <div className="simple-grid">
           {EXPERIENCE_ENTRIES.map((entry) => (
