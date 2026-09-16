@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import usa from "@svg-maps/usa";
+import { useEffect, useRef, useState } from "react";
 import { EXPERIENCE_ENTRIES } from "./scene/experienceData";
 import { PROJECT_NOTES } from "./scene/projectNotes";
 import { STATE_STORIES } from "./scene/stateEntries";
@@ -14,6 +17,24 @@ type MapLocation = { id: string; name: string; path: string };
 
 export function SimplePortfolio() {
   const gallery: GalleryDetail[] = [...GALLERY_PHOTOS, ...CABIN_INTERIOR_ARTWORKS];
+  const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
+  const stateDialogRef = useRef<HTMLDivElement>(null);
+  const lastStateTriggerRef = useRef<SVGPathElement>(null);
+  const selectedState = selectedStateId ? STATE_STORIES[selectedStateId] : null;
+
+  useEffect(() => {
+    if (selectedState) {
+      stateDialogRef.current?.focus();
+      return;
+    }
+
+    lastStateTriggerRef.current?.focus();
+  }, [selectedState]);
+
+  const openState = (stateId: string, trigger: SVGPathElement) => {
+    lastStateTriggerRef.current = trigger;
+    setSelectedStateId(stateId);
+  };
 
   return (
     <main className="simple-portfolio" id="simple-content">
@@ -92,6 +113,16 @@ export function SimplePortfolio() {
               key={location.id}
               d={location.path}
               className={`simple-map__state${STATE_STORIES[location.id]?.status === "complete" ? " simple-map__state--visited" : ""}`}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open details for ${location.name}`}
+              onClick={(event) => openState(location.id, event.currentTarget)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openState(location.id, event.currentTarget);
+                }
+              }}
             >
               <title>{location.name}</title>
             </path>
@@ -106,6 +137,51 @@ export function SimplePortfolio() {
           ))}
         </div>
       </section>
+
+      {selectedState && (
+        <article
+          className="note-detail anim-enter"
+          aria-live="polite"
+          onClick={() => setSelectedStateId(null)}
+          role="presentation"
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setSelectedStateId(null);
+            if (event.key === "Tab") {
+              event.preventDefault();
+              stateDialogRef.current?.focus();
+            }
+          }}
+        >
+          <div
+            className="detail-content-card project-detail-card state-detail-card anim-enter"
+            ref={stateDialogRef}
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="simple-state-title"
+            tabIndex={-1}
+          >
+            {selectedState.thumbnailSrc ? (
+              <Image
+                className="state-detail-card__thumbnail"
+                src={selectedState.thumbnailSrc}
+                alt={selectedState.thumbnailAlt ?? ""}
+                width={520}
+                height={220}
+              />
+            ) : (
+              <div className="state-detail-card__badge" aria-hidden="true">
+                {selectedState.abbreviation}
+              </div>
+            )}
+            <p className={`detail-meta state-detail-card__status state-detail-card__status--${selectedState.status}`}>
+              {selectedState.status === "complete" ? "Complete" : "Incomplete"}
+            </p>
+            <h2 id="simple-state-title">{selectedState.name}</h2>
+            <p className="detail-summary">{selectedState.content}</p>
+          </div>
+        </article>
+      )}
 
       <footer><h2>Let’s connect.</h2><p><a className="simple-resume" href="/Ben%20Goulet%20-%20Software%20Engineer%20(1).pdf">View official resume <span aria-hidden="true">↗</span></a></p><p><a href="mailto:bengoulet02@gmail.com">bengoulet02@gmail.com</a></p></footer>
     </main>
