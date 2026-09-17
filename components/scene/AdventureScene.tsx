@@ -1654,7 +1654,7 @@ export function AdventureScene({
               <section className="introduction-detail-copy">
                 <h2 id="chasing50-title">Chasing 50</h2>
                 <p>
-                  {"I've taken up the lifelong project of reaching the highest point in all 50 states. I'll be tackling the northeast this fall, enjoying the foliage, and updating the map for the first time - you can track my chase for 50 here!"}
+                  {"I love travelling and climbing, and have wanted to travel across the country for years now. This summer I got into peakbagging, and shortly after I learned about highpointing. It's a fascinating and diverse journey; your next state might be a short walk to Jerimoth Hill, a drive 4 hours to the 'remote' Mt. Sunflower, or a multi-week expedition to Denali's chilling peak. So, I've taken up the personal project of reaching the highest point in all 50 states! I'll be tackling the northeast this fall, enjoying the foliage, and updating the map for the first time - you can track my chase for 50 here!"}
                 </p>
                 <p></p>
                 <p></p>
