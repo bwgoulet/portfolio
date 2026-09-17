@@ -71,7 +71,7 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     whyItMattered: [
       "This project was a real introduction to the world of big data, leveraging that data to increase revenue for clients, and utilizing AI in the SWE workflow.",
       "I had received this opportunity through the lovely folks in the Shuford program at UNC, our entrepreneurship program.",
-      "It was around this time that I had become captivated by the startup style of development; I found that working on cutting-edge projects and wearing many hats was thrilling to me.",
+      "It was around this time that I had gotten into the startup style of development; I found that working on cutting-edge projects and wearing many hats was thrilling to me.",
       "I learned a ton at this internship, especially with how we could use some of those earlier models to draw larger conclusions about leads through signals and data."
     ].join(" "),
   },
@@ -90,13 +90,21 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     ],
     placeholderImageSrc: "/experience/pyw-icon-logo.png",
     detailImageSrc: "/experience/pyw-bg.png",
-    whyItMattered: "[Coming Soon!]",
+    whyItMattered: [
+      "This was my first job out of undergrad!",
+      "PYW was also my first time leading the technical decisions for a professional project.",
+      "When I first joined, the team was incredibly small - just the two founders and another frontend developer.",
+      "This small team allowed me to really experiment and create a tasteful product from scratch.",
+      "I knew nothing about podcasts, nor was I particularly passionate about them, but I was deeply involved with the product we were creating.",
+      "Having to get scrappy early in my career taught me a lot about building full-stack applications and managing hundreds of users.",
+      "The experience also gave me an even greater reward - vision and confidence, which I would carry with me into my next role at The Nexus!"
+    ].join(" "),
   },
   {
     id: "the-nexus",
-    role: "Full-Stack Software Engineer (Contract)",
+    role: "Full-Stack Software Engineer",
     company: "The Nexus",
-    date: "March 2026 - Present",
+    date: "March 2026 - Septemeber 2026",
     location: "Remote",
     bullets: [
       "Architected a full-stack Next.js, TypeScript, PostgreSQL, and Supabase platform that unifies registration, scheduling, live operations, standings, and statistics for competitive SSBU crew leagues.",
@@ -105,11 +113,12 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       "Built public schedules, projected tournament brackets, match history, standings, and player/team analytics backed by versioned SQL migrations, seed data, and reusable typed domain logic.",
     ],
     placeholderImageSrc: "/experience/Nexus Emerald Big.png",
-    detailImageSrc: "/experience/Nexus Logotype Emerald Large.png",
+    detailImageSrc: "/experience/nexus_bg.png",
     whyItMattered: [
-      "My latest project.",
-      "The Smash community has been a large part of my life for over a decade, and it's truly a full circle moment to pursue real work in this hobby that I love.",
-      "I'll be working on this contract until the beginning of August - if you think I'd be a good fit for your project or team, don't hesitate to reach out!",
+      "My most recent project.",
+      "It's no secret that Smash and our community is deeply important to me, so when a friend in the scene came to me with this contract request, I knew it was the perfect opportunity.",
+      "My contract had ended a few weeks prior with PYW, so I was eager to get back to building.",
+      "What better way to spend the summer? "
     ].join(" "),
   },
 ];
