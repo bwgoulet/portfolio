@@ -938,6 +938,14 @@ export function AdventureScene({
   }, []);
 
   const handleBackNavigation = useCallback(() => {
+    // A project detail is a nested view of the billboard. Close it before
+    // navigating away from the billboard itself so each back press moves up
+    // exactly one level.
+    if (selectedNoteId) {
+      closeNoteDetail();
+      return;
+    }
+
     if (focusTarget === "cabinDartboard") {
       setIsFreeModeEnabled(false);
       setInteractionState("transitioning");
@@ -966,9 +974,11 @@ export function AdventureScene({
     beginOverviewTransition();
   }, [
     beginOverviewTransition,
+    closeNoteDetail,
     focusTarget,
     isCabinExitTransitionPending,
     reducedMotion,
+    selectedNoteId,
   ]);
 
   const handleSceneBackgroundDismiss = useCallback(() => {
@@ -1843,7 +1853,11 @@ export function AdventureScene({
         !isCabinExitTransitionPending && (
           <button
             className="scene-back"
-            aria-label="Return to overview"
+            aria-label={
+              selectedNoteId
+                ? "Return to project billboard"
+                : "Return to overview"
+            }
             onClick={handleBackNavigation}
           >
             ←
