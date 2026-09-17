@@ -94,10 +94,11 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
       "This was my first job out of undergrad!",
       "PYW was also my first time leading the technical decisions for a professional project.",
       "When I first joined, the team was incredibly small - just the two founders and another frontend developer.",
-      "This small team allowed me to really experiment and create a tasteful product from scratch.",
-      "I knew nothing about podcasts, nor was I particularly passionate about them, but I was deeply involved with the product we were creating.",
+      "This small team allowed me to experiment and create a tasteful product from scratch.",
+      "I knew nothing about podcasts, but I was deeply involved with the product we were creating.",
       "Having to get scrappy early in my career taught me a lot about building full-stack applications and managing hundreds of users.",
-      "The experience also gave me an even greater reward - vision and confidence, which I would carry with me into my next role at The Nexus!"
+      "It was challenging at times, but I enjoy the thrill of a good challenge!",
+      "Looking back, I'm grateful for the time I spent learning and honing my skills at PYW.",
     ].join(" "),
   },
   {
@@ -116,9 +117,14 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     detailImageSrc: "/experience/nexus_bg.png",
     whyItMattered: [
       "My most recent project.",
-      "It's no secret that Smash and our community is deeply important to me, so when a friend in the scene came to me with this contract request, I knew it was the perfect opportunity.",
+      "The Smash community has been a large part of my life, so when a friend in the scene came to me with this contract request, I knew it was the perfect opportunity.",
       "My contract had ended a few weeks prior with PYW, so I was eager to get back to building.",
-      "What better way to spend the summer? "
+      "'What better way to spend the summer?', I thought!",
+      "Working on The Nexus was a joy - it's a rare privlege to build something for your community as your job.",
+      "It was such a refreshing project, and I'm so glad I chose to take this contract.",
+      "However, my time with The Nexus recently came to an end.",
+      "With the project fully developed and the first 10+ schools enrolled, I'm now looking for my next opportunity!",
+      "If you've read this far and think I'd be a good fit for your project and team, let's chat :)"
     ].join(" "),
   },
 ];
