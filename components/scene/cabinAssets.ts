@@ -100,13 +100,13 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
   {
     id: "photo-08",
     position: [-0.34, 1.04, -0.759],
-    size: [0.18, 0.12],
+    size: [0.11, 0.17],
     rotation: -0.07,
     pinOffsetX: -0.016,
-    imageSrc: "/gallery/brevityaward.png",
-    textureSrc: "/gallery/thumbs/brevityaward.webp",
-    title: "Brevity",
-    description: "A picture of the team and I after getting 2nd at HackNC 2022.",
+    imageSrc: "/gallery/lily.jpg",
+    textureSrc: "/gallery/thumbs/lily.webp",
+    title: "Santa Cruz",
+    description: "A picture of my sister and I after traveling coast to coast.",
   },
   {
     id: "photo-09",
