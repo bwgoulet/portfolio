@@ -602,7 +602,7 @@ export const CabinInterior = memo(function CabinInterior({
             rotation={[0, Math.PI, 0]}
             scale={0.125}
           >
-            <planeGeometry args={[1.55, 1]} />
+            <planeGeometry args={[1.55, 1.35]} />
             <meshBasicMaterial map={crtThumbnailTexture} toneMapped={false} />
           </mesh>
         <mesh
