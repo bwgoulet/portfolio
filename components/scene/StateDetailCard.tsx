@@ -24,9 +24,9 @@ export function StateDetailCard({ story, titleId }: { story: StateStory; titleId
   const stats = [
     ["Elevation gain", story.elevationGain],
     ["Date of ascent", story.ascentDate],
-    ["Round trip", story.roundTripDistance],
+    ["Round trip distance", story.roundTripDistance],
     ["Route", story.route],
-    ["Classification", story.classification],
+    ["Martin Classification (Adjusted)", story.classification],
     ["Difficulty", story.difficulty],
   ];
 
