@@ -411,6 +411,7 @@ export function AdventureScene({
   const freeModeControlsRef = useRef<OrbitControlsImpl>(null);
   const cabinFadeTimerRef = useRef<number | null>(null);
   const cabinExitTimerRef = useRef<number | null>(null);
+  const cabinRevealFrameRef = useRef<number | null>(null);
   const cabinProgressBaselineRef = useRef({ loaded: 0, total: 0 });
   const [isCabinBundleReady, setIsCabinBundleReady] = useState(false);
   const {
@@ -901,6 +902,9 @@ export function AdventureScene({
       if (cabinExitTimerRef.current !== null) {
         window.clearTimeout(cabinExitTimerRef.current);
       }
+      if (cabinRevealFrameRef.current !== null) {
+        window.cancelAnimationFrame(cabinRevealFrameRef.current);
+      }
       document.body.style.cursor = "auto";
     },
     [],
@@ -1022,11 +1026,21 @@ export function AdventureScene({
   useEffect(() => {
     if (!isCabinInteriorTarget || isCabinInteriorRevealed) return;
     if (!isCabinCameraTransitionComplete || !isCabinBundleReady) return;
+
+    // Keep the blackout fully opaque while swapping the exterior cabin for the
+    // interior. Waiting two frames gives React Three Fiber a complete render of
+    // the newly-visible room before the DOM overlay begins to fade away.
     setIsCabinInteriorRevealed(true);
     setInteractionState("cabinCloseup");
     if (!reducedMotion) {
-      setCabinTransitionFadeState("fade-in");
-      scheduleCabinFadeReset(320);
+      setCabinTransitionFadeState("black");
+      cabinRevealFrameRef.current = window.requestAnimationFrame(() => {
+        cabinRevealFrameRef.current = window.requestAnimationFrame(() => {
+          setCabinTransitionFadeState("fade-in");
+          scheduleCabinFadeReset(320);
+          cabinRevealFrameRef.current = null;
+        });
+      });
     } else {
       setCabinTransitionFadeState("idle");
     }
@@ -1146,7 +1160,9 @@ export function AdventureScene({
                 onTransitionProgress={(target, progress) => {
                   if (reducedMotion) return;
                   if (target !== "cabinInterior" || !isCabinFadePending) return;
-                  if (progress < 0.99) return;
+                  // Finish covering the scene before the camera crosses the
+                  // cabin wall, rather than starting the fade at the endpoint.
+                  if (progress < 0.82) return;
                   setCabinTransitionFadeState("fade-out");
                   setIsCabinFadePending(false);
                 }}

@@ -17,6 +17,16 @@ type CameraRigProps = {
 export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, onTransitionProgress, reducedMotion }: CameraRigProps) {
   const camera = useThree((state) => state.camera as PerspectiveCamera);
   const lookAt = useRef(new Vector3(...CAMERA_PRESETS.overview.lookAt));
+  const onTransitionEndRef = useRef(onTransitionEnd);
+  const onTransitionProgressRef = useRef(onTransitionProgress);
+
+  // Transition callbacks are derived from scene state and can change on every
+  // render. Keep their latest versions without restarting an in-flight camera
+  // tween (which can otherwise happen when a progress callback updates state).
+  useEffect(() => {
+    onTransitionEndRef.current = onTransitionEnd;
+    onTransitionProgressRef.current = onTransitionProgress;
+  }, [onTransitionEnd, onTransitionProgress]);
 
   useEffect(() => {
     const preset = CAMERA_PRESETS[targetKey];
@@ -29,8 +39,8 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, onTrans
       camera.fov = preset.fov;
       camera.lookAt(lookAt.current);
       camera.updateProjectionMatrix();
-      onTransitionProgress?.(targetKey, 1);
-      if (isTransitioning) onTransitionEnd(targetKey);
+      onTransitionProgressRef.current?.(targetKey, 1);
+      if (isTransitioning) onTransitionEndRef.current(targetKey);
       return;
     }
 
@@ -44,7 +54,7 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, onTrans
       onUpdate: () => {
         camera.lookAt(lookAt.current);
         const elapsed = performance.now() - transitionStartTime;
-        onTransitionProgress?.(targetKey, Math.min(1, elapsed / transitionDurationMs));
+        onTransitionProgressRef.current?.(targetKey, Math.min(1, elapsed / transitionDurationMs));
       }
     });
 
@@ -63,7 +73,10 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, onTrans
       ease: MOTION_TIERS.macro.cameraEase,
       onUpdate: () => camera.updateProjectionMatrix(),
       onComplete: () => {
-        settleTimer = setTimeout(() => onTransitionEnd(targetKey), MOTION_TIERS.macro.settleDelay * 1000);
+        settleTimer = setTimeout(
+          () => onTransitionEndRef.current(targetKey),
+          MOTION_TIERS.macro.settleDelay * 1000,
+        );
       }
     });
 
@@ -73,7 +86,7 @@ export function CameraRig({ targetKey, isTransitioning, onTransitionEnd, onTrans
       tweenFov.kill();
       if (settleTimer) clearTimeout(settleTimer);
     };
-  }, [camera, isTransitioning, onTransitionEnd, onTransitionProgress, reducedMotion, targetKey]);
+  }, [camera, isTransitioning, reducedMotion, targetKey]);
 
   return null;
 }
