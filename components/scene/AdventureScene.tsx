@@ -33,6 +33,7 @@ import { CABIN_INTERIOR_ARTWORKS, GALLERY_PHOTOS } from "./cabinAssets";
 import { PROJECT_NOTE_RECORD } from "./projectNotes";
 import { EXPERIENCE_RECORD } from "./experienceData";
 import { STATE_STORIES } from "./stateEntries";
+import { StateDetailCard } from "./StateDetailCard";
 import {
   CAMERA_PRESETS,
   FocusTarget,
@@ -1468,24 +1469,7 @@ export function AdventureScene({
             aria-labelledby={stateTitleId}
             tabIndex={-1}
           >
-            {selectedState.thumbnailSrc ? (
-              <Image
-                className="state-detail-card__thumbnail"
-                src={selectedState.thumbnailSrc}
-                alt={selectedState.thumbnailAlt ?? ""}
-                width={520}
-                height={220}
-              />
-            ) : (
-              <div className="state-detail-card__badge" aria-hidden="true">
-                {selectedState.abbreviation}
-              </div>
-            )}
-            <p className={`detail-meta state-detail-card__status state-detail-card__status--${selectedState.status}`}>
-              {selectedState.status === "complete" ? "Complete" : "Incomplete"}
-            </p>
-            <h2 id={stateTitleId}>{selectedState.name}</h2>
-            <p className="detail-summary">{selectedState.content}</p>
+            <StateDetailCard story={selectedState} titleId={stateTitleId} />
           </div>
         </article>
       )}

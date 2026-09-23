@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { EXPERIENCE_ENTRIES } from "./scene/experienceData";
 import { PROJECT_NOTES } from "./scene/projectNotes";
 import { STATE_STORIES } from "./scene/stateEntries";
+import { StateDetailCard } from "./scene/StateDetailCard";
 import { INTRODUCTION_PARAGRAPHS } from "./scene/introductionData";
 import {
   CABIN_INTERIOR_ARTWORKS,
@@ -161,24 +162,7 @@ export function SimplePortfolio() {
             aria-labelledby="simple-state-title"
             tabIndex={-1}
           >
-            {selectedState.thumbnailSrc ? (
-              <Image
-                className="state-detail-card__thumbnail"
-                src={selectedState.thumbnailSrc}
-                alt={selectedState.thumbnailAlt ?? ""}
-                width={520}
-                height={220}
-              />
-            ) : (
-              <div className="state-detail-card__badge" aria-hidden="true">
-                {selectedState.abbreviation}
-              </div>
-            )}
-            <p className={`detail-meta state-detail-card__status state-detail-card__status--${selectedState.status}`}>
-              {selectedState.status === "complete" ? "Complete" : "Incomplete"}
-            </p>
-            <h2 id="simple-state-title">{selectedState.name}</h2>
-            <p className="detail-summary">{selectedState.content}</p>
+            <StateDetailCard story={selectedState} titleId="simple-state-title" />
           </div>
         </article>
       )}
