@@ -152,6 +152,8 @@ const scoreDartThrow = (normalizedX: number, normalizedY: number) => {
   return { points: baseValue, label: `Single ${baseValue}` };
 };
 
+const SHOW_FREE_MODE = false;
+
 const FREE_MODE_VIEW_PRESETS: Record<
   "overview" | "cabinInterior",
   { position: [number, number, number]; lookAt: [number, number, number] }
@@ -1879,7 +1881,7 @@ export function AdventureScene({
             ←
           </button>
         )}
-      {canToggleFreeMode && (
+      {SHOW_FREE_MODE && canToggleFreeMode && (
         <div className="scene-free-mode-group">
           <button
             className="scene-free-mode-help"
