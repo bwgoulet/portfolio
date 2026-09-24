@@ -1,5 +1,7 @@
 export type StateStatus = "complete" | "incomplete";
 
+export type StateMedia = { src: string; alt: string; type?: "image" | "video" };
+
 export type StateStory = {
   id: string;
   name: string;
@@ -16,7 +18,7 @@ export type StateStory = {
   classification?: string;
   difficulty?: string;
   notes?: string;
-  media?: Array<{ src: string; alt: string }>;
+  media?: StateMedia[];
 };
 
 const STATE_NAMES: Record<string, string> = {
@@ -59,19 +61,20 @@ const STATE_CONTENT: Partial<Record<string, Partial<Omit<StateStory, "id" | "nam
     media: [
       {
         src: "/highpoints/mitchell.jpg",
-        alt: "thumbanail",
+        alt: "At the Mount Mitchell summit sign",
       },
       {
         src: "/highpoints/mitchell_summit.jpg",
-        alt: "summit",
+        alt: "View from the summit of Mount Mitchell",
       },
       {
         src: "/highpoints/mitchell_landscape.jpg",
-        alt: "landscape shot",
+        alt: "Mountain landscape along the Mount Mitchell Trail",
       },
       {
         src: "/highpoints/mitchell_pin.mov",
-        alt: "pin video",
+        alt: "Mount Mitchell map pin video",
+        type: "video",
       },
     ],
   },
