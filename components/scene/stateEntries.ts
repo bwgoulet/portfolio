@@ -72,7 +72,7 @@ const STATE_CONTENT: Partial<Record<string, Partial<Omit<StateStory, "id" | "nam
         alt: "Mountain landscape along the Mount Mitchell Trail",
       },
       {
-        src: "/highpoints/mitchell_pin.mov",
+        src: "/highpoints/mitchell_pin.mp4",
         alt: "Mount Mitchell map pin video",
         type: "video",
       },
