@@ -89,7 +89,7 @@ export function StateDetailCard({ story, titleId }: { story: StateStory; titleId
                 >
                   {video ? (
                     <video ref={(node) => { videoRefs.current[index] = node; }} controls={active} playsInline preload="metadata" aria-label={item.alt}>
-                      <source src={item.src} type={item.type === "video" || item.src.toLowerCase().includes(".mov") ? "video/quicktime" : undefined} />
+                      <source src={item.src} type={item.src.toLowerCase().includes(".mp4") ? "video/mp4" : item.src.toLowerCase().includes(".mov") ? "video/quicktime" : undefined} />
                       Your browser does not support this video format.
                     </video>
                   ) : (
