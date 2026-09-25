@@ -1175,10 +1175,10 @@ main {
 .state-detail-card__header h2 { margin: 0.12rem 0 0; font-size: clamp(1.7rem, 4vw, 2.5rem); }
 .state-detail-card__eyebrow { color: #5d6e55 !important; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
 .state-detail-card__complete { flex: none; padding: 0.45rem 0.7rem; border: 1px solid #769365; border-radius: 999px; background: #e2ecd9; color: #36572b; font-size: 0.78rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
-.state-carousel { width: min(100%, 680px); margin: 0 auto 1.15rem; touch-action: pan-y; outline: none; }
-.simple-portfolio section.state-carousel { width: min(100%, 680px); max-width: 680px; margin: 0 auto 1.15rem; padding: 0; border: 0; }
+.state-carousel { width: min(100%, 740px); margin: 0 auto 1.15rem; touch-action: pan-y; outline: none; }
+.simple-portfolio section.state-carousel { width: min(100%, 740px); max-width: 740px; margin: 0 auto 1.15rem; padding: 0; border: 0; }
 .state-carousel:focus-visible .state-carousel__stage { outline: 3px solid #b48035; outline-offset: 4px; }
-.state-carousel__stage { position: relative; height: clamp(230px, 42vw, 340px); overflow: hidden; border-radius: 20px; isolation: isolate; }
+.state-carousel__stage { position: relative; height: clamp(250px, 45vw, 380px); overflow: hidden; border-radius: 20px; isolation: isolate; }
 .state-carousel__slide { position: absolute; top: 8%; left: 50%; z-index: 2; width: 76%; height: 84%; margin: 0; overflow: hidden; transform: translateX(-50%) scale(.76); border: 1px solid rgba(247,237,213,.7); border-radius: 18px; background: #172018; box-shadow: 0 14px 30px rgba(20,26,18,.3); opacity: .5; cursor: pointer; transition: transform 420ms cubic-bezier(.22,.8,.3,1), opacity 320ms ease, filter 320ms ease; filter: saturate(.65) brightness(.72); }
 .state-carousel__slide[data-position="-1"] { z-index: 4; transform: translateX(-122%) scale(.8); }
 .state-carousel__slide[data-position="1"] { z-index: 4; transform: translateX(22%) scale(.8); }
@@ -1186,14 +1186,10 @@ main {
 .state-carousel__slide[data-position="2"] { transform: translateX(70%) scale(.76); opacity: 0; }
 .state-carousel__slide[data-active] { z-index: 6; transform: translateX(-50%) scale(1); opacity: 1; cursor: default; filter: none; }
 .detail-content-card .state-carousel__slide img, .state-carousel__slide video { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; object-fit: cover; background: #172018; }
-.state-carousel__controls { display: flex; align-items: center; justify-content: center; gap: .75rem; margin-top: .55rem; }
-.state-carousel__button { display: grid; place-items: center; width: 2.15rem; height: 2.15rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #52614d; font: 700 1.35rem/1 sans-serif; cursor: pointer; transition: color 150ms ease, background 150ms ease, transform 150ms ease; }
-.state-carousel__button:hover { color: #182318; background: #e1dccd; transform: scale(1.08); }
+.state-carousel__controls { display: flex; align-items: center; justify-content: center; margin-top: .55rem; }
 .state-carousel__dots { display: flex; align-items: center; gap: .45rem; }
 .state-carousel__dots button { width: .58rem; height: .58rem; padding: 0; border: 0; border-radius: 50%; background: #babdb5; cursor: pointer; transition: width 200ms ease, background 200ms ease; }
 .state-carousel__dots button[aria-current] { width: 1.35rem; border-radius: 999px; background: #62804f; }
-.state-carousel__caption { display: flex; justify-content: space-between; gap: 1rem; width: 76%; min-height: 1.2rem; margin: .35rem auto 0; color: #667061 !important; font-size: .72rem !important; text-align: left; }
-.state-carousel__caption span { flex: none; font-weight: 800; }
 .state-detail-card__stats { width: min(100%, 680px); margin: 0 auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #d4cbb9; border-radius: 12px; overflow: hidden; text-align: left; }
 .state-detail-card__stats div { padding: 0.78rem 1rem; border-bottom: 1px solid #d4cbb9; }
 .state-detail-card__stats div:nth-child(odd) { border-right: 1px solid #d4cbb9; }
