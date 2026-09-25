@@ -60,19 +60,19 @@ const STATE_CONTENT: Partial<Record<string, Partial<Omit<StateStory, "id" | "nam
     thumbnailAlt: "A low-poly mountain landscape from the Chasing 50 project",
     media: [
       {
-        src: "/highpoints/mitchell.jpg",
+        src: "/highpoints/nc/mitchell.jpg",
         alt: "At the Mount Mitchell summit sign",
       },
       {
-        src: "/highpoints/mitchell_summit.jpg",
+        src: "/highpoints/nc/mitchell_summit.jpg",
         alt: "View from the summit of Mount Mitchell",
       },
       {
-        src: "/highpoints/mitchell_landscape.jpg",
+        src: "/highpoints/nc/mitchell_landscape.jpg",
         alt: "Mountain landscape along the Mount Mitchell Trail",
       },
       {
-        src: "/highpoints/mitchell_pin.mov",
+        src: "/highpoints/nc/mitchell_pin.mov",
         alt: "Mount Mitchell map pin video",
         type: "video",
       },
