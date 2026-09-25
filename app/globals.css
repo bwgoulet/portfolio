@@ -1185,7 +1185,9 @@ main {
 .state-carousel__slide[data-position="-2"] { transform: translateX(-170%) scale(.76); opacity: 0; }
 .state-carousel__slide[data-position="2"] { transform: translateX(70%) scale(.76); opacity: 0; }
 .state-carousel__slide[data-active] { z-index: 6; transform: translateX(-50%) scale(1); opacity: 1; cursor: default; filter: none; }
+.state-carousel__slide[data-portrait-video] { top: 2%; width: min(76%, 320px); height: 96%; }
 .detail-content-card .state-carousel__slide img, .state-carousel__slide video { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; border-radius: 0; object-fit: cover; background: #172018; }
+.state-carousel__slide video { object-fit: contain; }
 .state-carousel__controls { display: flex; align-items: center; justify-content: center; margin-top: .55rem; }
 .state-carousel__dots { display: flex; align-items: center; gap: .45rem; }
 .state-carousel__dots button { width: .58rem; height: .58rem; padding: 0; border: 0; border-radius: 50%; background: #babdb5; cursor: pointer; transition: width 200ms ease, background 200ms ease; }

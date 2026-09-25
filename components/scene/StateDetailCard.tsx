@@ -10,6 +10,7 @@ function isVideo(item: StateMedia) {
 
 export function StateDetailCard({ story, titleId }: { story: StateStory; titleId: string }) {
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [portraitVideos, setPortraitVideos] = useState<Record<number, boolean>>({});
   const dragStart = useRef<number | null>(null);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const media = story.media ?? (story.thumbnailSrc ? [{ src: story.thumbnailSrc, alt: story.thumbnailAlt ?? "" }] : []);
@@ -83,12 +84,26 @@ export function StateDetailCard({ story, titleId }: { story: StateStory; titleId
                   className="state-carousel__slide"
                   data-active={active || undefined}
                   data-position={visiblePosition}
+                  data-portrait-video={(video && (portraitVideos[index] ?? true)) || undefined}
                   key={item.src}
                   aria-hidden={!active}
                   onClick={() => !active && selectMedia(index)}
                 >
                   {video ? (
-                    <video ref={(node) => { videoRefs.current[index] = node; }} controls={active} playsInline preload="metadata" aria-label={item.alt}>
+                    <video
+                      ref={(node) => { videoRefs.current[index] = node; }}
+                      controls={active}
+                      playsInline
+                      preload="metadata"
+                      aria-label={item.alt}
+                      onLoadedMetadata={(event) => {
+                        const element = event.currentTarget;
+                        setPortraitVideos((current) => ({
+                          ...current,
+                          [index]: element.videoHeight > element.videoWidth,
+                        }));
+                      }}
+                    >
                       <source src={item.src} type={item.src.toLowerCase().includes(".mp4") ? "video/mp4" : item.src.toLowerCase().includes(".mov") ? "video/quicktime" : undefined} />
                       Your browser does not support this video format.
                     </video>
