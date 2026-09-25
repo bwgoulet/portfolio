@@ -93,7 +93,7 @@ export function StateDetailCard({ story, titleId }: { story: StateStory; titleId
                       Your browser does not support this video format.
                     </video>
                   ) : (
-                    <Image src={item.src} alt={item.alt} fill sizes="(max-width: 760px) 78vw, 540px" priority={index < 2} />
+                    <Image src={item.src} alt={item.alt} fill sizes="(max-width: 760px) 78vw, 570px" priority={index < 2} />
                   )}
                 </figure>
               );
@@ -101,17 +101,14 @@ export function StateDetailCard({ story, titleId }: { story: StateStory; titleId
           </div>
 
           {media.length > 1 && (
-            <nav className="state-carousel__controls" aria-label="Media controls">
-              <button type="button" className="state-carousel__button" aria-label="Previous media" onClick={() => selectMedia(mediaIndex - 1)}>←</button>
+            <nav className="state-carousel__controls" aria-label="Choose media">
               <div className="state-carousel__dots">
                 {media.map((item, index) => (
                   <button key={item.src} type="button" aria-label={`Show media ${index + 1} of ${media.length}`} aria-current={index === mediaIndex ? "true" : undefined} onClick={() => selectMedia(index)} />
                 ))}
               </div>
-              <button type="button" className="state-carousel__button" aria-label="Next media" onClick={() => selectMedia(mediaIndex + 1)}>→</button>
             </nav>
           )}
-          <p className="state-carousel__caption" aria-live="polite">{media[mediaIndex].alt} <span>{mediaIndex + 1} / {media.length}</span></p>
         </section>
       )}
 
